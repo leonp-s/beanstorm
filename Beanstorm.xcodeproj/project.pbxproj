@@ -7,22 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E1DE2EB92B2F608100F0D58F /* BeanstormApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DE2EB82B2F608100F0D58F /* BeanstormApp.swift */; };
-		E1DE2EBB2B2F608100F0D58F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DE2EBA2B2F608100F0D58F /* ContentView.swift */; };
-		E1DE2EBD2B2F608200F0D58F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1DE2EBC2B2F608200F0D58F /* Assets.xcassets */; };
-		E1DE2EC02B2F608200F0D58F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1DE2EBF2B2F608200F0D58F /* Preview Assets.xcassets */; };
+		E17E3EA02B323A6D000F456C /* BeanstormApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */; };
+		E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EA12B323A6D000F456C /* ContentView.swift */; };
+		E17E3EA42B323A6D000F456C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E17E3EA32B323A6D000F456C /* Assets.xcassets */; };
+		E17E3EA72B323A6D000F456C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E17E3EA62B323A6D000F456C /* Preview Assets.xcassets */; };
+		E17E3EB02B335E18000F456C /* TemperatureGuage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EAF2B335E18000F456C /* TemperatureGuage.swift */; };
+		E17E3EB42B337279000F456C /* QuickMonitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB32B337279000F456C /* QuickMonitorView.swift */; };
+		E17E3EB62B337812000F456C /* PressureGuage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB52B337812000F456C /* PressureGuage.swift */; };
+		E17E3EB82B338580000F456C /* BrewGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB72B338580000F456C /* BrewGraph.swift */; };
+		E17E3EBB2B33927D000F456C /* Rescale.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EBA2B33927D000F456C /* Rescale.swift */; };
+		E18B794C2B375B59001A3FF0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794B2B375B59001A3FF0 /* SettingsView.swift */; };
+		E18B794E2B3779CF001A3FF0 /* BrewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794D2B3779CF001A3FF0 /* BrewView.swift */; };
+		E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E1DE2EB52B2F608100F0D58F /* Beanstorm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beanstorm.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E1DE2EB82B2F608100F0D58F /* BeanstormApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormApp.swift; sourceTree = "<group>"; };
-		E1DE2EBA2B2F608100F0D58F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		E1DE2EBC2B2F608200F0D58F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		E1DE2EBF2B2F608200F0D58F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E17E3E9C2B323A6D000F456C /* beanstorm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = beanstorm.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormApp.swift; sourceTree = "<group>"; };
+		E17E3EA12B323A6D000F456C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E17E3EA32B323A6D000F456C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E17E3EA62B323A6D000F456C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E17E3EAF2B335E18000F456C /* TemperatureGuage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureGuage.swift; sourceTree = "<group>"; };
+		E17E3EB32B337279000F456C /* QuickMonitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMonitorView.swift; sourceTree = "<group>"; };
+		E17E3EB52B337812000F456C /* PressureGuage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressureGuage.swift; sourceTree = "<group>"; };
+		E17E3EB72B338580000F456C /* BrewGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewGraph.swift; sourceTree = "<group>"; };
+		E17E3EBA2B33927D000F456C /* Rescale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rescale.swift; sourceTree = "<group>"; };
+		E18B794B2B375B59001A3FF0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		E18B794D2B3779CF001A3FF0 /* BrewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewView.swift; sourceTree = "<group>"; };
+		E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E1DE2EB22B2F608100F0D58F /* Frameworks */ = {
+		E17E3E992B323A6D000F456C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -32,77 +48,109 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E1DE2EAC2B2F608100F0D58F = {
+		E17E3E932B323A6D000F456C = {
 			isa = PBXGroup;
 			children = (
-				E1DE2EB72B2F608100F0D58F /* Beanstorm */,
-				E1DE2EB62B2F608100F0D58F /* Products */,
+				E17E3E9E2B323A6D000F456C /* beanstorm */,
+				E17E3E9D2B323A6D000F456C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		E1DE2EB62B2F608100F0D58F /* Products */ = {
+		E17E3E9D2B323A6D000F456C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E1DE2EB52B2F608100F0D58F /* Beanstorm.app */,
+				E17E3E9C2B323A6D000F456C /* beanstorm.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E1DE2EB72B2F608100F0D58F /* Beanstorm */ = {
+		E17E3E9E2B323A6D000F456C /* beanstorm */ = {
 			isa = PBXGroup;
 			children = (
-				E1DE2EB82B2F608100F0D58F /* BeanstormApp.swift */,
-				E1DE2EBA2B2F608100F0D58F /* ContentView.swift */,
-				E1DE2EBC2B2F608200F0D58F /* Assets.xcassets */,
-				E1DE2EBE2B2F608200F0D58F /* Preview Content */,
+				E17E3EB92B33926B000F456C /* helpers */,
+				E17E3EAE2B323ADA000F456C /* components */,
+				E17E3EAD2B323AB7000F456C /* views */,
+				E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */,
+				E17E3EA32B323A6D000F456C /* Assets.xcassets */,
+				E17E3EA52B323A6D000F456C /* Preview Content */,
 			);
-			path = Beanstorm;
+			path = beanstorm;
 			sourceTree = "<group>";
 		};
-		E1DE2EBE2B2F608200F0D58F /* Preview Content */ = {
+		E17E3EA52B323A6D000F456C /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				E1DE2EBF2B2F608200F0D58F /* Preview Assets.xcassets */,
+				E17E3EA62B323A6D000F456C /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E17E3EAD2B323AB7000F456C /* views */ = {
+			isa = PBXGroup;
+			children = (
+				E17E3EA12B323A6D000F456C /* ContentView.swift */,
+				E18B794B2B375B59001A3FF0 /* SettingsView.swift */,
+				E18B794D2B3779CF001A3FF0 /* BrewView.swift */,
+				E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
+		E17E3EAE2B323ADA000F456C /* components */ = {
+			isa = PBXGroup;
+			children = (
+				E17E3EAF2B335E18000F456C /* TemperatureGuage.swift */,
+				E17E3EB32B337279000F456C /* QuickMonitorView.swift */,
+				E17E3EB52B337812000F456C /* PressureGuage.swift */,
+				E17E3EB72B338580000F456C /* BrewGraph.swift */,
+			);
+			path = components;
+			sourceTree = "<group>";
+		};
+		E17E3EB92B33926B000F456C /* helpers */ = {
+			isa = PBXGroup;
+			children = (
+				E17E3EBA2B33927D000F456C /* Rescale.swift */,
+			);
+			path = helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E1DE2EB42B2F608100F0D58F /* Beanstorm */ = {
+		E17E3E9B2B323A6D000F456C /* beanstorm */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E1DE2EC32B2F608200F0D58F /* Build configuration list for PBXNativeTarget "Beanstorm" */;
+			buildConfigurationList = E17E3EAA2B323A6D000F456C /* Build configuration list for PBXNativeTarget "beanstorm" */;
 			buildPhases = (
-				E1DE2EB12B2F608100F0D58F /* Sources */,
-				E1DE2EB22B2F608100F0D58F /* Frameworks */,
-				E1DE2EB32B2F608100F0D58F /* Resources */,
+				E17E3E982B323A6D000F456C /* Sources */,
+				E17E3E992B323A6D000F456C /* Frameworks */,
+				E17E3E9A2B323A6D000F456C /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = Beanstorm;
-			productName = Beanstorm;
-			productReference = E1DE2EB52B2F608100F0D58F /* Beanstorm.app */;
+			name = beanstorm;
+			productName = beanstorm;
+			productReference = E17E3E9C2B323A6D000F456C /* beanstorm.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		E1DE2EAD2B2F608100F0D58F /* Project object */ = {
+		E17E3E942B323A6D000F456C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					E1DE2EB42B2F608100F0D58F = {
+					E17E3E9B2B323A6D000F456C = {
 						CreatedOnToolsVersion = 15.0.1;
 					};
 				};
 			};
-			buildConfigurationList = E1DE2EB02B2F608100F0D58F /* Build configuration list for PBXProject "Beanstorm" */;
+			buildConfigurationList = E17E3E972B323A6D000F456C /* Build configuration list for PBXProject "beanstorm" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -110,42 +158,50 @@
 				en,
 				Base,
 			);
-			mainGroup = E1DE2EAC2B2F608100F0D58F;
-			productRefGroup = E1DE2EB62B2F608100F0D58F /* Products */;
+			mainGroup = E17E3E932B323A6D000F456C;
+			productRefGroup = E17E3E9D2B323A6D000F456C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E1DE2EB42B2F608100F0D58F /* Beanstorm */,
+				E17E3E9B2B323A6D000F456C /* beanstorm */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E1DE2EB32B2F608100F0D58F /* Resources */ = {
+		E17E3E9A2B323A6D000F456C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1DE2EC02B2F608200F0D58F /* Preview Assets.xcassets in Resources */,
-				E1DE2EBD2B2F608200F0D58F /* Assets.xcassets in Resources */,
+				E17E3EA72B323A6D000F456C /* Preview Assets.xcassets in Resources */,
+				E17E3EA42B323A6D000F456C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E1DE2EB12B2F608100F0D58F /* Sources */ = {
+		E17E3E982B323A6D000F456C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1DE2EBB2B2F608100F0D58F /* ContentView.swift in Sources */,
-				E1DE2EB92B2F608100F0D58F /* BeanstormApp.swift in Sources */,
+				E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */,
+				E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */,
+				E18B794C2B375B59001A3FF0 /* SettingsView.swift in Sources */,
+				E17E3EB42B337279000F456C /* QuickMonitorView.swift in Sources */,
+				E17E3EBB2B33927D000F456C /* Rescale.swift in Sources */,
+				E17E3EB82B338580000F456C /* BrewGraph.swift in Sources */,
+				E17E3EB02B335E18000F456C /* TemperatureGuage.swift in Sources */,
+				E17E3EA02B323A6D000F456C /* BeanstormApp.swift in Sources */,
+				E18B794E2B3779CF001A3FF0 /* BrewView.swift in Sources */,
+				E17E3EB62B337812000F456C /* PressureGuage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		E1DE2EC12B2F608200F0D58F /* Debug */ = {
+		E17E3EA82B323A6D000F456C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -208,7 +264,7 @@
 			};
 			name = Debug;
 		};
-		E1DE2EC22B2F608200F0D58F /* Release */ = {
+		E17E3EA92B323A6D000F456C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -264,28 +320,27 @@
 			};
 			name = Release;
 		};
-		E1DE2EC42B2F608200F0D58F /* Debug */ = {
+		E17E3EAB2B323A6D000F456C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Beanstorm/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"beanstorm/Preview Content\"";
 				DEVELOPMENT_TEAM = KZV679P5DQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.leonps.Beanstorm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.leonps.beanstorm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -293,28 +348,27 @@
 			};
 			name = Debug;
 		};
-		E1DE2EC52B2F608200F0D58F /* Release */ = {
+		E17E3EAC2B323A6D000F456C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Beanstorm/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"beanstorm/Preview Content\"";
 				DEVELOPMENT_TEAM = KZV679P5DQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.leonps.Beanstorm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.leonps.beanstorm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -325,25 +379,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E1DE2EB02B2F608100F0D58F /* Build configuration list for PBXProject "Beanstorm" */ = {
+		E17E3E972B323A6D000F456C /* Build configuration list for PBXProject "beanstorm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1DE2EC12B2F608200F0D58F /* Debug */,
-				E1DE2EC22B2F608200F0D58F /* Release */,
+				E17E3EA82B323A6D000F456C /* Debug */,
+				E17E3EA92B323A6D000F456C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E1DE2EC32B2F608200F0D58F /* Build configuration list for PBXNativeTarget "Beanstorm" */ = {
+		E17E3EAA2B323A6D000F456C /* Build configuration list for PBXNativeTarget "beanstorm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E1DE2EC42B2F608200F0D58F /* Debug */,
-				E1DE2EC52B2F608200F0D58F /* Release */,
+				E17E3EAB2B323A6D000F456C /* Debug */,
+				E17E3EAC2B323A6D000F456C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = E1DE2EAD2B2F608100F0D58F /* Project object */;
+	rootObject = E17E3E942B323A6D000F456C /* Project object */;
 }
