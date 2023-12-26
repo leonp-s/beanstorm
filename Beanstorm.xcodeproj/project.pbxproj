@@ -11,9 +11,9 @@
 		E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EA12B323A6D000F456C /* ContentView.swift */; };
 		E17E3EA42B323A6D000F456C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E17E3EA32B323A6D000F456C /* Assets.xcassets */; };
 		E17E3EA72B323A6D000F456C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E17E3EA62B323A6D000F456C /* Preview Assets.xcassets */; };
-		E17E3EB02B335E18000F456C /* TemperatureGuage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EAF2B335E18000F456C /* TemperatureGuage.swift */; };
+		E17E3EB02B335E18000F456C /* BoundedGuage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EAF2B335E18000F456C /* BoundedGuage.swift */; };
 		E17E3EB42B337279000F456C /* QuickMonitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB32B337279000F456C /* QuickMonitorView.swift */; };
-		E17E3EB62B337812000F456C /* PressureGuage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB52B337812000F456C /* PressureGuage.swift */; };
+		E17E3EB62B337812000F456C /* UnboundedGuage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB52B337812000F456C /* UnboundedGuage.swift */; };
 		E17E3EB82B338580000F456C /* BrewGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB72B338580000F456C /* BrewGraph.swift */; };
 		E17E3EBB2B33927D000F456C /* Rescale.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EBA2B33927D000F456C /* Rescale.swift */; };
 		E18B794C2B375B59001A3FF0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794B2B375B59001A3FF0 /* SettingsView.swift */; };
@@ -29,9 +29,9 @@
 		E17E3EA12B323A6D000F456C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E17E3EA32B323A6D000F456C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E17E3EA62B323A6D000F456C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		E17E3EAF2B335E18000F456C /* TemperatureGuage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureGuage.swift; sourceTree = "<group>"; };
+		E17E3EAF2B335E18000F456C /* BoundedGuage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundedGuage.swift; sourceTree = "<group>"; };
 		E17E3EB32B337279000F456C /* QuickMonitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickMonitorView.swift; sourceTree = "<group>"; };
-		E17E3EB52B337812000F456C /* PressureGuage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressureGuage.swift; sourceTree = "<group>"; };
+		E17E3EB52B337812000F456C /* UnboundedGuage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnboundedGuage.swift; sourceTree = "<group>"; };
 		E17E3EB72B338580000F456C /* BrewGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewGraph.swift; sourceTree = "<group>"; };
 		E17E3EBA2B33927D000F456C /* Rescale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rescale.swift; sourceTree = "<group>"; };
 		E18B794B2B375B59001A3FF0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -104,9 +104,9 @@
 		E17E3EAE2B323ADA000F456C /* components */ = {
 			isa = PBXGroup;
 			children = (
-				E17E3EAF2B335E18000F456C /* TemperatureGuage.swift */,
+				E17E3EAF2B335E18000F456C /* BoundedGuage.swift */,
+				E17E3EB52B337812000F456C /* UnboundedGuage.swift */,
 				E17E3EB32B337279000F456C /* QuickMonitorView.swift */,
-				E17E3EB52B337812000F456C /* PressureGuage.swift */,
 				E17E3EB72B338580000F456C /* BrewGraph.swift */,
 				E18B79542B378269001A3FF0 /* Idk.swift */,
 			);
@@ -199,10 +199,10 @@
 				E17E3EBB2B33927D000F456C /* Rescale.swift in Sources */,
 				E17E3EB82B338580000F456C /* BrewGraph.swift in Sources */,
 				E18B79532B377B74001A3FF0 /* Profiles.xcdatamodeld in Sources */,
-				E17E3EB02B335E18000F456C /* TemperatureGuage.swift in Sources */,
+				E17E3EB02B335E18000F456C /* BoundedGuage.swift in Sources */,
 				E17E3EA02B323A6D000F456C /* BeanstormApp.swift in Sources */,
 				E18B794E2B3779CF001A3FF0 /* BrewView.swift in Sources */,
-				E17E3EB62B337812000F456C /* PressureGuage.swift in Sources */,
+				E17E3EB62B337812000F456C /* UnboundedGuage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

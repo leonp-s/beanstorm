@@ -7,27 +7,31 @@ struct QuickMonitorView: View {
                 .font(.footnote)
         ) {
             HStack {
-                TemperatureGuage(
-                    currentTemperature: .constant(96),
-                    maxTemperature: .constant(96)
+                BoundedGuage(
+                    current: .constant(96),
+                    max: .constant(96),
+                    labelHint: "Brew (°C)"
                 )
                 Image(systemName: "thermometer")
             }
+            .frame(maxHeight: .infinity)
         }
     }
     
-    private var steamGuage: some View {
+    private var flowGuage: some View {
         GroupBox(
-            label: Text("Steam (°C)")
+            label: Text("Flow (ml/s)")
                 .font(.footnote)
         ) {
-            HStack {
-                TemperatureGuage(
-                    currentTemperature: .constant(102),
-                    maxTemperature: .constant(104)
+            HStack(alignment: .center) {
+                UnboundedGuage(
+                    current: .constant(2.4),
+                    max: .constant(11.0),
+                    labelHint: "Flow (ml/s)"
                 )
-                Image(systemName: "wind")
+                Image(systemName: "water.waves")
             }
+            .frame(maxHeight: .infinity)
         }
     }
     
@@ -36,25 +40,29 @@ struct QuickMonitorView: View {
             label: Text("Pressure (MPa)")
                 .font(.footnote)
         ) {
-            HStack {
-                PressureGuage(
-                    currentPressure: .constant(6.8),
-                    maxPressure: .constant(11.0)
+            HStack(alignment: .center) {
+                UnboundedGuage(
+                    current: .constant(6.8),
+                    max: .constant(11.0),
+                    labelHint: "Pressure (MPa)"
                 )
                 Image(systemName: "barometer")
             }
+            .frame(maxHeight: .infinity)
         }
     }
     
     var body: some View {
         HStack {
             brewGuage
-            steamGuage
+            flowGuage
             pressureGuage
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
 #Preview {
     QuickMonitorView()
+        .padding()
 }
