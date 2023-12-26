@@ -48,10 +48,25 @@ struct BrewGraph: View {
                 .foregroundStyle(.blue)
                 .lineStyle(StrokeStyle(lineWidth: 3))
                 .foregroundStyle(by: .value("Value", "Pressure"))
+                
+                LineMark(
+                    x: .value("Time", item.shotTime),
+                    y: .value("Pressure",
+                              Rescale(
+                                from: (pressureMin, pressureMax),
+                                to: (0, 1)
+                              ).rescale((item.pressure * 0.2) + 6)
+                             )
+                )
+                .interpolationMethod(.catmullRom)
+                .foregroundStyle(.yellow)
+                .lineStyle(StrokeStyle(lineWidth: 3))
+                .foregroundStyle(by: .value("Value", "Flow"))
             }
             .chartForegroundStyleScale([
                 "Pressure": .blue,
                 "Temperature": .green,
+                "Flow": .yellow,
             ])
             .chartXScale(domain: 0...40)
             .chartYAxis {
@@ -62,7 +77,12 @@ struct BrewGraph: View {
                 AxisMarks(position: .trailing, values: defaultStride) { axis in
                     AxisGridLine()
                     let value = costsStride[axis.index]
-                    AxisValueLabel("\(String(format: "%.2F", value)) (°C)", centered: false)
+                    AxisValueLabel(centered: false) {
+                        VStack(alignment: .leading) {
+                            Text("\(String(format: "%.2F", value))")
+                            Text("(°C)")
+                        }
+                    }
                 }
 
                 let consumptionStride = Array(stride(from: pressureMin,
@@ -71,7 +91,12 @@ struct BrewGraph: View {
                 AxisMarks(position: .leading, values: defaultStride) { axis in
                     AxisGridLine()
                     let value = consumptionStride[axis.index]
-                    AxisValueLabel("\(String(format: "%.2F", value)) (MPa)", centered: false)
+                    AxisValueLabel(centered: false) {
+                        VStack(alignment: .trailing) {
+                            Text("\(String(format: "%.2F", value))")
+                            Text("(MPa, mls⁻¹)")
+                        }
+                    }
                 }
             }
             .padding(.bottom, 20)

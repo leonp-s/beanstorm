@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct BrewView: View {
-    @StateObject var viewModel = BrewGraphPreviewModel()
-
+    @State private var started: Bool = false
+    
     private var timer: some View {
         Group {
             Image(systemName: "timer")
@@ -16,24 +16,51 @@ struct BrewView: View {
     private var status: some View {
         Group {
             Image(systemName: "waveform.path.ecg.rectangle")
-                .foregroundStyle(.green)
-            Text("Brewing")
+                .foregroundStyle(.primary)
+            Text("Idle")
                 .font(.headline)
                 .bold()
         }
     }
     
-    var body: some View {
-        VStack {
+    private var getReady: some View {
+        ContentUnavailableView {
+            Label("BeanstormOS Idle", systemImage: "lightswitch.off")
+        } description: {
+            Text("Load a profile and begin a shot using the machines front panel or via the app.")
             HStack {
-                status
-                Spacer()
-                timer
+                Button(action: {
+                    started = true
+                }) {
+                    Text("Start Shot")
+                    Image(systemName: "play.circle")
+                }
+                .buttonStyle(.borderedProminent)
             }
-            BrewGraph(data: $viewModel.brewData)
-            QuickMonitorView()
         }
-        .padding()
+    }
+    
+    var body: some View {
+            VStack {
+                HStack {
+                    status
+                    Spacer()
+                    if started {
+                        timer
+                    }
+                }
+                Group {
+                    if started {
+                        BrewGraph(data: .constant([]))
+                    } else {
+                        getReady
+                    }
+                }
+                .animation(.bouncy, value: started)
+                .transition(.slide)
+                QuickMonitorView()
+            }
+            .padding()
     }
 }
 
