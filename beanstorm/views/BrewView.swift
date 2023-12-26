@@ -33,7 +33,7 @@ struct BrewView: View {
                     started = true
                 }) {
                     Text("Start Shot")
-                    Image(systemName: "play.circle")
+                    Image(systemName: "play.circle.fill")
                 }
                 .buttonStyle(.borderedProminent)
             }
