@@ -6,6 +6,6 @@
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="temperature" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <relationship name="controlPoints" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ControlPoint"/>
+        <relationship name="controlPoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ControlPoint"/>
     </entity>
 </model>

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @State var isDarkModeEnabled: Bool = true
-    @State var downloadViaWifiEnabled: Bool = false
+    @State var enableLiveActivity: Bool = false
     
     var body: some View {
         Form {            
@@ -10,11 +10,6 @@ struct SettingsView: View {
                 HStack{
                     Image(systemName: "star")
                     Text("Favorites")
-                }
-
-                HStack{
-                    Image(systemName: "arrow.down.circle")
-                    Text("Downloads")
                 }
             }
 
@@ -24,22 +19,19 @@ struct SettingsView: View {
                     Text("Language")
                 }
                 HStack{
-                    Image(systemName: "moon")
-                    Toggle(isOn: $isDarkModeEnabled) {
-                        Text("Dark Mode")
+                    Image(systemName: "waveform.path.ecg.rectangle")
+                    Toggle(isOn: $enableLiveActivity) {
+                        Text("Live activity enabled")
                     }
                 }
-                HStack{
-                    Image(systemName: "wifi")
-                    Toggle(isOn: $downloadViaWifiEnabled) {
-                        Text("Only Download via Wi-Fi")
-                    }
+            }
+            
+            Section("Device") {
+                ContentUnavailableView {
+                    Label("No Device Connected", systemImage: "tropicalstorm")
+                } description: {
+                    Text("Connect to a device to view these settings.")
                 }
-                HStack{
-                    Image(systemName: "icloud")
-                    Text("Play in Background")
-                }
-
             }
         }
     }

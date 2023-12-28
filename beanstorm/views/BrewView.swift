@@ -23,6 +23,17 @@ struct BrewView: View {
         }
     }
     
+    private var profile: some View {
+        Group {
+            Image(systemName: "stopwatch")
+                .foregroundStyle(.primary)
+            Text("Bean Flow")
+                .font(.headline)
+                .bold()
+        }
+    }
+
+    
     private var getReady: some View {
         ContentUnavailableView {
             Label("BeanstormOS Idle", systemImage: "lightswitch.off")
@@ -42,10 +53,21 @@ struct BrewView: View {
     
     var body: some View {
             VStack {
+                if started {
+                    HStack {
+                        Spacer()
+                        Button("End Shot", systemImage: "stop.circle.fill", role: .destructive) {
+                            started = false
+                        }
+                    }
+                    .padding(.bottom)
+                }
                 HStack {
                     status
                     Spacer()
                     if started {
+                        profile
+                        Spacer()
                         timer
                     }
                 }
