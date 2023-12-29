@@ -7,7 +7,7 @@ static constexpr auto kBaudRate = 9600;
 
 void setup ()
 {
-    Pump pump;
+    // Pump pump;
     Serial.begin (kBaudRate);
 
     ums3.begin ();
