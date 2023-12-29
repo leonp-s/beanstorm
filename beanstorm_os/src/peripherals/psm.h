@@ -11,8 +11,11 @@ public:
          unsigned int range,
          int mode = RISING,
          unsigned char divider = 1,
-         unsigned char interrupt_min_time_diff = 0);
-    void InitTimer (uint16_t delay, uint8_t timer_id = 0);
+         unsigned char interrupt_min_time_diff = 0,
+         timer_group_t timer_group = TIMER_GROUP_0,
+         timer_idx_t timer_idx = TIMER_0);
+
+    void InitTimer (uint16_t delay);
     void Set (unsigned int value);
     long GetCounter ();
     void ResetCounter ();
@@ -25,10 +28,13 @@ public:
 
 private:
     static void OnZCInterrupt (void * args);
-    static void OnPsmTimerInterrupt (void * args);
+    static bool OnPsmTimerInterrupt (void * args);
     inline void CalculateSkipFromZc ();
     void CalculateSkip ();
     void UpdateControl (bool force_disable = true);
+
+    const timer_group_t timer_group_;
+    const timer_idx_t timer_idx_;
 
     unsigned char sense_pin_;
     unsigned char control_pin_;

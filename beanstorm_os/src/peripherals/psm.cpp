@@ -5,7 +5,11 @@ Psm::Psm (unsigned char sense_pin,
           unsigned int range,
           int mode,
           unsigned char divider,
-          unsigned char interrupt_min_time_diff)
+          unsigned char interrupt_min_time_diff,
+          timer_group_t timer_group,
+          timer_idx_t timer_idx)
+    : timer_group_ (timer_group)
+    , timer_idx_ (timer_idx)
 {
     pinMode (sense_pin, INPUT_PULLUP);
     sense_pin_ = sense_pin;
@@ -23,18 +27,20 @@ Psm::Psm (unsigned char sense_pin,
     interrupt_min_time_diff_ = interrupt_min_time_diff;
 }
 
-void Psm::InitTimer (uint16_t delay, uint8_t timer_id)
+void Psm::InitTimer (uint16_t delay)
 {
     uint32_t us = delay > 1000u ? delay : delay > 55u ? 5500u : 6600u;
+    timer_config_t config = {.divider = us,
+                             .counter_dir = TIMER_COUNT_UP,
+                             .counter_en = TIMER_PAUSE,
+                             .alarm_en = TIMER_ALARM_DIS,
+                             .auto_reload = TIMER_AUTORELOAD_EN};
 
-    esp_timer_create_args_t timer_config;
-    timer_config.arg = this;
-    timer_config.callback = reinterpret_cast<esp_timer_cb_t> (OnPsmTimerInterrupt);
-    timer_config.dispatch_method = ESP_TIMER_TASK;
-    timer_config.name = "psm_timer";
-
-    esp_timer_create (&timer_config, &psm_interval_timer_);
-    esp_timer_start_periodic (psm_interval_timer_, us);
+    timer_init (timer_group_, timer_idx_, &config);
+    timer_set_counter_value (timer_group_, timer_idx_, 0);
+    timer_enable_intr (timer_group_, timer_idx_);
+    timer_isr_callback_add (timer_group_, timer_idx_, OnPsmTimerInterrupt, this, 0);
+    timer_start (timer_group_, timer_idx_);
 
     psm_interval_timer_initialized_ = true;
 }
@@ -54,17 +60,19 @@ void Psm::OnZCInterrupt (void * args)
 
     if (psm->psm_interval_timer_initialized_)
     {
-        psm->psm_interval_timer_->setCount (0);
-        psm->psm_interval_timer_->resume ();
+        timer_set_counter_value (psm->timer_group_, psm->timer_idx_, 0);
+        timer_start (psm->timer_group_, psm->timer_idx_);
     }
 }
 
-void Psm::OnPsmTimerInterrupt (void * args)
+bool Psm::OnPsmTimerInterrupt (void * args)
 {
     auto psm = reinterpret_cast<Psm *> (args);
 
-    //    psm_interval_timer_->pause ();
+    timer_pause (psm->timer_group_, psm->timer_idx_);
     psm->UpdateControl (true);
+
+    return true;
 }
 
 void Psm::Set (unsigned int value)
