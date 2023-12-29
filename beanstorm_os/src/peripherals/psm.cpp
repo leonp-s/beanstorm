@@ -30,11 +30,13 @@ Psm::Psm (unsigned char sense_pin,
 void Psm::InitTimer (uint16_t delay)
 {
     uint32_t us = delay > 1000u ? delay : delay > 55u ? 5500u : 6600u;
-    timer_config_t config = {.divider = us,
-                             .counter_dir = TIMER_COUNT_UP,
-                             .counter_en = TIMER_PAUSE,
-                             .alarm_en = TIMER_ALARM_DIS,
-                             .auto_reload = TIMER_AUTORELOAD_EN};
+    timer_config_t config = {
+        .alarm_en = TIMER_ALARM_DIS,
+        .counter_en = TIMER_PAUSE,
+        .counter_dir = TIMER_COUNT_UP,
+        .auto_reload = TIMER_AUTORELOAD_EN,
+        .divider = us,
+    };
 
     timer_init (timer_group_, timer_idx_, &config);
     timer_set_counter_value (timer_group_, timer_idx_, 0);
@@ -83,7 +85,7 @@ void Psm::Set (unsigned int value)
         value_ = range_;
 }
 
-long Psm::GetCounter ()
+long Psm::GetCounter () const
 {
     return counter_;
 }
@@ -140,7 +142,7 @@ void Psm::CalculateSkip ()
         skip_ = true;
 }
 
-void Psm::UpdateControl (bool force_disable)
+void Psm::UpdateControl (bool force_disable) const
 {
     if (force_disable || skip_)
         digitalWrite (control_pin_, LOW);

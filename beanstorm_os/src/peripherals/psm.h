@@ -17,7 +17,7 @@ public:
 
     void InitTimer (uint16_t delay);
     void Set (unsigned int value);
-    long GetCounter ();
+    long GetCounter () const;
     void ResetCounter ();
     void StopAfter (long counter);
     unsigned int CPS ();
@@ -31,7 +31,7 @@ private:
     static bool OnPsmTimerInterrupt (void * args);
     inline void CalculateSkipFromZc ();
     void CalculateSkip ();
-    void UpdateControl (bool force_disable = true);
+    void UpdateControl (bool force_disable = true) const;
 
     const timer_group_t timer_group_;
     const timer_idx_t timer_idx_;
@@ -42,13 +42,13 @@ private:
     unsigned char divider_ = 1;
     unsigned char divider_counter_ = 1;
     unsigned char interrupt_min_time_diff_;
-    volatile unsigned int value_;
-    volatile unsigned int a_;
+    volatile unsigned int value_ {};
+    volatile unsigned int a_ {};
     volatile bool skip_ = true;
-    volatile long counter_;
-    volatile long stop_after_;
+    volatile long counter_ {};
+    volatile long stop_after_ {};
     volatile unsigned long last_millis_ = 0;
 
     bool psm_interval_timer_initialized_ = false;
-    esp_timer_handle_t psm_interval_timer_;
+    esp_timer_handle_t psm_interval_timer_ {};
 };
