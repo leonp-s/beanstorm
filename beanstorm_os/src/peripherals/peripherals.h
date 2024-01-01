@@ -4,7 +4,6 @@
 
 namespace Peripherals
 {
-
 struct SwitchState
 {
     bool steam;
@@ -14,14 +13,14 @@ struct SwitchState
 
 namespace
 {
-static inline void SetupSwitchPins ()
+inline void SetupSwitchPins ()
 {
     pinMode (Pindef::Switches::kBrewSwitchPin, INPUT_PULLUP);
     pinMode (Pindef::Switches::kSteamSwitchPin, INPUT_PULLUP);
     pinMode (Pindef::Switches::kWaterSwitchPin, INPUT_PULLUP);
 }
 
-static inline void SetupControlPins ()
+inline void SetupControlPins ()
 {
     pinMode (Pindef::Control::kValvePin, OUTPUT);
     pinMode (Pindef::Control::kBoilerRelayPin, OUTPUT);
@@ -60,5 +59,4 @@ static inline void SetBoilerOff ()
 {
     digitalWrite (Pindef::Control::kBoilerRelayPin, LOW);
 }
-
 }

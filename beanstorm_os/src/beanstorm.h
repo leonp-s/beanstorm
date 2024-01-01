@@ -1,13 +1,14 @@
 #pragma once
 
-#include <peripherals/pindef.h>
-#include <peripherals/pressure_sensor.h>
-#include <peripherals/thermocouple.h>
+#include "peripherals/pindef.h"
+#include "peripherals/pressure_sensor.h"
+#include "peripherals/thermocouple.h"
+#include "views/view_delegate.h"
 
 class Beanstorm
 {
 public:
-    Beanstorm ();
+    explicit Beanstorm (ViewDelegate & view_delegate);
     void Setup ();
 
 private:
@@ -15,6 +16,9 @@ private:
     static void SetupPins ();
 
     void SetupSensors ();
+    void SetupViewListeners ();
+
+    ViewDelegate & view_delegate_;
 
     PressureSensor pressure_sensor_;
     Thermocouple thermocouple_{
