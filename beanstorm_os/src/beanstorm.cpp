@@ -6,18 +6,11 @@ Beanstorm::Beanstorm (ViewDelegate & view_delegate)
 {
 }
 
-void Beanstorm::Setup ()
-{
-    SetupPins ();
-    SetupSensors ();
-
-    view_delegate_.Setup ();
-}
-
-void Beanstorm::SetupPins ()
+void Beanstorm::SetupPeripherals ()
 {
     Peripherals::SetupPins ();
-    SetPinsToDefaultState ();
+    pressure_sensor_.Setup ();
+    thermocouple_.Setup ();
 }
 
 void Beanstorm::SetPinsToDefaultState ()
@@ -26,10 +19,13 @@ void Beanstorm::SetPinsToDefaultState ()
     Peripherals::CloseValve ();
 }
 
-void Beanstorm::SetupSensors ()
+void Beanstorm::Setup ()
 {
-    pressure_sensor_.Setup ();
-    thermocouple_.Setup ();
+    SetupPeripherals ();
+    SetPinsToDefaultState ();
+
+    SetupViewListeners ();
+    view_delegate_.Setup ();
 }
 
 void Beanstorm::SetupViewListeners ()
