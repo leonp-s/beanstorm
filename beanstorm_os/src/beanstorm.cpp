@@ -1,8 +1,9 @@
 #include "beanstorm.h"
+
 #include "peripherals/peripherals.h"
 
-Beanstorm::Beanstorm (ViewDelegate & view_delegate)
-    : view_delegate_ (view_delegate)
+Beanstorm::Beanstorm (BeanstormBLE & beanstorm_ble)
+    : beanstorm_ble_ (beanstorm_ble)
 {
 }
 
@@ -21,16 +22,13 @@ void Beanstorm::SetPinsToDefaultState ()
 
 void Beanstorm::Setup ()
 {
-    SetupPeripherals ();
-    SetPinsToDefaultState ();
+    //    SetupPeripherals ();
+    //    SetPinsToDefaultState ();
 
     SetupViewListeners ();
-    view_delegate_.Setup ();
+    beanstorm_ble_.Setup ();
 }
 
 void Beanstorm::SetupViewListeners ()
 {
-    view_delegate_.OnProfileDidLoad = []
-    {
-    };
 }
