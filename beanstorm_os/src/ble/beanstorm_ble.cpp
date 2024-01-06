@@ -54,18 +54,20 @@ void BeanstormBLE::Setup ()
 
 void BeanstormBLE::BLEServiceTask (void * param)
 {
+    auto beanstorm_ble = reinterpret_cast<BeanstormBLE *> (param);
+    auto server = beanstorm_ble->ble_server_;
+
     for (;;)
     {
-        auto beanstorm_ble = reinterpret_cast<BeanstormBLE *> (param);
-        if (beanstorm_ble->ble_server_->getConnectedCount ())
+        if (server->getConnectedCount ())
         {
-            NimBLEService * pSvc = beanstorm_ble->ble_server_->getServiceByUUID ("BAAD");
-            if (pSvc)
+            NimBLEService * service = server->getServiceByUUID ("BAAD");
+            if (service)
             {
-                NimBLECharacteristic * pChr = pSvc->getCharacteristic ("F00D");
-                if (pChr)
+                NimBLECharacteristic * characteristic = service->getCharacteristic ("F00D");
+                if (characteristic)
                 {
-                    pChr->notify (true);
+                    characteristic->notify (true);
                 }
             }
         }
