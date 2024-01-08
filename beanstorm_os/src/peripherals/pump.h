@@ -1,14 +1,31 @@
 #pragma once
-#include "psm.h"
+
+#include "CytronMotorDriver.h"
+
+#include <PID_v1.h>
 
 class Pump
 {
 public:
-    Pump (u_char sense_pin, u_char control_pin, uint range, int mode);
+    struct Pins
+    {
+        uint8_t motor_pin_1;
+        uint8_t motor_pin_2;
+    };
+
+    explicit Pump (const Pins & pins);
+    void Setup ();
+    void SetPumpOff ();
 
 private:
-    static constexpr u_char kDivider = 1;
-    static constexpr u_char kInterruptMinTimeDiff = 6;
-    
-    Psm psm_;
+    CytronMD motor_;
+
+    double set_point_ {};
+    double input_ {};
+    double output_ {};
+    double kp_ = 2.0;
+    double ki_ = 5.0;
+    double kd_ = 1.0;
+
+    PID pid_ {&input_, &output_, &set_point_, kp_, ki_, kd_, DIRECT};
 };

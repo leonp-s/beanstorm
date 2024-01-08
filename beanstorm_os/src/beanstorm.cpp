@@ -11,6 +11,7 @@ void Beanstorm::SetupPeripherals ()
 {
     pressure_sensor_.Setup ();
     thermocouple_.Setup ();
+    pump_.Setup ();
 }
 
 void Beanstorm::SetPinsToDefaultState ()

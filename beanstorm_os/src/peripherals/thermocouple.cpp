@@ -1,10 +1,7 @@
 #include "thermocouple.h"
 
-Thermocouple::Thermocouple (int8_t spi_pin_cs,
-                            int8_t spi_pin_di,
-                            int8_t spi_pin_do,
-                            int8_t spi_pin_clk)
-    : thermocouple_ (spi_pin_cs, spi_pin_di, spi_pin_do, spi_pin_clk)
+Thermocouple::Thermocouple (Pins pins)
+    : thermocouple_ (pins.spi_pin_cs, pins.spi_pin_di, pins.spi_pin_do, pins.spi_pin_clk)
 {
 }
 

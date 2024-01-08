@@ -1,6 +1,19 @@
 #include "pump.h"
 
-Pump::Pump (u_char sense_pin, u_char control_pin, uint range, int mode)
-    : psm_ (sense_pin, control_pin, range, mode, kDivider, kInterruptMinTimeDiff)
+Pump::Pump (const Pins & pins)
+    : motor_ (PWM_DIR, pins.motor_pin_1, pins.motor_pin_2)
 {
+}
+
+void Pump::Setup ()
+{
+    SetPumpOff ();
+
+    set_point_ = 0;
+    pid_.SetMode (AUTOMATIC);
+}
+
+void Pump::SetPumpOff ()
+{
+    motor_.setSpeed (0);
 }

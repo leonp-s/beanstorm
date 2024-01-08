@@ -5,7 +5,15 @@
 class Thermocouple
 {
 public:
-    Thermocouple (int8_t spi_pin_cs, int8_t spi_pin_di, int8_t spi_pin_do, int8_t spi_pin_clk);
+    struct Pins
+    {
+        int8_t spi_pin_cs;
+        int8_t spi_pin_di;
+        int8_t spi_pin_do;
+        int8_t spi_pin_clk;
+    };
+
+    Thermocouple (Pins pins);
     void Setup ();
     float ReadTemperature ();
 
