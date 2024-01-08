@@ -9,7 +9,6 @@ Beanstorm::Beanstorm (BeanstormBLE & beanstorm_ble)
 
 void Beanstorm::SetupPeripherals ()
 {
-    Peripherals::SetupPins ();
     pressure_sensor_.Setup ();
     thermocouple_.Setup ();
 }
@@ -22,13 +21,10 @@ void Beanstorm::SetPinsToDefaultState ()
 
 void Beanstorm::Setup ()
 {
-    //    SetupPeripherals ();
-    //    SetPinsToDefaultState ();
+    Peripherals::SetupPins ();
 
-    SetupViewListeners ();
+    // SetupPeripherals ();
+    SetPinsToDefaultState ();
+
     beanstorm_ble_.Setup ();
-}
-
-void Beanstorm::SetupViewListeners ()
-{
 }

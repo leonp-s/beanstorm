@@ -22,4 +22,12 @@ private:
 
     static void BLEServiceTask (void * param);
     void StartBLEServiceTask ();
+    NimBLEService * CreateBeanService ();
+    NimBLEService * CreateDataService ();
+
+    static const NimBLEUUID kBeanServiceUUID;
+    static const NimBLEUUID kBeanCharacteristicUUID;
+    
+    static const NimBLEUUID kDataServiceUUID;
+    static const NimBLEUUID kPressureCharacteristicUUID;
 };
