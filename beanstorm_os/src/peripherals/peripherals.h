@@ -11,6 +11,12 @@ struct SwitchState
     bool water;
 };
 
+struct SensorState
+{
+    float temperature;
+    float pressure;
+};
+
 inline void SetupSwitchPins ()
 {
     pinMode (Pindef::Switches::kBrewSwitchPin, INPUT_PULLUP);
@@ -37,12 +43,12 @@ static SwitchState ReadSwitchState ()
             .water = digitalRead (Pindef::Switches::kWaterSwitchPin) == HIGH};
 }
 
-static void OpenValve ()
+static void SetValveOpened ()
 {
     digitalWrite (Pindef::Control::kValvePin, LOW);
 }
 
-static void CloseValve ()
+static void SetValveClosed ()
 {
     digitalWrite (Pindef::Control::kValvePin, HIGH);
 }
@@ -52,7 +58,7 @@ static void SetBoilerOn ()
     digitalWrite (Pindef::Control::kBoilerRelayPin, HIGH);
 }
 
-static inline void SetBoilerOff ()
+static void SetBoilerOff ()
 {
     digitalWrite (Pindef::Control::kBoilerRelayPin, LOW);
 }

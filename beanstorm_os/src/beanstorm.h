@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ble/beanstorm_ble.h"
+#include "peripherals/peripherals.h"
 #include "peripherals/pindef.h"
 #include "peripherals/pressure_sensor.h"
 #include "peripherals/pump.h"
@@ -17,10 +18,11 @@ public:
 private:
     static void SetPinsToDefaultState ();
     void SetupPeripherals ();
+    void HandleSwitchEvents ();
 
-    int pump_time_ = 0;
-    BeanstormBLE & beanstorm_ble_;
-    ProgramController program_controller_;
+    static constexpr int kServiceIntervalMs = 200;
+
+    Peripherals::SwitchState last_switch_state_ {.steam = false, .brew = false, .water = false};
 
     Pump pump_ {{.motor_pin_1 = Pindef::Control::kPumpMotorPinOne,
                  .motor_pin_2 = Pindef::Control::kPumpMotorPinTwo}};
@@ -29,4 +31,10 @@ private:
                                  .spi_pin_do = Pindef::Sensors::kThermocoupleSpiDoPin,
                                  .spi_pin_clk = Pindef::Sensors::kThermocoupleSpiClkPin}};
     PressureSensor pressure_sensor_;
+
+    ProgramController program_controller_;
+    IdleProgram idle_program_;
+    BrewProgram brew_program_ {pump_};
+
+    BeanstormBLE & beanstorm_ble_;
 };
