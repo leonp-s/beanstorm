@@ -11,8 +11,6 @@ struct SwitchState
     bool water;
 };
 
-namespace
-{
 inline void SetupSwitchPins ()
 {
     pinMode (Pindef::Switches::kBrewSwitchPin, INPUT_PULLUP);
@@ -25,32 +23,31 @@ inline void SetupControlPins ()
     pinMode (Pindef::Control::kValvePin, OUTPUT);
     pinMode (Pindef::Control::kBoilerRelayPin, OUTPUT);
 }
-}
 
-static inline void SetupPins ()
+static void SetupPins ()
 {
     SetupSwitchPins ();
     SetupControlPins ();
 }
 
-static inline SwitchState ReadSwitchState ()
+static SwitchState ReadSwitchState ()
 {
-    return {.steam = digitalRead (Pindef::Switches::kSteamSwitchPin) == LOW,
-            .brew = digitalRead (Pindef::Switches::kBrewSwitchPin) == LOW,
-            .water = digitalRead (Pindef::Switches::kWaterSwitchPin) == LOW};
+    return {.steam = digitalRead (Pindef::Switches::kSteamSwitchPin) == HIGH,
+            .brew = digitalRead (Pindef::Switches::kBrewSwitchPin) == HIGH,
+            .water = digitalRead (Pindef::Switches::kWaterSwitchPin) == HIGH};
 }
 
-static inline void OpenValve ()
-{
-    digitalWrite (Pindef::Control::kValvePin, HIGH);
-}
-
-static inline void CloseValve ()
+static void OpenValve ()
 {
     digitalWrite (Pindef::Control::kValvePin, LOW);
 }
 
-static inline void SetBoilerOn ()
+static void CloseValve ()
+{
+    digitalWrite (Pindef::Control::kValvePin, HIGH);
+}
+
+static void SetBoilerOn ()
 {
     digitalWrite (Pindef::Control::kBoilerRelayPin, HIGH);
 }

@@ -16,6 +16,7 @@ public:
     explicit Pump (const Pins & pins);
     void Setup ();
     void SetPumpOff ();
+    void SetSpeed (float speed);
 
 private:
     CytronMD motor_;

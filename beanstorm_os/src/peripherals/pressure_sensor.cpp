@@ -9,11 +9,8 @@ void PressureSensor::Setup ()
     ads_.readADC (0);
 }
 
-float PressureSensor::GetPressure ()
+float PressureSensor::ReadPressure ()
 {
     //    getAdsError ();
-
-    previous_pressure_ = current_pressure_;
-    current_pressure_ = (static_cast<float> (ads_.getValue ()) - 2666.f) / 1777.8f;
-    return current_pressure_;
+    return static_cast<float> ((ads_.getValue () - 2666)) / 1777.8f;
 }

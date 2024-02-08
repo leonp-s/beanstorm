@@ -13,10 +13,12 @@ Beanstorm beanstorm {beanstorm_ble};
 void setup ()
 {
     Serial.begin (kBaudRate);
+    Wire.begin (SDA, SCL);
     ums3.begin ();
     beanstorm.Setup ();
 }
 
 void loop ()
 {
+    beanstorm.Loop ();
 }

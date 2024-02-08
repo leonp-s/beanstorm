@@ -17,8 +17,8 @@ public:
 private:
     static void SetPinsToDefaultState ();
     void SetupPeripherals ();
-    void SetupSensors ();
 
+    int pump_time_ = 0;
     BeanstormBLE & beanstorm_ble_;
     ProgramController program_controller_;
 

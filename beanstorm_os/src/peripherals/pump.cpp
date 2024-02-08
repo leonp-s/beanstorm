@@ -17,3 +17,8 @@ void Pump::SetPumpOff ()
 {
     motor_.setSpeed (0);
 }
+
+void Pump::SetSpeed (float speed)
+{
+    motor_.setSpeed (speed);
+}
