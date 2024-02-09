@@ -78,7 +78,7 @@ void BrewProgram::Enter ()
 
     Peripherals::SetValveOpened ();
 
-    pump_.SetPumpOff ();
+    pump_.SetOff ();
     smoothed_pump_speed_normalised_ = 0.f;
 }
 
@@ -87,7 +87,7 @@ void BrewProgram::Leave ()
     Serial.println ("Leave Brew Program");
     Peripherals::SetBoilerOff ();
     Peripherals::SetValveClosed ();
-    pump_.SetPumpOff ();
+    pump_.SetOff ();
 }
 
 float SmoothedValue (float value_to_smooth, float target)
@@ -130,7 +130,7 @@ void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
         }
         else if (shot_time < 14000)
         {
-            Serial.println ("Rest");
+            Serial.println ("Soak");
             smoothed_pump_speed_normalised_ = SmoothedValue (smoothed_pump_speed_normalised_, 0.0f);
         }
         else
@@ -146,7 +146,7 @@ void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
     {
         Serial.println ("Shot finished");
         Peripherals::SetValveClosed ();
-        pump_.SetPumpOff ();
+        pump_.SetOff ();
     }
 
     Serial.print ("Temperature: ");

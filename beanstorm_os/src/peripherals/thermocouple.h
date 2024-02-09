@@ -13,9 +13,10 @@ public:
         int8_t spi_pin_clk;
     };
 
-    Thermocouple (Pins pins);
+    explicit Thermocouple (Pins pins);
     void Setup ();
     float ReadTemperature ();
+    bool HasError ();
 
 private:
     static constexpr float kRRef = 430.0f;

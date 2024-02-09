@@ -2,8 +2,6 @@
 
 #include "CytronMotorDriver.h"
 
-#include <PID_v1.h>
-
 class Pump
 {
 public:
@@ -15,18 +13,10 @@ public:
 
     explicit Pump (const Pins & pins);
     void Setup ();
-    void SetPumpOff ();
+
+    void SetOff ();
     void SetSpeed (float speed);
 
 private:
     CytronMD motor_;
-
-    double set_point_ {};
-    double input_ {};
-    double output_ {};
-    double kp_ = 2.0;
-    double ki_ = 5.0;
-    double kd_ = 1.0;
-
-    PID pid_ {&input_, &output_, &set_point_, kp_, ki_, kd_, DIRECT};
 };

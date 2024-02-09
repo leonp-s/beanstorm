@@ -20,6 +20,9 @@ private:
     void SetupPeripherals ();
     void HandleSwitchEvents ();
 
+    void PerformHealthCheck ();
+
+    static constexpr int kWatchdogTimeout = 1;
     static constexpr int kServiceIntervalMs = 200;
 
     Peripherals::SwitchState last_switch_state_ {.steam = false, .brew = false, .water = false};

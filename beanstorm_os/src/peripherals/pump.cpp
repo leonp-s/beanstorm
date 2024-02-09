@@ -7,18 +7,15 @@ Pump::Pump (const Pins & pins)
 
 void Pump::Setup ()
 {
-    SetPumpOff ();
-
-    set_point_ = 0;
-    pid_.SetMode (AUTOMATIC);
+    SetOff ();
 }
 
-void Pump::SetPumpOff ()
+void Pump::SetOff ()
 {
     motor_.setSpeed (0);
 }
 
 void Pump::SetSpeed (float speed)
 {
-    motor_.setSpeed (speed);
+    motor_.setSpeed (static_cast<int16_t> (std::round (speed)));
 }

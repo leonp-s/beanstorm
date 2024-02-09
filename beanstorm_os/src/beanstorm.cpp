@@ -2,6 +2,8 @@
 
 #include "peripherals/peripherals.h"
 
+#include <esp_task_wdt.h>
+
 Beanstorm::Beanstorm (BeanstormBLE & beanstorm_ble)
     : beanstorm_ble_ (beanstorm_ble)
 {
@@ -11,7 +13,9 @@ void Beanstorm::SetupPeripherals ()
 {
     pressure_sensor_.Setup ();
     thermocouple_.Setup ();
+
     pump_.Setup ();
+    pump_.SetOff ();
 }
 
 void Beanstorm::SetPinsToDefaultState ()
@@ -24,9 +28,19 @@ void Beanstorm::Setup ()
 {
     Peripherals::SetupPins ();
     SetPinsToDefaultState ();
-    SetupPeripherals ();
 
+    SetupPeripherals ();
     program_controller_.LoadProgram (&idle_program_);
+
+    esp_task_wdt_init (kWatchdogTimeout, true);
+    esp_task_wdt_add (nullptr);
+
+    const auto boot_reason = esp_reset_reason ();
+    if (boot_reason == 1)
+        Serial.println ("Reboot was because of Power-On!!");
+
+    if (boot_reason == 6)
+        Serial.println ("Reboot was because of WDT!!");
 
     // beanstorm_ble_.Setup ();
 }
@@ -46,44 +60,23 @@ void Beanstorm::HandleSwitchEvents ()
     last_switch_state_ = switch_state;
 }
 
+void Beanstorm::PerformHealthCheck ()
+{
+}
+
 void Beanstorm::Loop ()
 {
-    HandleSwitchEvents ();
+    esp_task_wdt_reset ();
+
+    PerformHealthCheck ();
+
     const Peripherals::SensorState sensor_state {
         .temperature = thermocouple_.ReadTemperature (),
         .pressure = pressure_sensor_.ReadPressure (),
     };
+
+    HandleSwitchEvents ();
     program_controller_.Loop (sensor_state);
 
-    // if (switch_state.brew)
-    //     Peripherals::SetBoilerOn ();
-    // else
-    //     Peripherals::SetBoilerOff ();
-    //
-    // if (switch_state.water)
-    // {
-    //     auto speed = std::sin (pump_time_ * 0.1f);
-    //     speed = speed + 1.f;
-    //     speed = speed / 2.f;
-    //     speed = speed * 200.f;
-    //
-    //     pump_.SetSpeed (static_cast<int> (std::round (speed)));
-    // }
-    // else
-    // {
-    //     pump_.SetPumpOff ();
-    // }
-    //
-    // if (switch_state.steam)
-    //     Peripherals::SetValveOpened ();
-    // else
-    //     Peripherals::SetValveClosed ();
-    //
-    // Serial.print ("Temperature: ");
-    // Serial.println (thermocouple_.ReadTemperature ());
-    //
-    // Serial.print ("Pressure: ");
-    // Serial.println (pressure_sensor_.ReadPressure ());
-
-    delay (200);
+    delay (kServiceIntervalMs);
 }
