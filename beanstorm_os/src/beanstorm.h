@@ -5,8 +5,8 @@
 #include "peripherals/pindef.h"
 #include "peripherals/pressure_sensor.h"
 #include "peripherals/pump.h"
-#include "peripherals/thermocouple.h"
-#include "programs/ProgramController.h"
+#include "peripherals/temperature_sensor.h"
+#include "programs/program_controller.h"
 
 class Beanstorm
 {
@@ -16,7 +16,7 @@ public:
     void Loop ();
 
 private:
-    static void SetPinsToDefaultState ();
+    void SetPeripheralsToDefaultState ();
     void SetupPeripherals ();
     void HandleSwitchEvents ();
 
@@ -29,10 +29,11 @@ private:
 
     Pump pump_ {{.motor_pin_1 = Pindef::Control::kPumpMotorPinOne,
                  .motor_pin_2 = Pindef::Control::kPumpMotorPinTwo}};
-    Thermocouple thermocouple_ {{.spi_pin_cs = Pindef::Sensors::kThermocoupleSpiCsPin,
-                                 .spi_pin_di = Pindef::Sensors::kThermocoupleSpiDiPin,
-                                 .spi_pin_do = Pindef::Sensors::kThermocoupleSpiDoPin,
-                                 .spi_pin_clk = Pindef::Sensors::kThermocoupleSpiClkPin}};
+    TemperatureSensor temperature_sensor_ {
+        {.spi_pin_cs = Pindef::Sensors::kTemperatureSensorSpiCsPin,
+         .spi_pin_di = Pindef::Sensors::kTemperatureSensorSpiDiPin,
+         .spi_pin_do = Pindef::Sensors::kTemperatureSensorSpiDoPin,
+         .spi_pin_clk = Pindef::Sensors::kTemperatureSensorSpiClkPin}};
     PressureSensor pressure_sensor_;
 
     ProgramController program_controller_;

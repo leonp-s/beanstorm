@@ -1,8 +1,7 @@
 #include "beanstorm.h"
 
 #include "peripherals/peripherals.h"
-
-#include <esp_task_wdt.h>
+#include "watchdog.h"
 
 Beanstorm::Beanstorm (BeanstormBLE & beanstorm_ble)
     : beanstorm_ble_ (beanstorm_ble)
@@ -12,36 +11,37 @@ Beanstorm::Beanstorm (BeanstormBLE & beanstorm_ble)
 void Beanstorm::SetupPeripherals ()
 {
     pressure_sensor_.Setup ();
-    thermocouple_.Setup ();
-
+    temperature_sensor_.Setup ();
     pump_.Setup ();
-    pump_.SetOff ();
 }
 
-void Beanstorm::SetPinsToDefaultState ()
+void Beanstorm::SetPeripheralsToDefaultState ()
 {
     Peripherals::SetBoilerOff ();
     Peripherals::SetValveClosed ();
+    pump_.SetOff ();
 }
 
 void Beanstorm::Setup ()
 {
     Peripherals::SetupPins ();
-    SetPinsToDefaultState ();
-
+    SetPeripheralsToDefaultState ();
     SetupPeripherals ();
+
+    const auto setup_error = TaskWatchdog::SetupWatchdog (kWatchdogTimeout);
+    const auto add_task_error = TaskWatchdog::AddTask (nullptr);
+
+    if (setup_error || add_task_error)
+    {
+        static constexpr auto kErrorRestartDelayMs = 2000;
+        delay (kErrorRestartDelayMs);
+        esp_restart ();
+    }
+
+    if (TaskWatchdog::IsBootReasonReset ())
+        Serial.println ("Reboot from WDT");
+
     program_controller_.LoadProgram (&idle_program_);
-
-    esp_task_wdt_init (kWatchdogTimeout, true);
-    esp_task_wdt_add (nullptr);
-
-    const auto boot_reason = esp_reset_reason ();
-    if (boot_reason == 1)
-        Serial.println ("Reboot was because of Power-On!!");
-
-    if (boot_reason == 6)
-        Serial.println ("Reboot was because of WDT!!");
-
     // beanstorm_ble_.Setup ();
 }
 
@@ -62,16 +62,24 @@ void Beanstorm::HandleSwitchEvents ()
 
 void Beanstorm::PerformHealthCheck ()
 {
+    if (pressure_sensor_.HasError ())
+    {
+        Serial.println ("Oh no... Pressure");
+    }
+
+    if (temperature_sensor_.HasError ())
+    {
+        Serial.println ("Oh no... Temperature");
+    }
 }
 
 void Beanstorm::Loop ()
 {
-    esp_task_wdt_reset ();
-
+    TaskWatchdog::Reset ();
     PerformHealthCheck ();
 
     const Peripherals::SensorState sensor_state {
-        .temperature = thermocouple_.ReadTemperature (),
+        .temperature = temperature_sensor_.ReadTemperature (),
         .pressure = pressure_sensor_.ReadPressure (),
     };
 

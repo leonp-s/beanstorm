@@ -20,9 +20,9 @@ static constexpr auto kPumpMotorPinTwo = A11;
 
 namespace Sensors
 {
-static constexpr auto kThermocoupleSpiCsPin = A1;
-static constexpr auto kThermocoupleSpiDiPin = A2;
-static constexpr auto kThermocoupleSpiDoPin = A3;
-static constexpr auto kThermocoupleSpiClkPin = A4;
+static constexpr auto kTemperatureSensorSpiCsPin = A1;
+static constexpr auto kTemperatureSensorSpiDiPin = A2;
+static constexpr auto kTemperatureSensorSpiDoPin = A3;
+static constexpr auto kTemperatureSensorSpiClkPin = A4;
 }
 }

@@ -1,4 +1,4 @@
-#include "ProgramController.h"
+#include "program_controller.h"
 
 void ProgramController::LoadProgram (Program * program)
 {

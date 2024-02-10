@@ -2,7 +2,7 @@
 
 #include <Adafruit_MAX31865.h>
 
-class Thermocouple
+class TemperatureSensor
 {
 public:
     struct Pins
@@ -13,7 +13,7 @@ public:
         int8_t spi_pin_clk;
     };
 
-    explicit Thermocouple (Pins pins);
+    explicit TemperatureSensor (Pins pins);
     void Setup ();
     float ReadTemperature ();
     bool HasError ();
@@ -22,5 +22,5 @@ private:
     static constexpr float kRRef = 430.0f;
     static constexpr float kRNominal = 100.0f;
 
-    Adafruit_MAX31865 thermocouple_;
+    Adafruit_MAX31865 rtd_;
 };
