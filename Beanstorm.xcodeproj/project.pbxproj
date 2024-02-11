@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		E10415A12B3C3C5600C50767 /* nav_test.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10415A02B3C3C5600C50767 /* nav_test.swift */; };
+		E136667D2B77E94600AF2C98 /* DeviceConnectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */; };
+		E136667F2B77EB6600AF2C98 /* BeanstormBLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */; };
 		E176E9162B3D9A620077BFB0 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E176E9152B3D9A620077BFB0 /* DataController.swift */; };
 		E17E3EA02B323A6D000F456C /* BeanstormApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */; };
 		E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EA12B323A6D000F456C /* ContentView.swift */; };
@@ -27,6 +29,8 @@
 
 /* Begin PBXFileReference section */
 		E10415A02B3C3C5600C50767 /* nav_test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nav_test.swift; sourceTree = "<group>"; };
+		E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceConnectivity.swift; sourceTree = "<group>"; };
+		E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormBLE.swift; sourceTree = "<group>"; };
 		E176E9152B3D9A620077BFB0 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		E17E3E9C2B323A6D000F456C /* beanstorm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = beanstorm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormApp.swift; sourceTree = "<group>"; };
@@ -83,6 +87,7 @@
 				E17E3EA52B323A6D000F456C /* Preview Content */,
 				E18B79512B377B74001A3FF0 /* Profiles.xcdatamodeld */,
 				E176E9152B3D9A620077BFB0 /* DataController.swift */,
+				E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */,
 			);
 			path = beanstorm;
 			sourceTree = "<group>";
@@ -98,6 +103,7 @@
 		E17E3EAD2B323AB7000F456C /* views */ = {
 			isa = PBXGroup;
 			children = (
+				E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */,
 				E17E3EA12B323A6D000F456C /* ContentView.swift */,
 				E18B794B2B375B59001A3FF0 /* SettingsView.swift */,
 				E18B794D2B3779CF001A3FF0 /* BrewView.swift */,
@@ -198,6 +204,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E18B79552B378269001A3FF0 /* Idk.swift in Sources */,
+				E136667D2B77E94600AF2C98 /* DeviceConnectivity.swift in Sources */,
 				E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */,
 				E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */,
 				E10415A12B3C3C5600C50767 /* nav_test.swift in Sources */,
@@ -207,6 +214,7 @@
 				E176E9162B3D9A620077BFB0 /* DataController.swift in Sources */,
 				E17E3EB82B338580000F456C /* BrewGraph.swift in Sources */,
 				E18B79532B377B74001A3FF0 /* Profiles.xcdatamodeld in Sources */,
+				E136667F2B77EB6600AF2C98 /* BeanstormBLE.swift in Sources */,
 				E17E3EB02B335E18000F456C /* BoundedGuage.swift in Sources */,
 				E17E3EA02B323A6D000F456C /* BeanstormApp.swift in Sources */,
 				E18B794E2B3779CF001A3FF0 /* BrewView.swift in Sources */,

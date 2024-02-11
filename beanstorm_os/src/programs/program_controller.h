@@ -12,9 +12,9 @@ struct Program
     virtual void Loop (const Peripherals::SensorState & sensor_state) = 0;
 };
 
-static constexpr double kKp = 12.0;
-static constexpr double kKi = 0.4;
-static constexpr double kKd = 480.0;
+static constexpr double kKp = 16.16;
+static constexpr double kKi = 0.14;
+static constexpr double kKd = 480.10;
 
 class IdleProgram : public Program
 {

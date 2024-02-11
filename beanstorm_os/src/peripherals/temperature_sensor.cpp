@@ -1,6 +1,6 @@
 #include "temperature_sensor.h"
 
-TemperatureSensor::Thermocouple (Pins pins)
+TemperatureSensor::TemperatureSensor (Pins pins)
     : rtd_ (pins.spi_pin_cs, pins.spi_pin_di, pins.spi_pin_do, pins.spi_pin_clk)
 {
 }

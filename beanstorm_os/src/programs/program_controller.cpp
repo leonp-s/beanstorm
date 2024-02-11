@@ -123,12 +123,13 @@ void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
     auto shot_time = now - shot_start_time_;
     if (shot_time < 42000)
     {
-        if (shot_time < 6000)
+        if (shot_time < 10000)
         {
             Serial.println ("Pre-infuse");
-            smoothed_pump_speed_normalised_ = SmoothedValue (smoothed_pump_speed_normalised_, 0.6f);
+            smoothed_pump_speed_normalised_ =
+                SmoothedValue (smoothed_pump_speed_normalised_, 0.48f);
         }
-        else if (shot_time < 14000)
+        else if (shot_time < 20000)
         {
             Serial.println ("Soak");
             smoothed_pump_speed_normalised_ = SmoothedValue (smoothed_pump_speed_normalised_, 0.0f);
@@ -136,7 +137,7 @@ void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
         else
         {
             Serial.println ("Infuse");
-            smoothed_pump_speed_normalised_ = SmoothedValue (smoothed_pump_speed_normalised_, 0.8f);
+            smoothed_pump_speed_normalised_ = SmoothedValue (smoothed_pump_speed_normalised_, 0.7f);
         }
 
         Serial.println (smoothed_pump_speed_normalised_);

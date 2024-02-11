@@ -52,6 +52,7 @@ struct BrewView: View {
     }
     
     var body: some View {
+        DeviceConnectivity {
             VStack {
                 if started {
                     HStack {
@@ -83,9 +84,11 @@ struct BrewView: View {
                 QuickMonitorView()
             }
             .padding()
+        }
     }
 }
 
 #Preview {
     BrewView()
+        .environmentObject(BeanstormBLE())
 }

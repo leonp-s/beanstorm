@@ -63,14 +63,10 @@ void Beanstorm::HandleSwitchEvents ()
 void Beanstorm::PerformHealthCheck ()
 {
     if (pressure_sensor_.HasError ())
-    {
         Serial.println ("Oh no... Pressure");
-    }
 
     if (temperature_sensor_.HasError ())
-    {
         Serial.println ("Oh no... Temperature");
-    }
 }
 
 void Beanstorm::Loop ()

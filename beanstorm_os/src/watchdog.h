@@ -1,6 +1,7 @@
 #pragma once
 
-#include "freertos/task.h"
+#include <FreeRTOS.h>
+#include <task.h>
 
 class TaskWatchdog
 {

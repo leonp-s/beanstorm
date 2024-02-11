@@ -27,10 +27,8 @@ struct SettingsView: View {
             }
             
             Section("Device") {
-                ContentUnavailableView {
-                    Label("No Device Connected", systemImage: "tropicalstorm")
-                } description: {
-                    Text("Connect to a device to view these settings.")
+                DeviceConnectivity {
+                    Text("Device Settings")
                 }
             }
         }
@@ -39,4 +37,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
+        .environmentObject(BeanstormBLE())
 }
