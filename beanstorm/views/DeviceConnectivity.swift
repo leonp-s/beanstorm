@@ -42,13 +42,17 @@ struct DeviceConnectivity<Content: View>: View {
                     }
                 }
             case .scanning:
-                VStack {
+                VStack(alignment: .center) {
                     HStack {
-                        Image(systemName: "antenna.radiowaves.left.and.right")
-                        Text("Scanning For Devices")
+
+                        
+                        Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
+
                         Spacer()
                         ProgressView()
                     }
+                    .padding()
+
                     
                     Divider()
                     
@@ -64,8 +68,6 @@ struct DeviceConnectivity<Content: View>: View {
                         
                     }
                 }
-                .padding()
-
             case .connected:
                 content
             }
@@ -94,7 +96,7 @@ struct DeviceConnectivity<Content: View>: View {
 }
 
 #Preview {
-    DeviceConnectivity {
+    DeviceConnectivity<BeanstormBLE> {
         Text("Content View")
     }
     .environmentObject(BeanstormBLE())

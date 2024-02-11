@@ -1,18 +1,26 @@
 import CoreBluetooth
 import SwiftUI
 
-class BeanstormBLE: NSObject, ObservableObject {
-    enum ConnectionState {
-        case disconnected, scanning, connected
-    }
+enum BeanstormConnectionState {
+    case disconnected, scanning, connected
+}
+
+protocol BeanstormBLEService: ObservableObject {
+    var centralState: CBManagerState! { get set }
+    var connectionState: BeanstormConnectionState { get set }
     
+    func displaySettingsUI();
+    func startScanning();
+}
+
+class BeanstormBLE: NSObject, BeanstormBLEService {
     var centralManager: CBCentralManager!
     var peripheral: CBPeripheral? = nil
     var someCharacteristic: CBCharacteristic? = nil
     var scanningTimer = Timer()
 
     @Published var centralState: CBManagerState!
-    @Published var connectionState: ConnectionState = .disconnected
+    @Published var connectionState: BeanstormConnectionState = .disconnected
     
     override init() {
         super.init()
