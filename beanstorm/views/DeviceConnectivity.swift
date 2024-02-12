@@ -18,7 +18,7 @@ struct DeviceConnectivity<Content: View>: View {
                 .multilineTextAlignment(.center)
             Divider()
             Button("Open App Settings", systemImage: "gear") {
-                beanstormBLE.service.displaySettingsUI()
+                beanstormBLE.displaySettingsUI()
             }
         }
     }
@@ -47,11 +47,15 @@ struct DeviceConnectivity<Content: View>: View {
                     .padding()
                     Divider()
                     List(beanstormBLE.devices) { device in
-                        HStack() {
-                            Text(device.name)
-                                .font(.headline)
-                            Spacer()
-                            Image(systemName: "wifi", variableValue: device.rssi)
+                        Button {
+                            beanstormBLE.service.connect(advertisingPeripheral: device)
+                        } label: {
+                            HStack() {
+                                Text(device.name)
+                                    .font(.headline)
+                                Spacer()
+                                Image(systemName: "wifi", variableValue: 1.0)
+                            }
                         }
                     }
                     .refreshable {
@@ -88,15 +92,16 @@ struct DeviceConnectivity<Content: View>: View {
 class MockBeanstormBLEService : BeanstormBLEService {
     let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
     let conectionStateSubject: CurrentValueSubject<BeanstormConnectionState, Never>
-    let devicesSubject: CurrentValueSubject<[DeviceAdvertisment], Never>
+    let devicesSubject: CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>
 
     func displaySettingsUI() { }
     func startScanning() { }
+    func connect(advertisingPeripheral: BeanstormAdvertisingPeripheral) { }
     
     init(centralState: CBManagerState, connectionState: BeanstormConnectionState) {
         centralStateSubject = CurrentValueSubject<CBManagerState, Never>(centralState)
         conectionStateSubject = CurrentValueSubject<BeanstormConnectionState, Never>(connectionState)
-        devicesSubject = CurrentValueSubject<[DeviceAdvertisment], Never>([DeviceAdvertisment(name: "BeastormOS", rssi: 1.0), DeviceAdvertisment(name: "mcAcorn", rssi: 0.6)])
+        devicesSubject = CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>([])
 
     }
 }

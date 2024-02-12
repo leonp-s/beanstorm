@@ -26,8 +26,8 @@ void BeanstormBLE::Setup ()
     data_service_.Setup (ble_server_);
 
     NimBLEAdvertising * advertising = NimBLEDevice::getAdvertising ();
-    advertising->addServiceUUID (bean_service->getUUID ());
     data_service_.Advertise (advertising);
+    advertising->addServiceUUID (bean_service->getUUID ());
 
     advertising->setScanResponse (true);
     advertising->start ();
