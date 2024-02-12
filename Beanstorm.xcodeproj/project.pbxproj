@@ -12,6 +12,7 @@
 		E136667F2B77EB6600AF2C98 /* BeanstormBLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */; };
 		E13666822B7A75E100AF2C98 /* BeanstormPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13666812B7A75E100AF2C98 /* BeanstormPeripheral.swift */; };
 		E13666842B7A760C00AF2C98 /* BeanstormBLEModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13666832B7A760C00AF2C98 /* BeanstormBLEModel.swift */; };
+		E13666862B7AA95600AF2C98 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13666852B7AA95600AF2C98 /* FloatingPoint.swift */; };
 		E176E9162B3D9A620077BFB0 /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E176E9152B3D9A620077BFB0 /* DataController.swift */; };
 		E17E3EA02B323A6D000F456C /* BeanstormApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */; };
 		E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EA12B323A6D000F456C /* ContentView.swift */; };
@@ -26,7 +27,7 @@
 		E18B794E2B3779CF001A3FF0 /* BrewViewGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794D2B3779CF001A3FF0 /* BrewViewGuard.swift */; };
 		E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */; };
 		E18B79532B377B74001A3FF0 /* Profiles.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E18B79512B377B74001A3FF0 /* Profiles.xcdatamodeld */; };
-		E18B79552B378269001A3FF0 /* Idk.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B79542B378269001A3FF0 /* Idk.swift */; };
+		E18B79552B378269001A3FF0 /* ProfileGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B79542B378269001A3FF0 /* ProfileGraph.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormBLE.swift; sourceTree = "<group>"; };
 		E13666812B7A75E100AF2C98 /* BeanstormPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormPeripheral.swift; sourceTree = "<group>"; };
 		E13666832B7A760C00AF2C98 /* BeanstormBLEModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormBLEModel.swift; sourceTree = "<group>"; };
+		E13666852B7AA95600AF2C98 /* FloatingPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
 		E176E9152B3D9A620077BFB0 /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		E17E3E9C2B323A6D000F456C /* beanstorm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = beanstorm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormApp.swift; sourceTree = "<group>"; };
@@ -50,7 +52,7 @@
 		E18B794D2B3779CF001A3FF0 /* BrewViewGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewViewGuard.swift; sourceTree = "<group>"; };
 		E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilesView.swift; sourceTree = "<group>"; };
 		E18B79522B377B74001A3FF0 /* Profiles.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Profiles.xcdatamodel; sourceTree = "<group>"; };
-		E18B79542B378269001A3FF0 /* Idk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Idk.swift; sourceTree = "<group>"; };
+		E18B79542B378269001A3FF0 /* ProfileGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileGraph.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,7 +136,7 @@
 				E17E3EB52B337812000F456C /* UnboundedGuage.swift */,
 				E17E3EB32B337279000F456C /* QuickMonitorView.swift */,
 				E17E3EB72B338580000F456C /* BrewGraph.swift */,
-				E18B79542B378269001A3FF0 /* Idk.swift */,
+				E18B79542B378269001A3FF0 /* ProfileGraph.swift */,
 			);
 			path = components;
 			sourceTree = "<group>";
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				E17E3EBA2B33927D000F456C /* Rescale.swift */,
+				E13666852B7AA95600AF2C98 /* FloatingPoint.swift */,
 			);
 			path = helpers;
 			sourceTree = "<group>";
@@ -217,12 +220,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E18B79552B378269001A3FF0 /* Idk.swift in Sources */,
+				E18B79552B378269001A3FF0 /* ProfileGraph.swift in Sources */,
 				E136667D2B77E94600AF2C98 /* DeviceConnectivity.swift in Sources */,
 				E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */,
 				E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */,
 				E10415A12B3C3C5600C50767 /* nav_test.swift in Sources */,
 				E13666822B7A75E100AF2C98 /* BeanstormPeripheral.swift in Sources */,
+				E13666862B7AA95600AF2C98 /* FloatingPoint.swift in Sources */,
 				E18B794C2B375B59001A3FF0 /* SettingsView.swift in Sources */,
 				E13666842B7A760C00AF2C98 /* BeanstormBLEModel.swift in Sources */,
 				E17E3EB42B337279000F456C /* QuickMonitorView.swift in Sources */,

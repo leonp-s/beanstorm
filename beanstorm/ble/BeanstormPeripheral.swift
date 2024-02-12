@@ -2,17 +2,6 @@ import CoreBluetooth
 import SwiftUI
 import Combine
 
-struct BeanstormAdvertisingPeripheral: Identifiable {
-    let id = UUID()
-    let peripheral: CBPeripheral?
-    let name: String
-    
-    init(peripheral: CBPeripheral?) {
-        self.peripheral = peripheral
-        name = peripheral?.name ?? "Unknown Device"
-    }
-}
-
 protocol DataService {
     var pressureSubject: CurrentValueSubject<Float, Never> { get }
     var temperatureSubject: CurrentValueSubject<Float, Never> { get }
@@ -106,8 +95,6 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
             let value = data.withUnsafeBytes( {(pointer: UnsafeRawBufferPointer) -> Float in
                 return pointer.load(as: Float.self)
             })
-            
-            print("Pressure Updated: \(value)")
             pressureSubject.send(value)
         }
     }
@@ -117,8 +104,6 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
             let value = data.withUnsafeBytes( {(pointer: UnsafeRawBufferPointer) -> Float in
                 return pointer.load(as: Float.self)
             })
-            
-            print("Temperature Updated: \(value)")
             temperatureSubject.send(value)
         }
     }
@@ -128,16 +113,8 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
             let value = data.withUnsafeBytes( {(pointer: UnsafeRawBufferPointer) -> Float in
                 return pointer.load(as: Float.self)
             })
-            
-            print("Flow Updated: \(value)")
             flowSubject.send(value)
         }
-    }
-}
-
-extension FloatingPoint {
-    func isNearlyEqual(to value: Self, precision: Self) -> Bool {
-        return abs(self - value) <= precision
     }
 }
 

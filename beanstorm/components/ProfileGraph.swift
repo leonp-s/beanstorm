@@ -7,7 +7,7 @@ struct ChartPosition: Identifiable {
     let y: Double
 }
 
-struct Idk: View {
+struct ProfileGraph: View {
     @State var positions: [ChartPosition]
     @State var cursorIndex: Int?
     
@@ -113,7 +113,7 @@ struct Idk: View {
 }
 
 #Preview {
-    Idk(positions: [ChartPosition(id: UUID(), x: 0.0, y: 1.0),
+    ProfileGraph(positions: [ChartPosition(id: UUID(), x: 0.0, y: 1.0),
                     ChartPosition(id: UUID(), x: 4.0, y: 0.8),
                     ChartPosition(id: UUID(), x: 6.0, y: 0.3),
                     ChartPosition(id: UUID(), x: 10.0, y: 0.9)])

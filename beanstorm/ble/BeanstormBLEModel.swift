@@ -8,7 +8,7 @@ class BeanstormBLEModel: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     @Published var centralState: CBManagerState!
     @Published var connectionState: BeanstormConnectionState = .disconnected
-    @Published var devices: [BeanstormAdvertisingPeripheral] = []
+    @Published var devices: [CBPeripheral] = []
     
     init(service: BeanstormBLEService = BeanstormBLE()) {
         self.service = service
@@ -26,8 +26,16 @@ class BeanstormBLEModel: ObservableObject {
             .store(in: &subscriptions)
     }
     
-    func displaySettingsUI() {
+    func displayAppSettings() {
         if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+            if UIApplication.shared.canOpenURL(settingsUrl) {
+                UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
+            }
+        }
+    }
+    
+    func displaySystemSettings() {
+        if let settingsUrl = URL(string: "App-Prefs:root=General") {
             if UIApplication.shared.canOpenURL(settingsUrl) {
                 UIApplication.shared.open(settingsUrl, completionHandler: { (success) in })
             }

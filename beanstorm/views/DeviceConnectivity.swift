@@ -18,7 +18,7 @@ struct DeviceConnectivity<Content: View>: View {
                 .multilineTextAlignment(.center)
             Divider()
             Button("Open App Settings", systemImage: "gear") {
-                beanstormBLE.displaySettingsUI()
+                beanstormBLE.displayAppSettings()
             }
         }
     }
@@ -38,30 +38,39 @@ struct DeviceConnectivity<Content: View>: View {
                     }
                 }
             case .scanning:
-                VStack(alignment: .center) {
+                VStack {
+                    Image(systemName: "antenna.radiowaves.left.and.right")
+                        .font(.system(size: 48))
+                        .foregroundStyle(.secondary)
+                        .padding()
                     HStack {
-                        Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
+                        Text("Scanning For Devices")
+                            .font(.title2)
+                            .bold()
                         Spacer()
                         ProgressView()
                     }
-                    .padding()
                     Divider()
                     List(beanstormBLE.devices) { device in
                         Button {
-                            beanstormBLE.service.connect(advertisingPeripheral: device)
+                            beanstormBLE.service.connect(peripheral: device)
                         } label: {
                             HStack() {
-                                Text(device.name)
+                                Text(device.name ?? "Unknown Device")
                                     .font(.headline)
                                 Spacer()
                                 Image(systemName: "wifi", variableValue: 1.0)
                             }
                         }
+                        .buttonStyle(.plain)
                     }
-                    .refreshable {
-                        
-                    }
+                    .listRowSeparator(.visible)
+                    .frame(
+                        width: .infinity,
+                        height: 80
+                    )
                 }
+                .padding()
             case .connected:
                 content
             }
@@ -76,11 +85,25 @@ struct DeviceConnectivity<Content: View>: View {
         }
     }
     
+    var turnBluetoothOn: some View {
+        ContentUnavailableView {
+            Label("Bluetooth Disabled", systemImage: "tropicalstorm")
+        } description: {
+            Text ("BLE is required to communicate with devices running BeanstormOS. You can open settings manually to enable bluetooth or use the shortcut below.")
+                .multilineTextAlignment(.center)
+            Divider()
+            Button("Open Settings", systemImage: "gear") {
+                beanstormBLE.displaySystemSettings()
+            }
+        }
+    }
+    
     var body: some View {
         switch(beanstormBLE.centralState) {
+        case .poweredOff:
+            turnBluetoothOn
         case .unauthorized:
             grantPemission
-                .padding()
         case .poweredOn:
             poweredOn
         default:
@@ -92,17 +115,17 @@ struct DeviceConnectivity<Content: View>: View {
 class MockBeanstormBLEService : BeanstormBLEService {
     let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
     let conectionStateSubject: CurrentValueSubject<BeanstormConnectionState, Never>
-    let devicesSubject: CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>
+    let devicesSubject: CurrentValueSubject<[CBPeripheral], Never>
     var connectedPeripheral: BeanstormPeripheral? = nil
 
     func displaySettingsUI() { }
     func startScanning() { }
-    func connect(advertisingPeripheral: BeanstormAdvertisingPeripheral) { }
+    func connect(peripheral: CBPeripheral) { }
     
     init(centralState: CBManagerState, connectionState: BeanstormConnectionState) {
         centralStateSubject = CurrentValueSubject<CBManagerState, Never>(centralState)
         conectionStateSubject = CurrentValueSubject<BeanstormConnectionState, Never>(connectionState)
-        devicesSubject = CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>([])
+        devicesSubject = CurrentValueSubject<[CBPeripheral], Never>([])
 
     }
 }
