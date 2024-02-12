@@ -1,10 +1,15 @@
 import SwiftUI
 
 struct QuickMonitorView: View {
+    @Binding var pressue: Double
+    @Binding var temperature: Double
+    @Binding var flow: Double
+
+    
     private var brewGuage: some View {
         Group {
             BoundedGuage(
-                current: .constant(96),
+                current: $temperature,
                 max: .constant(96),
                 labelHint: "Brew (°C)"
             )
@@ -15,7 +20,7 @@ struct QuickMonitorView: View {
     private var flowGuage: some View {
         Group {
             UnboundedGuage(
-                current: .constant(2.4),
+                current: $flow,
                 max: .constant(11.0),
                 labelHint: "Flow (ml/s)"
             )
@@ -26,7 +31,7 @@ struct QuickMonitorView: View {
     private var pressureGuage: some View {
         Group {
             UnboundedGuage(
-                current: .constant(6.8),
+                current: $pressue,
                 max: .constant(11.0),
                 labelHint: "Pressure (MPa)"
             )
@@ -53,6 +58,6 @@ struct QuickMonitorView: View {
 }
 
 #Preview {
-    QuickMonitorView()
+    QuickMonitorView(pressue: .constant(2.6), temperature: .constant(96.0), flow: .constant(5.0))
         .padding()
 }

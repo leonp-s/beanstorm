@@ -3,7 +3,7 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         TabView {
-            BrewView()
+            BrewViewGuard()
                 .tabItem {
                     Label(
                         "Brew",

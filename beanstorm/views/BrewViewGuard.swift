@@ -1,7 +1,20 @@
 import SwiftUI
 
+struct BrewViewGuard: View {
+    @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
+    
+    var body: some View {
+        DeviceConnectivity {
+            BrewView(
+                peripheralModel: .init(dataService: beanstormBLE.service.connectedPeripheral!)
+            )
+        }
+    }
+}
+
 struct BrewView: View {
     @State private var started: Bool = false
+    @StateObject var peripheralModel: BeanstormPeripheralModel
     
     private var timer: some View {
         Group {
@@ -52,8 +65,7 @@ struct BrewView: View {
     }
     
     var body: some View {
-        DeviceConnectivity {
-            VStack {
+        VStack {
                 if started {
                     HStack {
                         Spacer()
@@ -81,14 +93,18 @@ struct BrewView: View {
                 }
                 .animation(.bouncy, value: started)
                 .transition(.slide)
-                QuickMonitorView()
-            }
-            .padding()
+            
+                QuickMonitorView(
+                    pressue: $peripheralModel.pressure,
+                    temperature: $peripheralModel.temperature,
+                    flow: $peripheralModel.flow
+                )
         }
+        .padding()
     }
 }
 
 #Preview {
-    BrewView()
+    BrewViewGuard()
         .environmentObject(BeanstormBLEModel())
 }

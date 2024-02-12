@@ -93,6 +93,7 @@ class MockBeanstormBLEService : BeanstormBLEService {
     let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
     let conectionStateSubject: CurrentValueSubject<BeanstormConnectionState, Never>
     let devicesSubject: CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>
+    var connectedPeripheral: BeanstormPeripheral? = nil
 
     func displaySettingsUI() { }
     func startScanning() { }

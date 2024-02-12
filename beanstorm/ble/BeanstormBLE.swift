@@ -9,6 +9,7 @@ protocol BeanstormBLEService {
     var centralStateSubject: CurrentValueSubject<CBManagerState, Never> { get }
     var conectionStateSubject: CurrentValueSubject<BeanstormConnectionState, Never> { get }
     var devicesSubject: CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never> { get }
+    var connectedPeripheral: BeanstormPeripheral? { get }
 
     func startScanning();
     func connect(advertisingPeripheral: BeanstormAdvertisingPeripheral)

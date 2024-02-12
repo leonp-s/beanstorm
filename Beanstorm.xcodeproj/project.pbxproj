@@ -23,7 +23,7 @@
 		E17E3EB82B338580000F456C /* BrewGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB72B338580000F456C /* BrewGraph.swift */; };
 		E17E3EBB2B33927D000F456C /* Rescale.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EBA2B33927D000F456C /* Rescale.swift */; };
 		E18B794C2B375B59001A3FF0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794B2B375B59001A3FF0 /* SettingsView.swift */; };
-		E18B794E2B3779CF001A3FF0 /* BrewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794D2B3779CF001A3FF0 /* BrewView.swift */; };
+		E18B794E2B3779CF001A3FF0 /* BrewViewGuard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794D2B3779CF001A3FF0 /* BrewViewGuard.swift */; };
 		E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */; };
 		E18B79532B377B74001A3FF0 /* Profiles.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E18B79512B377B74001A3FF0 /* Profiles.xcdatamodeld */; };
 		E18B79552B378269001A3FF0 /* Idk.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B79542B378269001A3FF0 /* Idk.swift */; };
@@ -47,7 +47,7 @@
 		E17E3EB72B338580000F456C /* BrewGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewGraph.swift; sourceTree = "<group>"; };
 		E17E3EBA2B33927D000F456C /* Rescale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rescale.swift; sourceTree = "<group>"; };
 		E18B794B2B375B59001A3FF0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		E18B794D2B3779CF001A3FF0 /* BrewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewView.swift; sourceTree = "<group>"; };
+		E18B794D2B3779CF001A3FF0 /* BrewViewGuard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewViewGuard.swift; sourceTree = "<group>"; };
 		E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilesView.swift; sourceTree = "<group>"; };
 		E18B79522B377B74001A3FF0 /* Profiles.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Profiles.xcdatamodel; sourceTree = "<group>"; };
 		E18B79542B378269001A3FF0 /* Idk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Idk.swift; sourceTree = "<group>"; };
@@ -120,7 +120,7 @@
 				E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */,
 				E17E3EA12B323A6D000F456C /* ContentView.swift */,
 				E18B794B2B375B59001A3FF0 /* SettingsView.swift */,
-				E18B794D2B3779CF001A3FF0 /* BrewView.swift */,
+				E18B794D2B3779CF001A3FF0 /* BrewViewGuard.swift */,
 				E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */,
 				E10415A02B3C3C5600C50767 /* nav_test.swift */,
 			);
@@ -233,7 +233,7 @@
 				E136667F2B77EB6600AF2C98 /* BeanstormBLE.swift in Sources */,
 				E17E3EB02B335E18000F456C /* BoundedGuage.swift in Sources */,
 				E17E3EA02B323A6D000F456C /* BeanstormApp.swift in Sources */,
-				E18B794E2B3779CF001A3FF0 /* BrewView.swift in Sources */,
+				E18B794E2B3779CF001A3FF0 /* BrewViewGuard.swift in Sources */,
 				E17E3EB62B337812000F456C /* UnboundedGuage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

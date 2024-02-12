@@ -13,12 +13,22 @@ struct BeanstormAdvertisingPeripheral: Identifiable {
     }
 }
 
+protocol DataService {
+    var pressureSubject: CurrentValueSubject<Float, Never> { get }
+    var temperatureSubject: CurrentValueSubject<Float, Never> { get }
+    var flowSubject: CurrentValueSubject<Float, Never> { get }
+}
+
 let pressureCharacteristicUUID = CBUUID(string: "46851b87-ee86-42eb-9e35-aaee0cad5485")
 let temperatureCharacteristicUUID = CBUUID(string: "76400bdc-15ce-4375-b861-97be9d54072c")
 let flowCharacteristicUUID = CBUUID(string: "13cdb71e-8d34-4d53-8f40-05d5677a48f3")
 
-class BeanstormPeripheral: NSObject, CBPeripheralDelegate {
+class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
     let peripheral: CBPeripheral
+    
+    let pressureSubject = CurrentValueSubject<Float, Never> (0.0);
+    let temperatureSubject = CurrentValueSubject<Float, Never> (0.0);
+    let flowSubject = CurrentValueSubject<Float, Never> (0.0);
 
     var dataService: CBService? = nil
     
@@ -78,12 +88,123 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate {
              return;
         }
         
-        if let data = characteristic.value {
+        if(characteristic == pressureCharacteristic) {
+            readPressure()
+        }
+        
+        if(characteristic == temperatureCharacteristic) {
+            readTemperature()
+        }
+        
+        if(characteristic == flowCharacteristic) {
+            readFlow()
+        }
+    }
+    
+    func readPressure() {
+        if let data = pressureCharacteristic?.value {
             let value = data.withUnsafeBytes( {(pointer: UnsafeRawBufferPointer) -> Float in
                 return pointer.load(as: Float.self)
             })
             
-            print("Value updated for charecteristic: \(characteristic.uuid), Updated Value: \(value)")
+            print("Pressure Updated: \(value)")
+            pressureSubject.send(value)
         }
+    }
+    
+    func readTemperature() {
+        if let data = temperatureCharacteristic?.value {
+            let value = data.withUnsafeBytes( {(pointer: UnsafeRawBufferPointer) -> Float in
+                return pointer.load(as: Float.self)
+            })
+            
+            print("Temperature Updated: \(value)")
+            temperatureSubject.send(value)
+        }
+    }
+    
+    func readFlow() {
+        if let data = flowCharacteristic?.value {
+            let value = data.withUnsafeBytes( {(pointer: UnsafeRawBufferPointer) -> Float in
+                return pointer.load(as: Float.self)
+            })
+            
+            print("Flow Updated: \(value)")
+            flowSubject.send(value)
+        }
+    }
+}
+
+extension FloatingPoint {
+    func isNearlyEqual(to value: Self) -> Bool {
+        return abs(self - value) <= .ulpOfOne
+    }
+}
+
+class BeanstormPeripheralModel: ObservableObject {
+    let dataService: DataService
+
+    private var subscriptions = Set<AnyCancellable>()
+
+    @Published var pressure: Double = 0.0
+    @Published var temperature: Double = 0.0
+    @Published var flow: Double = 0.0
+    
+    private let targetPressure: Double = 0.0
+    private let targetTemperature: Double = 0.0
+    private let targetFlow: Double = 0.0
+    
+    private var timer: Timer?
+    private let smoothSpeed: Double = 0.1
+    
+    init(dataService: DataService) {
+        self.dataService = dataService
+        
+        self.dataService.pressureSubject
+            .sink { value in self.pressure = Double(value) }
+            .store(in: &subscriptions)
+        
+        self.dataService.temperatureSubject
+            .sink { value in self.temperature = Double(value) }
+            .store(in: &subscriptions)
+        
+        self.dataService.flowSubject
+            .sink { value in self.flow = Double(value) }
+            .store(in: &subscriptions)
+        
+        self.timer = Timer(timeInterval: 0.1, repeats: true) { _ in
+            if(self.pressure.isNearlyEqual(to: self.targetPressure)) {
+                self.pressure = self.smoothedValue(
+                    valueToSmooth: self.pressure,
+                    target: self.targetPressure,
+                    smoothSpeed: self.smoothSpeed
+                )
+            }
+            
+            if(self.temperature.isNearlyEqual(to: self.targetTemperature)) {
+                self.temperature = self.smoothedValue(
+                    valueToSmooth: self.temperature,
+                    target: self.targetTemperature,
+                    smoothSpeed: self.smoothSpeed
+                )
+            }
+            
+            if(self.flow.isNearlyEqual(to: self.targetFlow)) {
+                self.flow = self.smoothedValue(
+                    valueToSmooth: self.flow,
+                    target: self.targetFlow,
+                    smoothSpeed: self.smoothSpeed
+                )
+            }
+        }
+    }
+    
+    private func smoothedValue (valueToSmooth: Double,
+                                target: Double,
+                                smoothSpeed: Double) -> Double
+    {
+        let delta = 1.0 / smoothSpeed;
+        let step = (target - valueToSmooth) * delta;
+        return valueToSmooth + step;
     }
 }

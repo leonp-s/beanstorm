@@ -9,24 +9,39 @@ struct BoundedGuage: View {
     private let gradient = Gradient(colors: [.blue, .green])
     
     var body: some View {
-        Gauge(value: current, in: minValue...max) {
-            Text(labelHint)
-        } currentValueLabel: {
-            Text("\(Int(current))")
-        } minimumValueLabel: {
-            Text("\(Int(minValue))")
-        } maximumValueLabel: {
-            Text("\(Int(max))")
+        VStack {
+            Gauge(value: current, in: minValue...max) {
+                Text(labelHint)
+            } currentValueLabel: {
+                Text(String(format: "%.1f", current))
+                    .font(.headline)
+            } minimumValueLabel: {
+                Text("\(Int(minValue))")
+            } maximumValueLabel: {
+                Text("\(Int(max))")
+            }
+            .gaugeStyle(.accessoryCircular)
+            .tint(gradient)
         }
-        .gaugeStyle(.accessoryCircular)
-        .tint(gradient)
+    }
+}
+
+struct BoundedGuagePreview: View {
+    @State var value: Double = 0.1
+    
+    var body: some View {
+        VStack {
+            BoundedGuage(
+                current: $value,
+                max: .constant(96),
+                labelHint: "Temperature (°C)"
+            )
+            Slider(value: $value, in: 0...100)
+        }
+        .padding()
     }
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
-    BoundedGuage(
-        current: .constant(96),
-        max: .constant(96),
-        labelHint: "Temperature (°C)"
-    )
+    BoundedGuagePreview()
 }
