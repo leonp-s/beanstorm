@@ -6,17 +6,10 @@ const NimBLEUUID BeanstormBLE::kBeanServiceUUID =
 const NimBLEUUID BeanstormBLE::kBeanCharacteristicUUID =
     NimBLEUUID ("e5384f14-9eda-4033-bcac-4a90b71fc628");
 
-const NimBLEUUID BeanstormBLE::kDataServiceUUID =
-    NimBLEUUID ("8ec57513-faca-4a5c-9a45-912bd28ce1dc");
-
-const NimBLEUUID BeanstormBLE::kPressureCharacteristicUUID =
-    NimBLEUUID ("46851b87-ee86-42eb-9e35-aaee0cad5485");
-
-const NimBLEUUID BeanstormBLE::kTemperatureCharacteristicUUID =
-    NimBLEUUID ("76400bdc-15ce-4375-b861-97be9d54072c");
-
-const NimBLEUUID BeanstormBLE::kFlowCharacteristicUUID =
-    NimBLEUUID ("13cdb71e-8d34-4d53-8f40-05d5677a48f3");
+BeanstormBLE::BeanstormBLE (DataService & data_service)
+    : data_service_ (data_service)
+{
+}
 
 void BeanstormBLE::Setup ()
 {
@@ -30,43 +23,17 @@ void BeanstormBLE::Setup ()
     auto bean_service = CreateBeanService ();
     bean_service->start ();
 
-    auto data_service = CreateDataService ();
-    data_service->start ();
+    data_service_.Setup (ble_server_);
 
     NimBLEAdvertising * advertising = NimBLEDevice::getAdvertising ();
     advertising->addServiceUUID (bean_service->getUUID ());
-    advertising->addServiceUUID (data_service->getUUID ());
+    data_service_.Advertise (advertising);
 
     advertising->setScanResponse (true);
     advertising->start ();
 
     Serial.println ("Advertising Started");
     StartBLEServiceTask ();
-}
-
-NimBLEService * BeanstormBLE::CreateDataService ()
-{
-    NimBLEService * data_service = ble_server_->createService (kDataServiceUUID);
-
-    NimBLECharacteristic * pressure_characteristic = data_service->createCharacteristic (
-        kPressureCharacteristicUUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-
-    pressure_characteristic->setValue (20.0f);
-    pressure_characteristic->setCallbacks (&characteristic_callbacks_);
-
-    NimBLECharacteristic * temperature_characteristic = data_service->createCharacteristic (
-        kTemperatureCharacteristicUUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-
-    temperature_characteristic->setValue (20.0f);
-    temperature_characteristic->setCallbacks (&characteristic_callbacks_);
-
-    NimBLECharacteristic * flow_characteristic = data_service->createCharacteristic (
-        kFlowCharacteristicUUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-
-    flow_characteristic->setValue (20.0f);
-    flow_characteristic->setCallbacks (&characteristic_callbacks_);
-
-    return data_service;
 }
 
 NimBLEService * BeanstormBLE::CreateBeanService ()
@@ -101,6 +68,8 @@ void BeanstormBLE::BLEServiceTask (void * param)
     {
         if (server->getConnectedCount ())
         {
+            beanstorm_ble->data_service_.Service ();
+
             NimBLEService * service = server->getServiceByUUID (kBeanServiceUUID);
             if (service)
             {
@@ -112,7 +81,8 @@ void BeanstormBLE::BLEServiceTask (void * param)
                 }
             }
         }
-        delay (2000);
+
+        delay (kServiceIntervalMs);
     }
 
     vTaskDelete (NULL);
@@ -127,8 +97,4 @@ void BeanstormBLE::StartBLEServiceTask ()
                              1,
                              nullptr,
                              CONFIG_BT_NIMBLE_PINNED_TO_CORE);
-}
-
-void BeanstormBLE::ModelDidUpdate (const Model & model)
-{
 }

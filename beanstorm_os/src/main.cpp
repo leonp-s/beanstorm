@@ -7,8 +7,9 @@ static constexpr auto kBaudRate = 9600;
 
 UMS3 ums3;
 
-BeanstormBLE beanstorm_ble;
-Beanstorm beanstorm {beanstorm_ble};
+DataService data_service;
+BeanstormBLE beanstorm_ble {data_service};
+Beanstorm beanstorm {data_service};
 
 void setup ()
 {
@@ -16,6 +17,7 @@ void setup ()
     Wire.begin (SDA, SCL);
     ums3.begin ();
     beanstorm.Setup ();
+    beanstorm_ble.Setup ();
 }
 
 void loop ()

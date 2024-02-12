@@ -3,8 +3,8 @@
 #include "peripherals/peripherals.h"
 #include "watchdog.h"
 
-Beanstorm::Beanstorm (BeanstormBLE & beanstorm_ble)
-    : beanstorm_ble_ (beanstorm_ble)
+Beanstorm::Beanstorm (DataService & data_service)
+    : data_service_ (data_service)
 {
 }
 
@@ -42,7 +42,6 @@ void Beanstorm::Setup ()
         Serial.println ("Reboot from WDT");
 
     program_controller_.LoadProgram (&idle_program_);
-    beanstorm_ble_.Setup ();
 }
 
 void Beanstorm::HandleSwitchEvents ()
@@ -81,6 +80,7 @@ void Beanstorm::Loop ()
 
     HandleSwitchEvents ();
     program_controller_.Loop (sensor_state);
+    data_service_.SensorStateUpdated (sensor_state);
 
     delay (kServiceIntervalMs);
 }

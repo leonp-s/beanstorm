@@ -2,38 +2,29 @@
 
 #include "NimBLEDevice.h"
 #include "ble_callbacks.h"
-#include "model.h"
+#include "data_service.h"
 
-class DataService
-{
-public:
-private:
-};
+#include <memory>
 
 class BeanstormBLE
 {
 public:
+    explicit BeanstormBLE (DataService & data_service);
     ~BeanstormBLE () = default;
-
     void Setup ();
 
-    void ModelDidUpdate (const Model & model);
-
 private:
-    NimBLEServer * ble_server_;
+    static constexpr int kServiceIntervalMs = 400;
+
+    DataService & data_service_;
+    NimBLEServer * ble_server_ = nullptr;
     DescriptorCallbacks descriptor_callbacks_;
     CharacteristicCallbacks characteristic_callbacks_;
 
     static void BLEServiceTask (void * param);
     void StartBLEServiceTask ();
     NimBLEService * CreateBeanService ();
-    NimBLEService * CreateDataService ();
 
     static const NimBLEUUID kBeanServiceUUID;
     static const NimBLEUUID kBeanCharacteristicUUID;
-
-    static const NimBLEUUID kDataServiceUUID;
-    static const NimBLEUUID kPressureCharacteristicUUID;
-    static const NimBLEUUID kTemperatureCharacteristicUUID;
-    static const NimBLEUUID kFlowCharacteristicUUID;
 };

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ble/beanstorm_ble.h"
 #include "peripherals/peripherals.h"
 #include "peripherals/pindef.h"
 #include "peripherals/pressure_sensor.h"
@@ -8,10 +7,12 @@
 #include "peripherals/temperature_sensor.h"
 #include "programs/program_controller.h"
 
+#include <ble/data_service.h>
+
 class Beanstorm
 {
 public:
-    explicit Beanstorm (BeanstormBLE & beanstorm_ble);
+    explicit Beanstorm (DataService & data_service);
     void Setup ();
     void Loop ();
 
@@ -40,5 +41,5 @@ private:
     IdleProgram idle_program_;
     BrewProgram brew_program_ {pump_};
 
-    BeanstormBLE & beanstorm_ble_;
+    DataService & data_service_;
 };
