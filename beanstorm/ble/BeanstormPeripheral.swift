@@ -136,8 +136,8 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
 }
 
 extension FloatingPoint {
-    func isNearlyEqual(to value: Self) -> Bool {
-        return abs(self - value) <= .ulpOfOne
+    func isNearlyEqual(to value: Self, precision: Self) -> Bool {
+        return abs(self - value) <= precision
     }
 }
 
@@ -150,60 +150,57 @@ class BeanstormPeripheralModel: ObservableObject {
     @Published var temperature: Double = 0.0
     @Published var flow: Double = 0.0
     
-    private let targetPressure: Double = 0.0
-    private let targetTemperature: Double = 0.0
-    private let targetFlow: Double = 0.0
+    private var targetPressure: Double = 0.0
+    private var targetTemperature: Double = 0.0
+    private var targetFlow: Double = 0.0
     
     private var timer: Timer?
-    private let smoothSpeed: Double = 0.1
     
     init(dataService: DataService) {
         self.dataService = dataService
         
         self.dataService.pressureSubject
-            .sink { value in self.pressure = Double(value) }
+            .sink { value in self.targetPressure = Double(value) }
             .store(in: &subscriptions)
         
         self.dataService.temperatureSubject
-            .sink { value in self.temperature = Double(value) }
+            .sink { value in self.targetTemperature = Double(value) }
             .store(in: &subscriptions)
         
         self.dataService.flowSubject
-            .sink { value in self.flow = Double(value) }
+            .sink { value in self.targetFlow = Double(value) }
             .store(in: &subscriptions)
         
-        self.timer = Timer(timeInterval: 0.1, repeats: true) { _ in
-            if(self.pressure.isNearlyEqual(to: self.targetPressure)) {
+        self.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            
+            if(!self.pressure.isNearlyEqual(to: self.targetPressure, precision: 0.1)) {
                 self.pressure = self.smoothedValue(
                     valueToSmooth: self.pressure,
-                    target: self.targetPressure,
-                    smoothSpeed: self.smoothSpeed
+                    target: self.targetPressure
                 )
             }
             
-            if(self.temperature.isNearlyEqual(to: self.targetTemperature)) {
+            if(!self.temperature.isNearlyEqual(to: self.targetTemperature, precision: 0.1)) {
                 self.temperature = self.smoothedValue(
                     valueToSmooth: self.temperature,
-                    target: self.targetTemperature,
-                    smoothSpeed: self.smoothSpeed
+                    target: self.targetTemperature
                 )
             }
             
-            if(self.flow.isNearlyEqual(to: self.targetFlow)) {
+            if(!self.flow.isNearlyEqual(to: self.targetFlow, precision: 0.1)) {
                 self.flow = self.smoothedValue(
                     valueToSmooth: self.flow,
-                    target: self.targetFlow,
-                    smoothSpeed: self.smoothSpeed
+                    target: self.targetFlow
                 )
             }
         }
     }
     
     private func smoothedValue (valueToSmooth: Double,
-                                target: Double,
-                                smoothSpeed: Double) -> Double
+                                target: Double) -> Double
     {
-        let delta = 1.0 / smoothSpeed;
+        let delta = 0.01
         let step = (target - valueToSmooth) * delta;
         return valueToSmooth + step;
     }
