@@ -1,13 +1,9 @@
 import SwiftUI
-
-struct DeviceAdvertisment: Identifiable {
-    let id = UUID()
-    let name: String
-    let rssi: Double
-}
+import Combine
+import CoreBluetooth
 
 struct DeviceConnectivity<Content: View>: View {
-    @EnvironmentObject private var beanstormBLE: BeanstormBLE
+    @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
     let content: Content
     
     init(@ViewBuilder content: @escaping () -> Content) {
@@ -22,7 +18,7 @@ struct DeviceConnectivity<Content: View>: View {
                 .multilineTextAlignment(.center)
             Divider()
             Button("Open App Settings", systemImage: "gear") {
-                beanstormBLE.displaySettingsUI()
+                beanstormBLE.service.displaySettingsUI()
             }
         }
     }
@@ -38,25 +34,19 @@ struct DeviceConnectivity<Content: View>: View {
                         .multilineTextAlignment(.center)
                     Divider()
                     Button("Scan For Devices", systemImage: "antenna.radiowaves.left.and.right") {
-                        beanstormBLE.startScanning()
+                        beanstormBLE.service.startScanning()
                     }
                 }
             case .scanning:
                 VStack(alignment: .center) {
                     HStack {
-
-                        
                         Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
-
                         Spacer()
                         ProgressView()
                     }
                     .padding()
-
-                    
                     Divider()
-                    
-                    List([DeviceAdvertisment(name: "BeastormOS", rssi: 1.0), DeviceAdvertisment(name: "mcAcorn", rssi: 0.6)]) { device in
+                    List(beanstormBLE.devices) { device in
                         HStack() {
                             Text(device.name)
                                 .font(.headline)
@@ -95,9 +85,31 @@ struct DeviceConnectivity<Content: View>: View {
     }
 }
 
+class MockBeanstormBLEService : BeanstormBLEService {
+    let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
+    let conectionStateSubject: CurrentValueSubject<BeanstormConnectionState, Never>
+    let devicesSubject: CurrentValueSubject<[DeviceAdvertisment], Never>
+
+    func displaySettingsUI() { }
+    func startScanning() { }
+    
+    init(centralState: CBManagerState, connectionState: BeanstormConnectionState) {
+        centralStateSubject = CurrentValueSubject<CBManagerState, Never>(centralState)
+        conectionStateSubject = CurrentValueSubject<BeanstormConnectionState, Never>(connectionState)
+        devicesSubject = CurrentValueSubject<[DeviceAdvertisment], Never>([DeviceAdvertisment(name: "BeastormOS", rssi: 1.0), DeviceAdvertisment(name: "mcAcorn", rssi: 0.6)])
+
+    }
+}
+
+
 #Preview {
-    DeviceConnectivity<BeanstormBLE> {
+    DeviceConnectivity {
         Text("Content View")
     }
-    .environmentObject(BeanstormBLE())
+    .environmentObject(BeanstormBLEModel(
+        service: MockBeanstormBLEService(
+            centralState: .poweredOn,
+            connectionState: .scanning
+        )
+    ))
 }

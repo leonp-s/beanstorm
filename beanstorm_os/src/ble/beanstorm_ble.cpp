@@ -12,6 +12,12 @@ const NimBLEUUID BeanstormBLE::kDataServiceUUID =
 const NimBLEUUID BeanstormBLE::kPressureCharacteristicUUID =
     NimBLEUUID ("46851b87-ee86-42eb-9e35-aaee0cad5485");
 
+const NimBLEUUID BeanstormBLE::kTemperatureCharacteristicUUID =
+    NimBLEUUID ("76400bdc-15ce-4375-b861-97be9d54072c");
+
+const NimBLEUUID BeanstormBLE::kFlowCharacteristicUUID =
+    NimBLEUUID ("13cdb71e-8d34-4d53-8f40-05d5677a48f3");
+
 void BeanstormBLE::Setup ()
 {
     NimBLEDevice::init ("BeanstormOS");
@@ -47,6 +53,18 @@ NimBLEService * BeanstormBLE::CreateDataService ()
 
     pressure_characteristic->setValue (20.0f);
     pressure_characteristic->setCallbacks (&characteristic_callbacks_);
+
+    NimBLECharacteristic * temperature_characteristic = data_service->createCharacteristic (
+        kTemperatureCharacteristicUUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+
+    temperature_characteristic->setValue (20.0f);
+    temperature_characteristic->setCallbacks (&characteristic_callbacks_);
+
+    NimBLECharacteristic * flow_characteristic = data_service->createCharacteristic (
+        kFlowCharacteristicUUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+
+    flow_characteristic->setValue (20.0f);
+    flow_characteristic->setCallbacks (&characteristic_callbacks_);
 
     return data_service;
 }

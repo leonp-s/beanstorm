@@ -90,5 +90,5 @@ struct BrewView: View {
 
 #Preview {
     BrewView()
-        .environmentObject(BeanstormBLE())
+        .environmentObject(BeanstormBLEModel())
 }

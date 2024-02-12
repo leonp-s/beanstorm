@@ -4,7 +4,11 @@
 #include "ble_callbacks.h"
 #include "model.h"
 
-#include <memory>
+class DataService
+{
+public:
+private:
+};
 
 class BeanstormBLE
 {
@@ -27,7 +31,9 @@ private:
 
     static const NimBLEUUID kBeanServiceUUID;
     static const NimBLEUUID kBeanCharacteristicUUID;
-    
+
     static const NimBLEUUID kDataServiceUUID;
     static const NimBLEUUID kPressureCharacteristicUUID;
+    static const NimBLEUUID kTemperatureCharacteristicUUID;
+    static const NimBLEUUID kFlowCharacteristicUUID;
 };

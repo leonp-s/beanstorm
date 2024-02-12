@@ -42,7 +42,7 @@ void Beanstorm::Setup ()
         Serial.println ("Reboot from WDT");
 
     program_controller_.LoadProgram (&idle_program_);
-    // beanstorm_ble_.Setup ();
+    beanstorm_ble_.Setup ();
 }
 
 void Beanstorm::HandleSwitchEvents ()
