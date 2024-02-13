@@ -1,16 +1,23 @@
 import CoreBluetooth
 import Combine
 
+struct BeanstormAdvertisingPeripheral: Identifiable {
+    let id: UUID
+    let name: String
+    let signalStrength: Double
+    let isConnecting: Bool
+}
+
 protocol BeanstormBLEService {
     var centralStateSubject: CurrentValueSubject<CBManagerState, Never> { get }
     var isConnectedSubject: CurrentValueSubject<Bool, Never> { get }
     var isScanningSubject: CurrentValueSubject<Bool, Never> { get }
-    var devicesSubject: CurrentValueSubject<[CBPeripheral], Never> { get }
+    var advertisingPeripheralsSubject: CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never> { get }
     var connectedPeripheral: BeanstormPeripheral? { get }
 
     func startScanning();
     func stopScanning();
-    func connect(peripheral: CBPeripheral)
+    func connect(advertisingPeripheral: BeanstormAdvertisingPeripheral)
 }
 
 extension CBPeripheral : Identifiable {
@@ -25,7 +32,9 @@ class BeanstormBLE: NSObject, BeanstormBLEService {
     let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
     let isConnectedSubject: CurrentValueSubject<Bool, Never>
     let isScanningSubject: CurrentValueSubject<Bool, Never>
-    let devicesSubject: CurrentValueSubject<[CBPeripheral], Never>
+    
+    var discoveredPeripherals: [CBPeripheral] = []
+    let advertisingPeripheralsSubject: CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>
     
     var centralManager: CBCentralManager!
     var peripheral: CBPeripheral? = nil
@@ -37,7 +46,7 @@ class BeanstormBLE: NSObject, BeanstormBLEService {
         centralStateSubject = CurrentValueSubject<CBManagerState, Never>(.poweredOff)
         isConnectedSubject = CurrentValueSubject<Bool, Never>(false)
         isScanningSubject = CurrentValueSubject<Bool, Never>(false)
-        devicesSubject = CurrentValueSubject<[CBPeripheral], Never>([])
+        advertisingPeripheralsSubject = CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>([])
         
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil)
@@ -55,7 +64,9 @@ extension BeanstormBLE: CBCentralManagerDelegate {
         scanningTimer.invalidate()
         isScanningSubject.send(false)
         centralManager.stopScan()
-        devicesSubject.send([])
+
+        advertisingPeripheralsSubject.send([])
+        discoveredPeripherals = []
     }
     
     func startScanning() {
@@ -68,18 +79,35 @@ extension BeanstormBLE: CBCentralManagerDelegate {
             self.stopScanning()
         }
     }
+    
+    func updateAdvertisingPeripheralsSubject() {
+        advertisingPeripheralsSubject.send(
+            discoveredPeripherals.map { discoveredPeripheral in
+                BeanstormAdvertisingPeripheral(
+                    id: discoveredPeripheral.identifier,
+                    name: discoveredPeripheral.name ?? "Unknown Device",
+                    signalStrength: 0.8,
+                    isConnecting: discoveredPeripheral.state == .connecting
+                )
+            }
+        )
+    }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        var devices = self.devicesSubject.value
-        if(!devices.contains(where: { device in device.identifier == peripheral.identifier })) {
-            devices.append(peripheral)
-            devicesSubject.send(devices)
+        if(!discoveredPeripherals.contains(where: { discoveredPeripheral in discoveredPeripheral.identifier == peripheral.identifier })) {
+            discoveredPeripherals.append(peripheral)
+            updateAdvertisingPeripheralsSubject()
         }
     }
     
-    func connect(peripheral: CBPeripheral)
+    func connect(advertisingPeripheral: BeanstormAdvertisingPeripheral)
     {
+        guard let peripheral = discoveredPeripherals.first(where: { discoveredPeripheral in
+            discoveredPeripheral.identifier == advertisingPeripheral.id
+        }) else { return }
+
         centralManager.connect(peripheral)
+        updateAdvertisingPeripheralsSubject()
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {

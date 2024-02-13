@@ -43,20 +43,24 @@ struct DeviceConnectivity<Content: View>: View {
                     beanstormBLE.service.stopScanning()
                 }) {
                     NavigationView {
-                        List(beanstormBLE.devices) { device in
+                        List(beanstormBLE.advertisingPeripherals) { advertisingPeripheral in
                             Button {
-                                beanstormBLE.service.connect(peripheral: device)
+                                beanstormBLE.service.connect(advertisingPeripheral: advertisingPeripheral)
                             } label: {
                                 HStack() {
-                                    Text(device.name ?? "Unknown Device")
+                                    Text(advertisingPeripheral.name)
                                         .font(.headline)
                                     Spacer()
-                                    Image(systemName: "wifi", variableValue: 0.8)
+                                    if(advertisingPeripheral.isConnecting) {
+                                        ProgressView()
+                                            .padding(.trailing)
+                                    }
+                                    Image(systemName: "wifi", variableValue: advertisingPeripheral.signalStrength)
                                 }
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(.borderless)
                         }
-                        .listRowSeparator(.visible)
+//                        .listRowSeparator(.visible)
                         .toolbar {
                             ToolbarItem(placement: .principal) {
                                 Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
@@ -108,24 +112,35 @@ struct DeviceConnectivity<Content: View>: View {
 }
 
 class MockBeanstormBLEService : BeanstormBLEService {
-    
     let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
     let isConnectedSubject: CurrentValueSubject<Bool, Never>
     let isScanningSubject: CurrentValueSubject<Bool, Never>
-    let devicesSubject: CurrentValueSubject<[CBPeripheral], Never>
+    var advertisingPeripheralsSubject: CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>
     var connectedPeripheral: BeanstormPeripheral? = nil
 
     func displaySettingsUI() { }
     func startScanning() { isScanningSubject.send(true) }
     func stopScanning() { isScanningSubject.send(false) }
-    func connect(peripheral: CBPeripheral) { }
+    func connect(advertisingPeripheral: BeanstormAdvertisingPeripheral) { }
     
     init(centralState: CBManagerState, isConnected: Bool, isScanning: Bool) {
         centralStateSubject = CurrentValueSubject<CBManagerState, Never>(centralState)
         isConnectedSubject = CurrentValueSubject<Bool, Never>(isConnected)
         isScanningSubject = CurrentValueSubject<Bool, Never>(isScanning)
-        devicesSubject = CurrentValueSubject<[CBPeripheral], Never>([])
-
+        advertisingPeripheralsSubject = CurrentValueSubject<[BeanstormAdvertisingPeripheral], Never>([
+            BeanstormAdvertisingPeripheral(
+                id: UUID(),
+                name: "Beanstorm Device 1",
+                signalStrength: 0.4,
+                isConnecting: false
+            ),
+            BeanstormAdvertisingPeripheral(
+                id: UUID(),
+                name: "Beanstorm Device 2",
+                signalStrength: 0.8,
+                isConnecting: true
+            )
+        ])
     }
 }
 

@@ -9,7 +9,7 @@ class BeanstormBLEModel: ObservableObject {
     @Published var centralState: CBManagerState!
     @Published var isConnected: Bool = false
     @Published var isScanning: Bool = false
-    @Published var devices: [CBPeripheral] = []
+    @Published var advertisingPeripherals: [BeanstormAdvertisingPeripheral] = []
     
     init(service: BeanstormBLEService = BeanstormBLE()) {
         self.service = service
@@ -26,8 +26,8 @@ class BeanstormBLEModel: ObservableObject {
             .sink { isScanning in self.isScanning = isScanning }
             .store(in: &subscriptions)
         
-        service.devicesSubject
-            .sink { devices in self.devices = devices }
+        service.advertisingPeripheralsSubject
+            .sink { advertisingPeripherals in self.advertisingPeripherals = advertisingPeripherals }
             .store(in: &subscriptions)
     }
     
