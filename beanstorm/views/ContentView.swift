@@ -3,17 +3,21 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
 
+    var brewView: some View {
+        Group {
+            if(beanstormBLE.isConnected) {
+                BrewView(
+                    peripheralModel: .init(dataService: beanstormBLE.service.connectedPeripheral!)
+                )
+            } else {
+                DeviceConnectivity()
+            }
+        }
+    }
+    
     var body: some View {
         TabView {
-            Group {
-                if(beanstormBLE.isConnected) {
-                    BrewView(
-                        peripheralModel: .init(dataService: beanstormBLE.service.connectedPeripheral!)
-                    )
-                } else {
-                    DeviceConnectivity()
-                }
-            }
+            brewView
                 .tabItem {
                     Label(
                         "Brew",
