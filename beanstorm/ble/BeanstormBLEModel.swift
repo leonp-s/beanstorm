@@ -7,7 +7,8 @@ class BeanstormBLEModel: ObservableObject {
     
     private var subscriptions = Set<AnyCancellable>()
     @Published var centralState: CBManagerState!
-    @Published var connectionState: BeanstormConnectionState = .disconnected
+    @Published var isConnected: Bool = false
+    @Published var isScanning: Bool = false
     @Published var devices: [CBPeripheral] = []
     
     init(service: BeanstormBLEService = BeanstormBLE()) {
@@ -17,8 +18,12 @@ class BeanstormBLEModel: ObservableObject {
             .sink { centralState in self.centralState = centralState }
             .store(in: &subscriptions)
         
-        service.conectionStateSubject
-            .sink { connectionState in self.connectionState = connectionState }
+        service.isConnectedSubject
+            .sink { isConnected in self.isConnected = isConnected }
+            .store(in: &subscriptions)
+        
+        service.isScanningSubject
+            .sink { isScanning in self.isScanning = isScanning }
             .store(in: &subscriptions)
         
         service.devicesSubject

@@ -1,17 +1,15 @@
 import CoreBluetooth
 import Combine
 
-enum BeanstormConnectionState {
-    case disconnected, scanning, connected
-}
-
 protocol BeanstormBLEService {
     var centralStateSubject: CurrentValueSubject<CBManagerState, Never> { get }
-    var conectionStateSubject: CurrentValueSubject<BeanstormConnectionState, Never> { get }
+    var isConnectedSubject: CurrentValueSubject<Bool, Never> { get }
+    var isScanningSubject: CurrentValueSubject<Bool, Never> { get }
     var devicesSubject: CurrentValueSubject<[CBPeripheral], Never> { get }
     var connectedPeripheral: BeanstormPeripheral? { get }
 
     func startScanning();
+    func stopScanning();
     func connect(peripheral: CBPeripheral)
 }
 
@@ -25,7 +23,8 @@ let dataServiceUUID = CBUUID(string: "8ec57513-faca-4a5c-9a45-912bd28ce1dc")
 
 class BeanstormBLE: NSObject, BeanstormBLEService {
     let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
-    let conectionStateSubject: CurrentValueSubject<BeanstormConnectionState, Never>
+    let isConnectedSubject: CurrentValueSubject<Bool, Never>
+    let isScanningSubject: CurrentValueSubject<Bool, Never>
     let devicesSubject: CurrentValueSubject<[CBPeripheral], Never>
     
     var centralManager: CBCentralManager!
@@ -36,7 +35,8 @@ class BeanstormBLE: NSObject, BeanstormBLEService {
 
     override init() {
         centralStateSubject = CurrentValueSubject<CBManagerState, Never>(.poweredOff)
-        conectionStateSubject = CurrentValueSubject<BeanstormConnectionState, Never>(.disconnected)
+        isConnectedSubject = CurrentValueSubject<Bool, Never>(false)
+        isScanningSubject = CurrentValueSubject<Bool, Never>(false)
         devicesSubject = CurrentValueSubject<[CBPeripheral], Never>([])
         
         super.init()
@@ -48,26 +48,19 @@ extension BeanstormBLE: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         centralStateSubject.send(central.state)
         print("State updated: \(central.state)")
-        
-        switch central.state {
-        case .poweredOn:
-            startScanning()
-            break;
-        default:
-            break;
-        }
     }
 
     func stopScanning() {
         print("Scan Stopped")
-        conectionStateSubject.send(.disconnected)
+        scanningTimer.invalidate()
+        isScanningSubject.send(false)
         centralManager.stopScan()
         devicesSubject.send([])
     }
     
     func startScanning() {
         print("Scan Started")
-        conectionStateSubject.send(.scanning)
+        isScanningSubject.send(true)
         
         centralManager.scanForPeripherals(withServices: [dataServiceUUID], options: nil)
         scanningTimer = Timer.scheduledTimer(withTimeInterval: 18.0, repeats: false) { [weak self] _ in
@@ -94,11 +87,11 @@ extension BeanstormBLE: CBCentralManagerDelegate {
         stopScanning()
     
         connectedPeripheral = BeanstormPeripheral(peripheral: peripheral)
-        conectionStateSubject.send(.connected)
+        isConnectedSubject.send(true)
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        conectionStateSubject.send(.connected)
+        isConnectedSubject.send(false)
         connectedPeripheral = nil
     }
 }

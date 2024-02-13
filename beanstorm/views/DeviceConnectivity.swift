@@ -4,6 +4,7 @@ import CoreBluetooth
 
 struct DeviceConnectivity<Content: View>: View {
     @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
+
     let content: Content
     
     init(@ViewBuilder content: @escaping () -> Content) {
@@ -24,9 +25,10 @@ struct DeviceConnectivity<Content: View>: View {
     }
     
     var poweredOn: some View {
-        HStack {
-            switch(beanstormBLE.connectionState) {
-            case .disconnected:
+        Group {
+            if(beanstormBLE.isConnected) {
+                content
+            } else {
                 ContentUnavailableView {
                     Label("No Device Connected", systemImage: "tropicalstorm")
                 } description: {
@@ -37,43 +39,37 @@ struct DeviceConnectivity<Content: View>: View {
                         beanstormBLE.service.startScanning()
                     }
                 }
-            case .scanning:
-                VStack {
-                    Image(systemName: "antenna.radiowaves.left.and.right")
-                        .font(.system(size: 48))
-                        .foregroundStyle(.secondary)
-                        .padding()
-                    HStack {
-                        Text("Scanning For Devices")
-                            .font(.title2)
-                            .bold()
-                        Spacer()
-                        ProgressView()
-                    }
-                    Divider()
-                    List(beanstormBLE.devices) { device in
-                        Button {
-                            beanstormBLE.service.connect(peripheral: device)
-                        } label: {
-                            HStack() {
-                                Text(device.name ?? "Unknown Device")
-                                    .font(.headline)
-                                Spacer()
-                                Image(systemName: "wifi", variableValue: 1.0)
-                            }
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    .listRowSeparator(.visible)
-                    .frame(
-                        width: .infinity,
-                        height: 80
-                    )
-                }
-                .padding()
-            case .connected:
-                content
             }
+        }
+        .sheet(isPresented: $beanstormBLE.isScanning, onDismiss: {
+            beanstormBLE.service.stopScanning()
+        }) {
+            NavigationView {
+                List(beanstormBLE.devices) { device in
+                    Button {
+                        beanstormBLE.service.connect(peripheral: device)
+                    } label: {
+                        HStack() {
+                            Text(device.name ?? "Unknown Device")
+                                .font(.headline)
+                            Spacer()
+                            Image(systemName: "wifi", variableValue: 1.0)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+                .listRowSeparator(.visible)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
+                            .labelStyle(.titleAndIcon)
+                            .bold()
+                    }
+                }
+                .navigationBarTitleDisplayMode(.inline)
+            }
+            .padding()
+            .presentationDetents([.medium])
         }
     }
     
@@ -113,18 +109,22 @@ struct DeviceConnectivity<Content: View>: View {
 }
 
 class MockBeanstormBLEService : BeanstormBLEService {
+    
     let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
-    let conectionStateSubject: CurrentValueSubject<BeanstormConnectionState, Never>
+    let isConnectedSubject: CurrentValueSubject<Bool, Never>
+    let isScanningSubject: CurrentValueSubject<Bool, Never>
     let devicesSubject: CurrentValueSubject<[CBPeripheral], Never>
     var connectedPeripheral: BeanstormPeripheral? = nil
 
     func displaySettingsUI() { }
-    func startScanning() { }
+    func startScanning() { isScanningSubject.send(true) }
+    func stopScanning() { isScanningSubject.send(false) }
     func connect(peripheral: CBPeripheral) { }
     
-    init(centralState: CBManagerState, connectionState: BeanstormConnectionState) {
+    init(centralState: CBManagerState, isConnected: Bool, isScanning: Bool) {
         centralStateSubject = CurrentValueSubject<CBManagerState, Never>(centralState)
-        conectionStateSubject = CurrentValueSubject<BeanstormConnectionState, Never>(connectionState)
+        isConnectedSubject = CurrentValueSubject<Bool, Never>(isConnected)
+        isScanningSubject = CurrentValueSubject<Bool, Never>(isScanning)
         devicesSubject = CurrentValueSubject<[CBPeripheral], Never>([])
 
     }
@@ -138,7 +138,8 @@ class MockBeanstormBLEService : BeanstormBLEService {
     .environmentObject(BeanstormBLEModel(
         service: MockBeanstormBLEService(
             centralState: .poweredOn,
-            connectionState: .scanning
+            isConnected: false,
+            isScanning: true
         )
     ))
 }
