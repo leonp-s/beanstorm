@@ -1,18 +1,5 @@
 import SwiftUI
-
-struct BrewViewGuard: View {
-    @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
-    
-    var body: some View {
-        if(beanstormBLE.isConnected) {
-            BrewView(
-                peripheralModel: .init(dataService: beanstormBLE.service.connectedPeripheral!)
-            )
-        } else {
-            DeviceConnectivity()
-        }
-    }
-}
+import Combine
 
 struct BrewView: View {
     @State private var started: Bool = false
@@ -105,7 +92,22 @@ struct BrewView: View {
     }
 }
 
+class MockDataService: DataService {
+    var pressureSubject: CurrentValueSubject<Float, Never>
+    var temperatureSubject: CurrentValueSubject<Float, Never>
+    var flowSubject: CurrentValueSubject<Float, Never>
+    
+    init() {
+        self.pressureSubject = CurrentValueSubject<Float, Never>(1.4)
+        self.temperatureSubject = CurrentValueSubject<Float, Never>(86.8)
+        self.flowSubject = CurrentValueSubject<Float, Never>(2.6)
+    }
+}
+
 #Preview {
-    BrewViewGuard()
-        .environmentObject(BeanstormBLEModel())
+    BrewView(
+        peripheralModel: BeanstormPeripheralModel(
+            dataService: MockDataService()
+        )
+    )
 }

@@ -106,7 +106,7 @@ struct DeviceConnectivity: View {
     }
 }
 
-class MockBeanstormBLEService : BeanstormBLEService {
+class MockBeanstormBLEService: BeanstormBLEService {
     let centralStateSubject: CurrentValueSubject<CBManagerState, Never>
     let isConnectedSubject: CurrentValueSubject<Bool, Never>
     let isScanningSubject: CurrentValueSubject<Bool, Never>
