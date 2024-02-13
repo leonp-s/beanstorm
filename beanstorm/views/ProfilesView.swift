@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct EditProfileView: View {
 //    var profile: FetchedResults<BrewProfile>.Element
@@ -50,30 +51,28 @@ struct NewBrewProfileView: View {
     NewBrewProfileView()
 }
 
-
-
 struct ProfilesView: View {
     @Environment(\.modelContext) private var context
-//    @FetchRequest(sortDescriptors: []) var profiles: FetchedResults<BrewProfile>
+    @Query(sort: \BrewProfile.name) private var profiles: [BrewProfile]
     @State private var showingAddView = false
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading) {
-                List {
-//                    ForEach(profiles) { profile in
-//                        NavigationLink(destination: EditProfileView()) {
-//                            VStack(alignment: .leading, spacing: 6) {
-//                                Text(profile.name!)
-//                                    .bold()
-//                            }
-//                        }
-//                    }
-//                    .onDelete(perform: deleteFood)
+            List {
+                ForEach(profiles) { profile in
+                    NavigationLink(
+                        destination: EditProfileView()
+                    ) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(profile.name)
+                                .bold()
+                        }
+                    }
                 }
-                .listStyle(.plain)
+//                    .onDelete(perform: deleteFood)
             }
-            .navigationTitle("Profiles")
+            .listStyle(.plain)
+            .navigationTitle("Brew Profiles")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -95,4 +94,5 @@ struct ProfilesView: View {
 
 #Preview {
     ProfilesView()
+        .modelContainer(for: BrewProfile.self)
 }

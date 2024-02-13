@@ -93,7 +93,6 @@ struct BrewView: View {
                 }
                 .animation(.bouncy, value: started)
                 .transition(.slide)
-            
                 QuickMonitorView(
                     pressue: $peripheralModel.pressure,
                     temperature: $peripheralModel.temperature,

@@ -1,25 +1,27 @@
 import SwiftData
 import Foundation
 
-enum ControlType: Codable {
-    case pressure, flow
+enum ControlType: Int, Codable {
+    case pressure
+    case flow
 }
 
-@Model final class ControlPoint {
-    var uuid: UUID
-    var pressure: Double
-    var flow: Double
-    var time: Double
-    
-    init(pressure: Double, flow: Double, time: Double) {
-        self.uuid = UUID()
-        self.pressure = pressure
-        self.flow = flow
-        self.time = time
-    }
-}
+//@Model class ControlPoint {
+//    var uuid: UUID
+//    var pressure: Double
+//    var flow: Double
+//    var time: Double
+//    
+//    init(pressure: Double, flow: Double, time: Double) {
+//        self.uuid = UUID()
+//        self.pressure = pressure
+//        self.flow = flow
+//        self.time = time
+//    }
+//}
 
-@Model final class BrewProfile {
+@Model 
+class BrewProfile {
     var uuid: UUID
     var temperature: Double
     var name: String

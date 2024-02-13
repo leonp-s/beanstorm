@@ -10,6 +10,6 @@ struct BeanstormApp: App {
             ContentView()
         }
         .environmentObject(beanstormBLE)
-        .modelContainer(for: [BrewProfile.self])
+        .modelContainer(for: BrewProfile.self)
     }
 }

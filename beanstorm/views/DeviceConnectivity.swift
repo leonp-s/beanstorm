@@ -51,7 +51,7 @@ struct DeviceConnectivity<Content: View>: View {
                                     Text(device.name ?? "Unknown Device")
                                         .font(.headline)
                                     Spacer()
-                                    Image(systemName: "wifi", variableValue: 1.0)
+                                    Image(systemName: "wifi", variableValue: 0.8)
                                 }
                             }
                             .buttonStyle(.plain)
@@ -66,7 +66,6 @@ struct DeviceConnectivity<Content: View>: View {
                         }
                         .navigationBarTitleDisplayMode(.inline)
                     }
-                    .padding()
                     .presentationDetents([.medium])
                 }
             }

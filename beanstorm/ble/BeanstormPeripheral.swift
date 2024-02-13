@@ -151,7 +151,7 @@ class BeanstormPeripheralModel: ObservableObject {
         self.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             
-            if(!self.pressure.isNearlyEqual(to: self.targetPressure, precision: 0.1)) {
+            if(!self.pressure.isNearlyEqual(to: self.targetPressure, precision: 0.01)) {
                 self.pressure = self.smoothedValue(
                     valueToSmooth: self.pressure,
                     target: self.targetPressure
@@ -165,7 +165,7 @@ class BeanstormPeripheralModel: ObservableObject {
                 )
             }
             
-            if(!self.flow.isNearlyEqual(to: self.targetFlow, precision: 0.1)) {
+            if(!self.flow.isNearlyEqual(to: self.targetFlow, precision: 0.01)) {
                 self.flow = self.smoothedValue(
                     valueToSmooth: self.flow,
                     target: self.targetFlow
