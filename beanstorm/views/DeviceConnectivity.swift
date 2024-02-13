@@ -39,37 +39,37 @@ struct DeviceConnectivity<Content: View>: View {
                         beanstormBLE.service.startScanning()
                     }
                 }
-            }
-        }
-        .sheet(isPresented: $beanstormBLE.isScanning, onDismiss: {
-            beanstormBLE.service.stopScanning()
-        }) {
-            NavigationView {
-                List(beanstormBLE.devices) { device in
-                    Button {
-                        beanstormBLE.service.connect(peripheral: device)
-                    } label: {
-                        HStack() {
-                            Text(device.name ?? "Unknown Device")
-                                .font(.headline)
-                            Spacer()
-                            Image(systemName: "wifi", variableValue: 1.0)
+                .sheet(isPresented: $beanstormBLE.isScanning, onDismiss: {
+                    beanstormBLE.service.stopScanning()
+                }) {
+                    NavigationView {
+                        List(beanstormBLE.devices) { device in
+                            Button {
+                                beanstormBLE.service.connect(peripheral: device)
+                            } label: {
+                                HStack() {
+                                    Text(device.name ?? "Unknown Device")
+                                        .font(.headline)
+                                    Spacer()
+                                    Image(systemName: "wifi", variableValue: 1.0)
+                                }
+                            }
+                            .buttonStyle(.plain)
                         }
+                        .listRowSeparator(.visible)
+                        .toolbar {
+                            ToolbarItem(placement: .principal) {
+                                Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
+                                    .labelStyle(.titleAndIcon)
+                                    .bold()
+                            }
+                        }
+                        .navigationBarTitleDisplayMode(.inline)
                     }
-                    .buttonStyle(.plain)
+                    .padding()
+                    .presentationDetents([.medium])
                 }
-                .listRowSeparator(.visible)
-                .toolbar {
-                    ToolbarItem(placement: .principal) {
-                        Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
-                            .labelStyle(.titleAndIcon)
-                            .bold()
-                    }
-                }
-                .navigationBarTitleDisplayMode(.inline)
             }
-            .padding()
-            .presentationDetents([.medium])
         }
     }
     

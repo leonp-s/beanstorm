@@ -63,7 +63,7 @@ extension BeanstormBLE: CBCentralManagerDelegate {
         isScanningSubject.send(true)
         
         centralManager.scanForPeripherals(withServices: [dataServiceUUID], options: nil)
-        scanningTimer = Timer.scheduledTimer(withTimeInterval: 18.0, repeats: false) { [weak self] _ in
+        scanningTimer = Timer.scheduledTimer(withTimeInterval: 20.0, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             self.stopScanning()
         }
