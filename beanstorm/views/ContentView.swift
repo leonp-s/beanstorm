@@ -18,12 +18,12 @@ struct ContentView: View {
     var body: some View {
         TabView {
             brewView
-                .tabItem {
-                    Label(
-                        "Brew",
-                        systemImage: "play.circle"
-                    )
-                }
+            .tabItem {
+                Label(
+                    "Brew",
+                    systemImage: "play.circle"
+                )
+            }
             ProfilesView()
                 .tabItem {
                     Label(

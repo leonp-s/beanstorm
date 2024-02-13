@@ -2,11 +2,11 @@ import SwiftUI
 import Combine
 
 struct BrewView: View {
-    @State private var started: Bool = false
     @StateObject var peripheralModel: BeanstormPeripheralModel
-    
+    @State var isBrewing: Bool = false
+
     private var timer: some View {
-        Group {
+        HStack {
             Image(systemName: "timer")
                 .foregroundStyle(.yellow)
             Text("00:11")
@@ -16,7 +16,7 @@ struct BrewView: View {
     }
     
     private var status: some View {
-        Group {
+        HStack {
             Image(systemName: "waveform.path.ecg.rectangle")
                 .foregroundStyle(.primary)
             Text("Idle")
@@ -26,7 +26,7 @@ struct BrewView: View {
     }
     
     private var profile: some View {
-        Group {
+        HStack {
             Image(systemName: "stopwatch")
                 .foregroundStyle(.primary)
             Text("Bean Flow")
@@ -43,7 +43,7 @@ struct BrewView: View {
             Text("Load a profile and begin a shot using the machines front panel or via the app.")
             HStack {
                 Button(action: {
-                    started = true
+                    isBrewing = true
                 }) {
                     Text("Start Shot")
                     Image(systemName: "play.circle.fill")
@@ -53,43 +53,55 @@ struct BrewView: View {
         }
     }
     
-    var body: some View {
+    private var brewing: some View {
         VStack {
-                if started {
-                    HStack {
-                        Spacer()
-                        Button("End Shot", systemImage: "stop.circle.fill", role: .destructive) {
-                            started = false
-                        }
-                    }
-                    .padding(.bottom)
+            HStack {
+                profile
+                Spacer()
+                timer
+            }
+            BrewGraph(data: .constant([]))
+        }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                if(isBrewing) {
+                    brewing
+                        .transition(.move(edge: self.isBrewing ? .trailing : .leading))
+                } else {
+                    getReady
+                        .transition(.move(edge: self.isBrewing ? .trailing : .leading))
                 }
-                HStack {
-                    status
-                    Spacer()
-                    if started {
-                        profile
-                        Spacer()
-                        timer
-                    }
-                }
-                Group {
-                    if started {
-                        BrewGraph(data: .constant([]))
-                    } else {
-                        getReady
-                    }
-                }
-                .animation(.bouncy, value: started)
-                .transition(.slide)
                 QuickMonitorView(
                     pressue: $peripheralModel.pressure,
                     temperature: $peripheralModel.temperature,
                     flow: $peripheralModel.flow
                 )
+            }
+            .padding()
+            .animation(.easeInOut, value: isBrewing)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    status
+                }
+                if(isBrewing) {
+                    ToolbarItem {
+                        Button(
+                            "End Shot",
+                            systemImage: "stop.circle.fill",
+                            role: .destructive
+                        ) {
+                            isBrewing = false
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                }
+            }
         }
-        .padding()
     }
+    
 }
 
 class MockDataService: DataService {

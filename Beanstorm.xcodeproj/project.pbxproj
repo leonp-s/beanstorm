@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E10415A12B3C3C5600C50767 /* nav_test.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10415A02B3C3C5600C50767 /* nav_test.swift */; };
 		E13656E22B7BD35E00FD14A5 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13656E12B7BD35E00FD14A5 /* View.swift */; };
 		E136667D2B77E94600AF2C98 /* DeviceConnectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */; };
 		E136667F2B77EB6600AF2C98 /* BeanstormBLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */; };
@@ -31,7 +30,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E10415A02B3C3C5600C50767 /* nav_test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = nav_test.swift; sourceTree = "<group>"; };
 		E13656E12B7BD35E00FD14A5 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceConnectivity.swift; sourceTree = "<group>"; };
 		E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormBLE.swift; sourceTree = "<group>"; };
@@ -133,7 +131,6 @@
 				E18B794B2B375B59001A3FF0 /* SettingsView.swift */,
 				E18B794D2B3779CF001A3FF0 /* BrewView.swift */,
 				E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */,
-				E10415A02B3C3C5600C50767 /* nav_test.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -240,7 +237,6 @@
 				E136667D2B77E94600AF2C98 /* DeviceConnectivity.swift in Sources */,
 				E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */,
 				E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */,
-				E10415A12B3C3C5600C50767 /* nav_test.swift in Sources */,
 				E13666822B7A75E100AF2C98 /* BeanstormPeripheral.swift in Sources */,
 				E13656E22B7BD35E00FD14A5 /* View.swift in Sources */,
 				E13666862B7AA95600AF2C98 /* FloatingPoint.swift in Sources */,
