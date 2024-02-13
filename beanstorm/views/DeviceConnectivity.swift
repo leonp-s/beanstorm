@@ -2,76 +2,58 @@ import SwiftUI
 import Combine
 import CoreBluetooth
 
-struct DeviceConnectivity<Content: View>: View {
+struct DeviceConnectivityScanningRoot: ViewModifier {
     @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
 
-    let content: Content
-    
-    init(@ViewBuilder content: @escaping () -> Content) {
-        self.content = content()
-    }
-
-    var grantPemission: some View {
-        ContentUnavailableView {
-            Label("Bluetooth Permissions", systemImage: "tropicalstorm")
-        } description: {
-            Text ("BLE permissions are required to communicate with devices running BeanstormOS. You can open settings manually to grant bluetooth permissions or use the shortcut below.")
-                .multilineTextAlignment(.center)
-            Divider()
-            Button("Open App Settings", systemImage: "gear") {
-                beanstormBLE.displayAppSettings()
+    func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: $beanstormBLE.isScanning, onDismiss: {
+                beanstormBLE.service.stopScanning()
+            }) {
+                NavigationView {
+                    List(beanstormBLE.advertisingPeripherals) { advertisingPeripheral in
+                        Button {
+                            beanstormBLE.service.connect(advertisingPeripheral: advertisingPeripheral)
+                        } label: {
+                            HStack() {
+                                Text(advertisingPeripheral.name)
+                                    .font(.headline)
+                                Spacer()
+                                if(advertisingPeripheral.isConnecting) {
+                                    ProgressView()
+                                        .padding(.trailing)
+                                }
+                                Image(systemName: "wifi", variableValue: advertisingPeripheral.signalStrength)
+                            }
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .principal) {
+                            Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
+                                .labelStyle(.titleAndIcon)
+                                .bold()
+                        }
+                    }
+                    .navigationBarTitleDisplayMode(.inline)
+                }
+                .presentationDetents([.medium])
             }
-        }
     }
+}
+
+struct DeviceConnectivity: View {
+    @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
     
     var poweredOn: some View {
-        Group {
-            if(beanstormBLE.isConnected) {
-                content
-            } else {
-                ContentUnavailableView {
-                    Label("No Device Connected", systemImage: "tropicalstorm")
-                } description: {
-                    Text ("Get started by scanning for local devices running BeanstormOS.")
-                        .multilineTextAlignment(.center)
-                    Divider()
-                    Button("Scan For Devices", systemImage: "antenna.radiowaves.left.and.right") {
-                        beanstormBLE.service.startScanning()
-                    }
-                }
-                .sheet(isPresented: $beanstormBLE.isScanning, onDismiss: {
-                    beanstormBLE.service.stopScanning()
-                }) {
-                    NavigationView {
-                        List(beanstormBLE.advertisingPeripherals) { advertisingPeripheral in
-                            Button {
-                                beanstormBLE.service.connect(advertisingPeripheral: advertisingPeripheral)
-                            } label: {
-                                HStack() {
-                                    Text(advertisingPeripheral.name)
-                                        .font(.headline)
-                                    Spacer()
-                                    if(advertisingPeripheral.isConnecting) {
-                                        ProgressView()
-                                            .padding(.trailing)
-                                    }
-                                    Image(systemName: "wifi", variableValue: advertisingPeripheral.signalStrength)
-                                }
-                            }
-                            .buttonStyle(.borderless)
-                        }
-//                        .listRowSeparator(.visible)
-                        .toolbar {
-                            ToolbarItem(placement: .principal) {
-                                Label("Scanning For Devices", systemImage: "antenna.radiowaves.left.and.right")
-                                    .labelStyle(.titleAndIcon)
-                                    .bold()
-                            }
-                        }
-                        .navigationBarTitleDisplayMode(.inline)
-                    }
-                    .presentationDetents([.medium])
-                }
+        ContentUnavailableView {
+            Label("No Device Connected", systemImage: "tropicalstorm")
+        } description: {
+            Text ("Get started by scanning for local devices running BeanstormOS.")
+                .multilineTextAlignment(.center)
+            Divider()
+            Button("Scan For Devices", systemImage: "antenna.radiowaves.left.and.right") {
+                beanstormBLE.service.startScanning()
             }
         }
     }
@@ -93,6 +75,19 @@ struct DeviceConnectivity<Content: View>: View {
             Divider()
             Button("Open Settings", systemImage: "gear") {
                 beanstormBLE.displaySystemSettings()
+            }
+        }
+    }
+    
+    var grantPemission: some View {
+        ContentUnavailableView {
+            Label("Bluetooth Permissions", systemImage: "tropicalstorm")
+        } description: {
+            Text ("BLE permissions are required to communicate with devices running BeanstormOS. You can open settings manually to grant bluetooth permissions or use the shortcut below.")
+                .multilineTextAlignment(.center)
+            Divider()
+            Button("Open App Settings", systemImage: "gear") {
+                beanstormBLE.displayAppSettings()
             }
         }
     }
@@ -146,9 +141,8 @@ class MockBeanstormBLEService : BeanstormBLEService {
 
 
 #Preview {
-    DeviceConnectivity {
-        Text("Content View")
-    }
+    DeviceConnectivity()
+    .deviceConnectivityScanningRoot()
     .environmentObject(BeanstormBLEModel(
         service: MockBeanstormBLEService(
             centralState: .poweredOn,

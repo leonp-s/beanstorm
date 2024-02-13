@@ -53,7 +53,7 @@ void DataService::Advertise (NimBLEAdvertising * advertising)
 
 void DataService::SensorStateUpdated (const Peripherals::SensorState & sensor_state)
 {
-    pressure_.store (sensor_state.pressure);
+    pressure_.store (sensor_state.pressure > 0.0f ? sensor_state.pressure : 0.0f);
     temperature_.store (sensor_state.temperature);
     flow_.store (0.f);
 }

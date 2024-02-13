@@ -3,7 +3,8 @@ import SwiftUI
 struct SettingsView: View {
     @State var isDarkModeEnabled: Bool = true
     @State var enableLiveActivity: Bool = false
-    
+    @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
+
     var body: some View {
         Form {            
             Section("Content"){
@@ -27,8 +28,10 @@ struct SettingsView: View {
             }
             
             Section("Device") {
-                DeviceConnectivity {
+                if(beanstormBLE.isConnected) {
                     Text("Device Settings")
+                } else {
+                    DeviceConnectivity()
                 }
             }
         }

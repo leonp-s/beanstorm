@@ -4,10 +4,12 @@ struct BrewViewGuard: View {
     @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
     
     var body: some View {
-        DeviceConnectivity {
+        if(beanstormBLE.isConnected) {
             BrewView(
                 peripheralModel: .init(dataService: beanstormBLE.service.connectedPeripheral!)
             )
+        } else {
+            DeviceConnectivity()
         }
     }
 }
