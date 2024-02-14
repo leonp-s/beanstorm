@@ -117,13 +117,12 @@ struct ProfileGraph: View {
                     x: .value("Time", pos.time),
                     y: .value("Height", pos.value)
                 )
-                .interpolationMethod(.catmullRom)
+                .interpolationMethod(.monotone)
                 .foregroundStyle(
                             .linearGradient(
-                                colors: [.blue, .cyan, .purple],
+                                colors: [.blue.opacity(0.2), .purple.opacity(0.4)],
                                 startPoint: .bottom, endPoint: .top
                             )
-                            .opacity(0.4)
                         )
                 .alignsMarkStylesWithPlotArea()
 
@@ -131,10 +130,10 @@ struct ProfileGraph: View {
                     x: .value("Time", pos.time),
                     y: .value("Height", pos.value)
                 )
-                .interpolationMethod(.catmullRom)
+                .interpolationMethod(.monotone)
                 .foregroundStyle(
                     .linearGradient(
-                        colors: [.blue, .cyan, .purple],
+                        colors: [.blue, .purple],
                         startPoint: .bottom, endPoint: .top
                     )
                 )
