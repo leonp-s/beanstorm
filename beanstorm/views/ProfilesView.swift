@@ -5,10 +5,12 @@ struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
     let profile: BrewProfile
 
-    @State private var name: String = "Profile Name"
+    @State private var name: String = ""
     @State private var temperature: Double = 80.0
     @State private var duration: Double = 28.0
     @State private var controlType: ControlType = .pressure
+    
+    @State private var showingEditor: Bool = false
     
     var changed: Bool {
         profile.name != name ||
@@ -22,10 +24,6 @@ struct EditProfileView: View {
             Form {
                 Section(header: Text("Name")) {
                     TextField("Profile Name", text: $name)
-                }
-                Picker("Control Type", selection: $controlType) {
-                    Text("Pressure").tag(ControlType.pressure)
-                    Text("Flow").tag(ControlType.flow)
                 }
                 Section(header: Text("Temperature")) {
                     VStack {
@@ -44,6 +42,41 @@ struct EditProfileView: View {
                         Text(String(format: "%.1f", temperature))
                             .font(.headline)
                     }
+                }
+                
+                Section(header: Text("Control Type")) {
+                    Picker("Control Type", selection: $controlType) {
+                        Text("Pressure").tag(ControlType.pressure)
+                        Text("Flow").tag(ControlType.flow)
+                    }
+                }
+                
+                Section(header: Text("Profile")) {
+                    ProfileGraph(
+                        positions: [
+                            ControlPoint(id: UUID(), time: 0.0, value: 1.0),
+                            ControlPoint(id: UUID(), time: 4.0, value: 0.8),
+                            ControlPoint(id: UUID(), time: 6.0, value: 0.3),
+                            ControlPoint(id: UUID(), time: 10.0, value: 0.9)
+                        ]
+                    )
+                    .frame(height: 280)
+                    .listRowSeparator(.hidden)
+                }
+                .sheet(isPresented: $showingEditor) {
+                    ProfileEditor(
+                        positions: [
+                            ControlPoint(id: UUID(), time: 0.0, value: 1.0),
+                            ControlPoint(id: UUID(), time: 4.0, value: 0.8),
+                            ControlPoint(id: UUID(), time: 6.0, value: 0.3),
+                            ControlPoint(id: UUID(), time: 10.0, value: 0.9)
+                        ]
+                    )
+                    .padding()
+                    .presentationDetents([.fraction(0.8)])
+                }
+                Button("Open Profile Editor", systemImage: "square.and.pencil") {
+                    showingEditor = true
                 }
                 Section(header: Text("Duration")) {
                     VStack {
@@ -64,6 +97,7 @@ struct EditProfileView: View {
                     }
                 }
             }
+            
             .navigationTitle(name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

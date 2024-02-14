@@ -9,6 +9,58 @@ struct ControlPoint: Identifiable {
 
 struct ProfileGraph: View {
     @State var positions: [ControlPoint]
+    
+    var body: some View {
+        Chart {
+            ForEach(positions) { pos in
+                AreaMark(
+                    x: .value("Time", pos.time),
+                    y: .value("Height", pos.value)
+                )
+                .interpolationMethod(.monotone)
+                .foregroundStyle(
+                            .linearGradient(
+                                colors: [.blue.opacity(0.2), .purple.opacity(0.4)],
+                                startPoint: .bottom, endPoint: .top
+                            )
+                        )
+                .alignsMarkStylesWithPlotArea()
+
+                LineMark(
+                    x: .value("Time", pos.time),
+                    y: .value("Height", pos.value)
+                )
+                .interpolationMethod(.monotone)
+                .foregroundStyle(
+                    .linearGradient(
+                        colors: [.blue, .purple],
+                        startPoint: .bottom, endPoint: .top
+                    )
+                )
+                .lineStyle(StrokeStyle(lineWidth: 4))
+                .alignsMarkStylesWithPlotArea()
+            }
+        }
+        .chartXAxisLabel("Time (s)")
+        .chartYAxisLabel("Pressure (MPa)")
+    }
+}
+
+#Preview("Profile Graph") {
+    ProfileGraph(
+        positions: [
+            ControlPoint(id: UUID(), time: 0.0, value: 1.0),
+            ControlPoint(id: UUID(), time: 4.0, value: 0.8),
+            ControlPoint(id: UUID(), time: 6.0, value: 0.3),
+            ControlPoint(id: UUID(), time: 10.0, value: 0.9)
+        ]
+    )
+    .padding()
+}
+
+
+struct ProfileEditor: View {
+    @State var positions: [ControlPoint]
     @State var cursorIndex: Int?
     
     @State var posX: Double = 0.0
@@ -56,53 +108,35 @@ struct ProfileGraph: View {
     private var controlPointEditor: some View {
         Group {
             if cursorIndex != nil {
-                Form {
-                    Section(header: Text("Time")) {
-                        VStack {
-                            Slider(
-                                value: $posX,
-                                in: 0...10
-                            ) {
-                                Text("Values from 0 to 10")
-                            } minimumValueLabel: {
-                                Text("0")
-                            } maximumValueLabel: {
-                                Text("10")
+                VStack {
+                    HStack {
+                        Slider(
+                            value: $posX,
+                            in: 0...10
+                        )
+                        .onChange(of: posX) {
+                            if let index = cursorIndex {
+                                let pos = positions[index]
+                                positions[index] = ControlPoint(id: pos.id, time: posX, value: pos.value)
                             }
-                            .onChange(of: posX) {
-                                if let index = cursorIndex {
-                                    let pos = positions[index]
-                                    positions[index] = ControlPoint(id: pos.id, time: posX, value: pos.value)
-                                }
-                            }
-                            
-                            Text(String(format: "%.1f", posX))
-                                .font(.headline)
                         }
+                        Text(String(format: "%.1f", posX))
+                            .font(.headline)
                     }
-                    
-                    Section(header: Text("Value")) {
-                        VStack {
-                            Slider(
-                                value: $posY,
-                                in: 0...1
-                            ) {
-                                Text("Values from 0 to 1")
-                            } minimumValueLabel: {
-                                Text("0")
-                            } maximumValueLabel: {
-                                Text("1")
+                
+                    HStack {
+                        Slider(
+                            value: $posY,
+                            in: 0...1
+                        )
+                        .onChange(of: posY) {
+                            if let index = cursorIndex {
+                                let pos = positions[index]
+                                positions[index] = ControlPoint(id: pos.id, time: pos.time, value: posY)
                             }
-                            .onChange(of: posY) {
-                                if let index = cursorIndex {
-                                    let pos = positions[index]
-                                    positions[index] = ControlPoint(id: pos.id, time: pos.time, value: posY)
-                                }
-                            }
-                            
-                            Text(String(format: "%.1f", posY))
-                                .font(.headline)
                         }
+                        Text(String(format: "%.1f", posY))
+                            .font(.headline)
                     }
                 }
             }
@@ -152,6 +186,8 @@ struct ProfileGraph: View {
                     .symbolSize(250)
             }
         }
+        .chartXAxisLabel("Time (s)")
+        .chartYAxisLabel("Pressure (MPa)")
         .chartOverlay { proxy in
             GeometryReader { geometry in
                 Rectangle().fill(.clear).contentShape(Rectangle())
@@ -185,8 +221,8 @@ struct ProfileGraph: View {
     }
 }
 
-#Preview {
-    ProfileGraph(
+#Preview("Profile Editor") {
+    ProfileEditor(
         positions: [
             ControlPoint(id: UUID(), time: 0.0, value: 1.0),
             ControlPoint(id: UUID(), time: 4.0, value: 0.8),
