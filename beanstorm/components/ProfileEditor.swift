@@ -58,6 +58,11 @@ struct ProfileGraph: View {
     .padding()
 }
 
+enum ProfileEditorTool {
+    case delete
+    case edit
+    case add
+}
 
 struct ProfileEditor: View {
     @State var positions: [ControlPoint]
@@ -65,6 +70,8 @@ struct ProfileEditor: View {
     
     @State var posX: Double = 0.0
     @State var posY: Double = 0.0
+    
+    @State var initialPos: CGPoint?
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -91,54 +98,79 @@ struct ProfileEditor: View {
         }
     }
     
-    func updateCursor(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
+    func updateCursor(value: DragGesture.Value, geometry: GeometryProxy, proxy: ChartProxy) {
         let origin = geometry[proxy.plotFrame!].origin
+        
+        let startTime = proxy.value(atX: value.startLocation.x - origin.x, as: Double.self)!
+        let startValue = proxy.value(atY: value.startLocation.y - origin.y, as: Double.self)!
+        
+        let dragTime = proxy.value(atX: value.location.x - origin.x, as: Double.self)!
+        let dragValue = proxy.value(atY: value.location.y - origin.y, as: Double.self)!
 
-        let time = proxy.value(atX: at.x - origin.x, as: Double.self)!
-        let value = proxy.value(atY: at.y - origin.y, as: Double.self)!
-
+        let timeDelta = dragTime - startTime;
+        let valueDelta = dragValue - startValue;
+        
         if let index = cursorIndex {
             let pos = positions[index]
-            positions[index] = ControlPoint(id: pos.id, time: time, value: value)
-            posX = time
-            posY = value
+
+            if(initialPos == nil) {
+                initialPos = CGPoint(x: pos.time, y: pos.value)
+            }
+            
+            var newTime = initialPos!.x + timeDelta
+            var newValue = initialPos!.y + valueDelta
+            
+            if(newTime < 0.0)
+            {
+                newTime = 0.0
+            }
+            
+            if(newValue < 0.0)
+            {
+                newValue = 0.0
+            }
+            
+            positions[index] = ControlPoint(
+                id: pos.id,
+                time: newTime,
+                value: newValue
+            )
+            
+            posX = newTime
+            posY = newValue
         }
     }
     
     private var controlPointEditor: some View {
-        Group {
-            if cursorIndex != nil {
-                VStack {
-                    HStack {
-                        Slider(
-                            value: $posX,
-                            in: 0...10
-                        )
-                        .onChange(of: posX) {
-                            if let index = cursorIndex {
-                                let pos = positions[index]
-                                positions[index] = ControlPoint(id: pos.id, time: posX, value: pos.value)
-                            }
-                        }
-                        Text(String(format: "%.1f", posX))
-                            .font(.headline)
-                    }
-                
-                    HStack {
-                        Slider(
-                            value: $posY,
-                            in: 0...1
-                        )
-                        .onChange(of: posY) {
-                            if let index = cursorIndex {
-                                let pos = positions[index]
-                                positions[index] = ControlPoint(id: pos.id, time: pos.time, value: posY)
-                            }
-                        }
-                        Text(String(format: "%.1f", posY))
-                            .font(.headline)
+        VStack {
+            HStack {
+                Slider(
+                    value: $posX,
+                    in: 0...10
+                )
+                .onChange(of: posX) {
+                    if let index = cursorIndex {
+                        let pos = positions[index]
+                        positions[index] = ControlPoint(id: pos.id, time: posX, value: pos.value)
                     }
                 }
+                Text(String(format: "%.1f", posX))
+                    .font(.headline)
+            }
+        
+            HStack {
+                Slider(
+                    value: $posY,
+                    in: 0...1
+                )
+                .onChange(of: posY) {
+                    if let index = cursorIndex {
+                        let pos = positions[index]
+                        positions[index] = ControlPoint(id: pos.id, time: pos.time, value: posY)
+                    }
+                }
+                Text(String(format: "%.1f", posY))
+                    .font(.headline)
             }
         }
         .animation(.spring, value: cursorIndex)
@@ -192,15 +224,19 @@ struct ProfileEditor: View {
             GeometryReader { geometry in
                 Rectangle().fill(.clear).contentShape(Rectangle())
                     .gesture(
-                        DragGesture().onChanged { value in
-                            if(cursorIndex != nil) {
-                                updateCursor(
-                                    at: value.location,
-                                    geometry: geometry,
-                                    proxy: proxy
-                                )
+                        DragGesture()
+                            .onChanged { value in
+                                if(cursorIndex != nil) {
+                                    updateCursor(
+                                        value: value,
+                                        geometry: geometry,
+                                        proxy: proxy
+                                    )
+                                }
                             }
-                        }
+                            .onEnded { _ in
+                                initialPos = nil
+                            }
                     )
                     .onTapGesture { location in
                         selectControlPoint(
@@ -213,10 +249,76 @@ struct ProfileEditor: View {
         }
     }
     
+    @State private var toolSelection: ProfileEditorTool = .edit
+    
+    var toolBar: some View {
+        HStack {
+            Button {
+                toolSelection = .delete
+            } label: {
+                VStack {
+                    Image(systemName: "minus.circle")
+                        .frame(width: 52, height: 52)
+                        .foregroundColor(.red)
+                        .background(.bar)
+                        .cornerRadius(8)
+                    if(toolSelection == .delete) {
+                        Circle()
+                            .fill(.primary)
+                            .frame(width: 8)
+                    }
+                }
+            }
+            .animation(.bouncy, value: toolSelection)
+            
+            Button {
+                toolSelection = .edit
+            } label: {
+                VStack {
+                    Image(systemName: "pencil")
+                        .frame(width: 52, height: 52)
+                        .foregroundColor(.white)
+                        .background(.bar)
+                        .cornerRadius(8)
+                    if(toolSelection == .edit) {
+                        Circle()
+                            .fill(.primary)
+                            .frame(width: 8)
+                    }
+                }
+            }
+            .animation(.bouncy, value: toolSelection)
+
+            Button {
+                toolSelection = .add
+            } label: {
+                VStack {
+                    Image(systemName: "plus.circle")
+                        .frame(width: 52, height: 52)
+                        .foregroundColor(.green)
+                        .background(.bar)
+                        .cornerRadius(8)
+                    if(toolSelection == .add) {
+                        Circle()
+                            .fill(.primary)
+                            .frame(width: 8)
+                    }
+                }
+            }
+            .animation(.bouncy, value: toolSelection)
+
+        }
+    }
+    
+    
     var body: some View {
         VStack {
             profileGraph
-            controlPointEditor
+            if cursorIndex != nil {
+                controlPointEditor
+            } else {
+                toolBar
+            }
         }
     }
 }
@@ -232,4 +334,3 @@ struct ProfileEditor: View {
     )
     .padding()
 }
-

@@ -25,32 +25,30 @@ struct EditProfileView: View {
                 Section(header: Text("Name")) {
                     TextField("Profile Name", text: $name)
                 }
-                Section(header: Text("Temperature")) {
+                Section(header: Label("Temperature", systemImage: "thermometer")) {
                     VStack {
                         Slider(
                             value: $temperature,
-                            in: 0...100,
+                            in: 0...110,
                             step: 0.1
                         ) {
-                            Text("Values from 0 to 100")
+                            Text("Values from 0 to 110")
                         } minimumValueLabel: {
                             Text("0")
                         } maximumValueLabel: {
-                            Text("100")
+                            Text("110")
                         }
                         
-                        Text(String(format: "%.1f", temperature))
+                        Text("\(String(format: "%.1f", temperature)) °C")
                             .font(.headline)
                     }
                 }
-                
                 Section(header: Text("Control Type")) {
                     Picker("Control Type", selection: $controlType) {
                         Text("Pressure").tag(ControlType.pressure)
                         Text("Flow").tag(ControlType.flow)
                     }
                 }
-                
                 Section(header: Text("Profile")) {
                     ProfileGraph(
                         positions: [
@@ -62,18 +60,6 @@ struct EditProfileView: View {
                     )
                     .frame(height: 280)
                     .listRowSeparator(.hidden)
-                }
-                .sheet(isPresented: $showingEditor) {
-                    ProfileEditor(
-                        positions: [
-                            ControlPoint(id: UUID(), time: 0.0, value: 1.0),
-                            ControlPoint(id: UUID(), time: 4.0, value: 0.8),
-                            ControlPoint(id: UUID(), time: 6.0, value: 0.3),
-                            ControlPoint(id: UUID(), time: 10.0, value: 0.9)
-                        ]
-                    )
-                    .padding()
-                    .presentationDetents([.fraction(0.8)])
                 }
                 Button("Open Profile Editor", systemImage: "square.and.pencil") {
                     showingEditor = true
@@ -97,7 +83,6 @@ struct EditProfileView: View {
                     }
                 }
             }
-            
             .navigationTitle(name)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -117,6 +102,18 @@ struct EditProfileView: View {
                 duration = profile.duration
                 controlType = profile.controlType
             }
+        }
+        .sheet(isPresented: $showingEditor) {
+            ProfileEditor(
+                positions: [
+                    ControlPoint(id: UUID(), time: 0.0, value: 1.0),
+                    ControlPoint(id: UUID(), time: 4.0, value: 0.8),
+                    ControlPoint(id: UUID(), time: 6.0, value: 0.3),
+                    ControlPoint(id: UUID(), time: 10.0, value: 0.9)
+                ]
+            )
+            .padding()
+            .presentationDetents([.fraction(0.8)])
         }
     }
 }
@@ -155,21 +152,21 @@ struct NewBrewProfileView: View {
                     Text("Pressure").tag(ControlType.pressure)
                     Text("Flow").tag(ControlType.flow)
                 }
-                Section(header: Text("Temperature")) {
+                Section(header: Label("Temperature", systemImage: "thermometer")) {
                     VStack {
                         Slider(
                             value: $temperature,
-                            in: 0...100,
+                            in: 0...110,
                             step: 0.1
                         ) {
-                            Text("Values from 0 to 100")
+                            Text("Values from 0 to 110")
                         } minimumValueLabel: {
                             Text("0")
                         } maximumValueLabel: {
-                            Text("100")
+                            Text("110")
                         }
                         
-                        Text(String(format: "%.1f", temperature))
+                        Text("\(String(format: "%.1f", temperature)) °C")
                             .font(.headline)
                     }
                 }
