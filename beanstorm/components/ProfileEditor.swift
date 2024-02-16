@@ -67,6 +67,7 @@ enum ProfileEditorTool {
 struct ProfileEditor: View {
     @State var positions: [ControlPoint]
     @State var cursorIndex: Int?
+    @State private var toolSelection: ProfileEditorTool = .edit
     
     @State var posX: Double = 0.0
     @State var posY: Double = 0.0
@@ -77,6 +78,42 @@ struct ProfileEditor: View {
     
     private var cursorColor: some ShapeStyle {
         return colorScheme == .dark ? .white : .black
+    }
+    
+    func handleTapGesture(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
+        switch(toolSelection) {
+        case .edit, .delete:
+            selectControlPoint(
+                at: at,
+                geometry: geometry,
+                proxy: proxy
+            )
+        case .add:
+            addControlPoint(
+                at: at,
+                geometry: geometry,
+                proxy: proxy
+            )
+        }
+    }
+    
+    func addControlPoint(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
+        let origin = geometry[proxy.plotFrame!].origin
+        
+        let time = proxy.value(atX: at.x - origin.x, as: Double.self)!
+        let value = proxy.value(atY: at.y - origin.y, as: Double.self)!
+
+        positions.append(
+            ControlPoint(
+                id: UUID(),
+                time: time,
+                value: value
+            )
+        )
+        
+        positions.sort(by: {a, b in
+            a.time > b.time
+        })
     }
     
     func selectControlPoint(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
@@ -138,6 +175,7 @@ struct ProfileEditor: View {
             
             posX = newTime
             posY = newValue
+        
         }
     }
     
@@ -245,7 +283,7 @@ struct ProfileEditor: View {
                             }
                     )
                     .onTapGesture { location in
-                        selectControlPoint(
+                        handleTapGesture(
                             at: location,
                             geometry: geometry,
                             proxy: proxy
@@ -254,8 +292,6 @@ struct ProfileEditor: View {
             }
         }
     }
-    
-    @State private var toolSelection: ProfileEditorTool = .edit
     
     var toolBar: some View {
         HStack {
@@ -276,7 +312,6 @@ struct ProfileEditor: View {
                 }
             }
             .animation(.bouncy, value: toolSelection)
-            
             Button {
                 toolSelection = .edit
             } label: {
@@ -294,7 +329,6 @@ struct ProfileEditor: View {
                 }
             }
             .animation(.bouncy, value: toolSelection)
-
             Button {
                 toolSelection = .add
             } label: {
@@ -312,7 +346,6 @@ struct ProfileEditor: View {
                 }
             }
             .animation(.bouncy, value: toolSelection)
-
         }
     }
     
