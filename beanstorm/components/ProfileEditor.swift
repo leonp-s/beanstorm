@@ -205,6 +205,12 @@ struct ProfileEditor: View {
                 )
                 .lineStyle(StrokeStyle(lineWidth: 4))
                 .alignsMarkStylesWithPlotArea()
+                
+                PointMark(
+                    x: .value("Time", pos.time),
+                    y: .value("Height", pos.value)
+                )
+                .foregroundStyle(.white)
             }
             if let index = cursorIndex {
                 let position = positions[index]
