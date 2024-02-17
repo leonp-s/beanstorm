@@ -9,6 +9,7 @@ struct EditProfileView: View {
     @State private var temperature: Double = 80.0
     @State private var duration: Double = 28.0
     @State private var controlType: ControlType = .pressure
+    @State private var controlPoints: [ControlPoint] = []
     
     @State private var showingEditor: Bool = false
     
@@ -16,7 +17,8 @@ struct EditProfileView: View {
         profile.name != name ||
         profile.temperature != temperature ||
         profile.duration != duration ||
-        profile.controlType != controlType
+        profile.controlType != controlType ||
+        profile.controlPoints != controlPoints
     }
     
     var body: some View {
@@ -51,12 +53,7 @@ struct EditProfileView: View {
                 }
                 Section(header: Text("Profile")) {
                     ProfileGraph(
-                        positions: [
-                            ControlPoint(id: UUID(), time: 0.0, value: 1.0),
-                            ControlPoint(id: UUID(), time: 4.0, value: 0.8),
-                            ControlPoint(id: UUID(), time: 6.0, value: 0.3),
-                            ControlPoint(id: UUID(), time: 10.0, value: 0.9)
-                        ]
+                        controlPoints: $controlPoints
                     )
                     .frame(height: 280)
                     .listRowSeparator(.hidden)
@@ -91,7 +88,7 @@ struct EditProfileView: View {
                     profile.temperature = temperature
                     profile.duration = duration
                     profile.controlType = controlType
-                    
+                    profile.controlPoints = controlPoints
                     dismiss()
                 }
                 .disabled(!changed)
@@ -101,16 +98,12 @@ struct EditProfileView: View {
                 temperature = profile.temperature
                 duration = profile.duration
                 controlType = profile.controlType
+                controlPoints = profile.controlPoints
             }
         }
         .sheet(isPresented: $showingEditor) {
             ProfileEditor(
-                positions: [
-                    ControlPoint(id: UUID(), time: 0.0, value: 1.0),
-                    ControlPoint(id: UUID(), time: 4.0, value: 0.8),
-                    ControlPoint(id: UUID(), time: 6.0, value: 0.3),
-                    ControlPoint(id: UUID(), time: 10.0, value: 0.9)
-                ]
+                controlPoints: $controlPoints
             )
             .padding()
             .presentationDetents([.fraction(0.8)])
@@ -127,7 +120,13 @@ struct EditProfileView: View {
             temperature: 88.0,
             name: "Profile # 1",
             duration: 36.0,
-            controlType: .pressure
+            controlType: .pressure,
+            controlPoints: [
+                ControlPoint(id: UUID(), time: 0.0, value: 1.0),
+                ControlPoint(id: UUID(), time: 4.0, value: 0.8),
+                ControlPoint(id: UUID(), time: 6.0, value: 0.3),
+                ControlPoint(id: UUID(), time: 10.0, value: 0.9)
+            ]
         )
     )
     .modelContainer(container)
@@ -194,7 +193,8 @@ struct NewBrewProfileView: View {
                         temperature: temperature,
                         name: name,
                         duration: duration,
-                        controlType: .pressure
+                        controlType: .pressure,
+                        controlPoints: []
                     )
                     context.insert(newProfile)
                     dismiss()

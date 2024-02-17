@@ -1,18 +1,12 @@
 import SwiftUI
 import Charts
 
-struct ControlPoint: Identifiable {
-    let id: UUID
-    let time: Double
-    let value: Double
-}
-
 struct ProfileGraph: View {
-    @State var positions: [ControlPoint]
+    @Binding var controlPoints: [ControlPoint]
     
     var body: some View {
         Chart {
-            ForEach(positions) { pos in
+            ForEach(controlPoints) { pos in
                 AreaMark(
                     x: .value("Time", pos.time),
                     y: .value("Height", pos.value)
@@ -48,12 +42,12 @@ struct ProfileGraph: View {
 
 #Preview("Profile Graph") {
     ProfileGraph(
-        positions: [
+        controlPoints: .constant([
             ControlPoint(id: UUID(), time: 0.0, value: 1.0),
             ControlPoint(id: UUID(), time: 4.0, value: 0.8),
             ControlPoint(id: UUID(), time: 6.0, value: 0.3),
             ControlPoint(id: UUID(), time: 10.0, value: 0.9)
-        ]
+        ])
     )
     .padding()
 }
@@ -65,15 +59,15 @@ enum ProfileEditorTool {
 }
 
 struct ProfileEditor: View {
-    @State var positions: [ControlPoint]
+    @Binding var controlPoints: [ControlPoint]
     @State var controlPointSelection: UUID?
     @State private var toolSelection: ProfileEditorTool = .drag
     
+    @State var initialPos: CGPoint?
+
     @State var posX: Double = 0.0
     @State var posY: Double = 0.0
-    
-    @State var initialPos: CGPoint?
-    
+        
     @Environment(\.colorScheme) var colorScheme
     
     private var cursorColor: some ShapeStyle {
@@ -98,7 +92,7 @@ struct ProfileEditor: View {
     }
     
     func sortPoints() {
-        positions.sort(by: {a, b in
+        controlPoints.sort(by: {a, b in
             if(a.time > b.time) {
                 return true
             }
@@ -118,15 +112,15 @@ struct ProfileEditor: View {
 
         let new_point_uuid = UUID()
         
-        if(positions.first(where: { controlPoint in controlPoint.time == time }) != nil) {
+        if(controlPoints.first(where: { controlPoint in controlPoint.time == time }) != nil) {
             return
         }
         
-        if(positions.first(where: { controlPoint in controlPoint.value == value }) != nil) {
+        if(controlPoints.first(where: { controlPoint in controlPoint.value == value }) != nil) {
             return
         }
         
-        positions.append(
+        controlPoints.append(
             ControlPoint(
                 id: new_point_uuid,
                 time: time,
@@ -140,13 +134,13 @@ struct ProfileEditor: View {
     func selectControlPoint(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
         let origin = geometry[proxy.plotFrame!].origin
         let pos = proxy.value(atX: at.x - origin.x, as: Double.self)!
-        let closest = positions
+        let closest = controlPoints
                         .enumerated()
                         .min( by: { abs($0.element.time - pos) < abs($1.element.time - pos) } )!
         
 
         let index = closest.offset
-        let closest_point = positions[index]
+        let closest_point = controlPoints[index]
 
         if controlPointSelection == closest_point.id {
             controlPointSelection = nil
@@ -170,13 +164,13 @@ struct ProfileEditor: View {
         let valueDelta = dragValue - startValue;
         
         if let pointSelection = controlPointSelection {
-            guard let editing_point_index = positions.firstIndex(
+            guard let editing_point_index = controlPoints.firstIndex(
                 where: { point in
                     point.id == pointSelection
                 }
             ) else { return }
             
-            let editing_point = positions[editing_point_index]
+            let editing_point = controlPoints[editing_point_index]
 
             if(initialPos == nil) {
                 initialPos = CGPoint(x: editing_point.time, y: editing_point.value)
@@ -195,7 +189,7 @@ struct ProfileEditor: View {
                 newValue = 0.0
             }
 
-            positions[editing_point_index] = ControlPoint(
+            controlPoints[editing_point_index] = ControlPoint(
                 id: editing_point.id,
                 time: newTime,
                 value: newValue
@@ -209,7 +203,7 @@ struct ProfileEditor: View {
     }
     
     func canRemoveControlPoint() -> Bool {
-        return positions.count > 2
+        return controlPoints.count > 2
     }
     
     func removeControlPoint() {
@@ -218,13 +212,13 @@ struct ProfileEditor: View {
         }
         
         if let pointSelection = controlPointSelection {
-            guard let editing_point_index = positions.firstIndex(
+            guard let editing_point_index = controlPoints.firstIndex(
                 where: { point in
                     point.id == pointSelection
                 }
             ) else { return }
             
-            positions.remove(at: editing_point_index)
+            controlPoints.remove(at: editing_point_index)
             self.controlPointSelection = nil
         }
     }
@@ -238,13 +232,13 @@ struct ProfileEditor: View {
                 )
                 .onChange(of: posX) {
                     if let pointSelection = controlPointSelection {
-                        guard let editing_point_index = positions.firstIndex(
+                        guard let editing_point_index = controlPoints.firstIndex(
                             where: { point in
                                 point.id == pointSelection
                             }
                         ) else { return }
-                        let editing_point = positions[editing_point_index]
-                        positions[editing_point_index] = ControlPoint(
+                        let editing_point = controlPoints[editing_point_index]
+                        controlPoints[editing_point_index] = ControlPoint(
                             id: editing_point.id,
                             time: posX,
                             value: editing_point.value
@@ -263,13 +257,13 @@ struct ProfileEditor: View {
                 )
                 .onChange(of: posY) {
                     if let pointSelection = controlPointSelection {
-                        guard let editing_point_index = positions.firstIndex(
+                        guard let editing_point_index = controlPoints.firstIndex(
                             where: { point in
                                 point.id == pointSelection
                             }
                         ) else { return }
-                        let editing_point = positions[editing_point_index]
-                        positions[editing_point_index] = ControlPoint(
+                        let editing_point = controlPoints[editing_point_index]
+                        controlPoints[editing_point_index] = ControlPoint(
                             id: editing_point.id,
                             time: editing_point.time,
                             value: posY
@@ -291,7 +285,7 @@ struct ProfileEditor: View {
     
     var profileGraph: some View {
         Chart {
-            ForEach(positions) { pos in
+            ForEach(controlPoints) { pos in
                 AreaMark(
                     x: .value("Time", pos.time),
                     y: .value("Height", pos.value)
@@ -326,12 +320,12 @@ struct ProfileEditor: View {
                 .foregroundStyle(.white)
             }
             if let index = controlPointSelection {
-                if let editing_point_index = positions.firstIndex(
+                if let editing_point_index = controlPoints.firstIndex(
                     where: { point in
                         point.id == controlPointSelection
                     }
                 ) {
-                    let editing_point = positions[editing_point_index]
+                    let editing_point = controlPoints[editing_point_index]
                     
                     RuleMark(x: .value("Time", editing_point.time))
                         .foregroundStyle(cursorColor)
@@ -444,14 +438,23 @@ struct ProfileEditor: View {
     }
 }
 
+
+struct ProfileEditorPreview: View {
+    @State var controlPoints: [ControlPoint] = [
+        ControlPoint(id: UUID(), time: 0.0, value: 1.0),
+        ControlPoint(id: UUID(), time: 4.0, value: 0.8),
+        ControlPoint(id: UUID(), time: 6.0, value: 0.3),
+        ControlPoint(id: UUID(), time: 10.0, value: 0.9)
+    ]
+    
+    var body: some View {
+        ProfileEditor(
+            controlPoints: $controlPoints
+        )
+        .padding()
+    }
+}
+
 #Preview("Profile Editor") {
-    ProfileEditor(
-        positions: [
-            ControlPoint(id: UUID(), time: 0.0, value: 1.0),
-            ControlPoint(id: UUID(), time: 4.0, value: 0.8),
-            ControlPoint(id: UUID(), time: 6.0, value: 0.3),
-            ControlPoint(id: UUID(), time: 10.0, value: 0.9)
-        ]
-    )
-    .padding()
+    ProfileEditorPreview()
 }
