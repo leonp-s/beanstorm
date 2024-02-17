@@ -59,15 +59,15 @@ struct ProfileGraph: View {
 }
 
 enum ProfileEditorTool {
-    case delete
+    case drag
     case edit
     case add
 }
 
 struct ProfileEditor: View {
     @State var positions: [ControlPoint]
-    @State var cursorIndex: Int?
-    @State private var toolSelection: ProfileEditorTool = .edit
+    @State var controlPointSelection: UUID?
+    @State private var toolSelection: ProfileEditorTool = .drag
     
     @State var posX: Double = 0.0
     @State var posY: Double = 0.0
@@ -82,7 +82,7 @@ struct ProfileEditor: View {
     
     func handleTapGesture(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
         switch(toolSelection) {
-        case .edit, .delete:
+        case .edit, .drag:
             selectControlPoint(
                 at: at,
                 geometry: geometry,
@@ -97,23 +97,44 @@ struct ProfileEditor: View {
         }
     }
     
+    func sortPoints() {
+        positions.sort(by: {a, b in
+            if(a.time > b.time) {
+                return true
+            }
+            else if (a.time == b.time) {
+                return a.value > b.value
+            }
+            
+            return false
+        })
+    }
+    
     func addControlPoint(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
         let origin = geometry[proxy.plotFrame!].origin
         
         let time = proxy.value(atX: at.x - origin.x, as: Double.self)!
         let value = proxy.value(atY: at.y - origin.y, as: Double.self)!
 
+        let new_point_uuid = UUID()
+        
+        if(positions.first(where: { controlPoint in controlPoint.time == time }) != nil) {
+            return
+        }
+        
+        if(positions.first(where: { controlPoint in controlPoint.value == value }) != nil) {
+            return
+        }
+        
         positions.append(
             ControlPoint(
-                id: UUID(),
+                id: new_point_uuid,
                 time: time,
                 value: value
             )
         )
-        
-        positions.sort(by: {a, b in
-            a.time > b.time
-        })
+                
+        sortPoints()
     }
     
     func selectControlPoint(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
@@ -125,13 +146,14 @@ struct ProfileEditor: View {
         
 
         let index = closest.offset
-        if cursorIndex == index {
-            cursorIndex = nil
+        let closest_point = positions[index]
+
+        if controlPointSelection == closest_point.id {
+            controlPointSelection = nil
         } else {
-            let pos = positions[index]
-            posX = pos.time
-            posY = pos.value
-            cursorIndex = index
+            posX = closest_point.time
+            posY = closest_point.value
+            controlPointSelection = closest_point.id
         }
     }
     
@@ -147,11 +169,17 @@ struct ProfileEditor: View {
         let timeDelta = dragTime - startTime;
         let valueDelta = dragValue - startValue;
         
-        if let index = cursorIndex {
-            let pos = positions[index]
+        if let pointSelection = controlPointSelection {
+            guard let editing_point_index = positions.firstIndex(
+                where: { point in
+                    point.id == pointSelection
+                }
+            ) else { return }
+            
+            let editing_point = positions[editing_point_index]
 
             if(initialPos == nil) {
-                initialPos = CGPoint(x: pos.time, y: pos.value)
+                initialPos = CGPoint(x: editing_point.time, y: editing_point.value)
             }
             
             var newTime = initialPos!.x + timeDelta
@@ -166,9 +194,9 @@ struct ProfileEditor: View {
             {
                 newValue = 0.0
             }
-            
-            positions[index] = ControlPoint(
-                id: pos.id,
+
+            positions[editing_point_index] = ControlPoint(
+                id: editing_point.id,
                 time: newTime,
                 value: newValue
             )
@@ -176,42 +204,89 @@ struct ProfileEditor: View {
             posX = newTime
             posY = newValue
         
+            sortPoints()
+        }
+    }
+    
+    func canRemoveControlPoint() -> Bool {
+        return positions.count > 2
+    }
+    
+    func removeControlPoint() {
+        if(!canRemoveControlPoint()) {
+            return
+        }
+        
+        if let pointSelection = controlPointSelection {
+            guard let editing_point_index = positions.firstIndex(
+                where: { point in
+                    point.id == pointSelection
+                }
+            ) else { return }
+            
+            positions.remove(at: editing_point_index)
+            self.controlPointSelection = nil
         }
     }
     
     private var controlPointEditor: some View {
-        VStack {
+        Group {
             HStack {
                 Slider(
                     value: $posX,
                     in: 0...10
                 )
                 .onChange(of: posX) {
-                    if let index = cursorIndex {
-                        let pos = positions[index]
-                        positions[index] = ControlPoint(id: pos.id, time: posX, value: pos.value)
+                    if let pointSelection = controlPointSelection {
+                        guard let editing_point_index = positions.firstIndex(
+                            where: { point in
+                                point.id == pointSelection
+                            }
+                        ) else { return }
+                        let editing_point = positions[editing_point_index]
+                        positions[editing_point_index] = ControlPoint(
+                            id: editing_point.id,
+                            time: posX,
+                            value: editing_point.value
+                        )
+                        
                     }
                 }
                 Text(String(format: "%.1f", posX))
                     .font(.headline)
             }
-        
+            
             HStack {
                 Slider(
                     value: $posY,
                     in: 0...1
                 )
                 .onChange(of: posY) {
-                    if let index = cursorIndex {
-                        let pos = positions[index]
-                        positions[index] = ControlPoint(id: pos.id, time: pos.time, value: posY)
+                    if let pointSelection = controlPointSelection {
+                        guard let editing_point_index = positions.firstIndex(
+                            where: { point in
+                                point.id == pointSelection
+                            }
+                        ) else { return }
+                        let editing_point = positions[editing_point_index]
+                        positions[editing_point_index] = ControlPoint(
+                            id: editing_point.id,
+                            time: editing_point.time,
+                            value: posY
+                        )
                     }
                 }
                 Text(String(format: "%.1f", posY))
                     .font(.headline)
             }
+            
+            Button("Remove Point", systemImage: "minus.circle", role: .destructive) {
+                removeControlPoint()
+            }
+            .disabled(!canRemoveControlPoint())
+            .buttonStyle(.borderedProminent)
+            .padding()
         }
-        .animation(.spring, value: cursorIndex)
     }
     
     var profileGraph: some View {
@@ -250,16 +325,23 @@ struct ProfileEditor: View {
                 )
                 .foregroundStyle(.white)
             }
-            if let index = cursorIndex {
-                let position = positions[index]
-                RuleMark(x: .value("Time", position.time))
-                    .foregroundStyle(cursorColor)
-                RuleMark(y: .value("Height", position.value))
-                    .foregroundStyle(cursorColor)
-                PointMark(x: .value("Time", position.time), y: .value("Height", position.value))
-                    .foregroundStyle(cursorColor)
-                    .symbol(BasicChartSymbolShape.circle.strokeBorder(lineWidth: 3.0))
-                    .symbolSize(250)
+            if let index = controlPointSelection {
+                if let editing_point_index = positions.firstIndex(
+                    where: { point in
+                        point.id == controlPointSelection
+                    }
+                ) {
+                    let editing_point = positions[editing_point_index]
+                    
+                    RuleMark(x: .value("Time", editing_point.time))
+                        .foregroundStyle(cursorColor)
+                    RuleMark(y: .value("Height", editing_point.value))
+                        .foregroundStyle(cursorColor)
+                    PointMark(x: .value("Time", editing_point.time), y: .value("Height", editing_point.value))
+                        .foregroundStyle(cursorColor)
+                        .symbol(BasicChartSymbolShape.circle.strokeBorder(lineWidth: 3.0))
+                        .symbolSize(250)
+                }
             }
         }
         .chartXAxisLabel("Time (s)")
@@ -270,7 +352,7 @@ struct ProfileEditor: View {
                     .gesture(
                         DragGesture()
                             .onChanged { value in
-                                if(cursorIndex != nil) {
+                                if(controlPointSelection != nil) {
                                     updateCursor(
                                         value: value,
                                         geometry: geometry,
@@ -296,15 +378,15 @@ struct ProfileEditor: View {
     var toolBar: some View {
         HStack {
             Button {
-                toolSelection = .delete
+                toolSelection = .drag
             } label: {
                 VStack {
-                    Image(systemName: "minus.circle")
+                    Image(systemName: "arrow.up.left.and.down.right.and.arrow.up.right.and.down.left")
                         .frame(width: 52, height: 52)
-                        .foregroundColor(.red)
+                        .foregroundColor(.white)
                         .background(.bar)
                         .cornerRadius(8)
-                    if(toolSelection == .delete) {
+                    if(toolSelection == .drag) {
                         Circle()
                             .fill(.primary)
                             .frame(width: 8)
@@ -331,6 +413,7 @@ struct ProfileEditor: View {
             .animation(.bouncy, value: toolSelection)
             Button {
                 toolSelection = .add
+                controlPointSelection = nil
             } label: {
                 VStack {
                     Image(systemName: "plus.circle")
@@ -353,11 +436,10 @@ struct ProfileEditor: View {
     var body: some View {
         VStack {
             profileGraph
-            if cursorIndex != nil {
+            if controlPointSelection != nil && toolSelection == .edit {
                 controlPointEditor
-            } else {
-                toolBar
             }
+            toolBar
         }
     }
 }
