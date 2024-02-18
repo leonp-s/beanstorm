@@ -1,6 +1,8 @@
 import SwiftUI
 import Charts
 
+private let maxPointValue = 11.0;
+
 struct ProfileGraph: View {
     @Binding var controlPoints: [ControlPoint]
     
@@ -59,6 +61,9 @@ enum ProfileEditorTool {
 }
 
 struct ProfileEditor: View {
+    private let maxNumPoints = 20;
+    private let maxPointTime = 80.0;
+    
     @Binding var controlPoints: [ControlPoint]
     @State var controlPointSelection: UUID?
     @State private var toolSelection: ProfileEditorTool = .drag
@@ -93,7 +98,7 @@ struct ProfileEditor: View {
     
     func sortPoints() {
         controlPoints.sort(by: {a, b in
-            if(a.time > b.time) {
+            if(a.time < b.time) {
                 return true
             }
             else if (a.time == b.time) {
@@ -105,6 +110,10 @@ struct ProfileEditor: View {
     }
     
     func addControlPoint(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
+        if(controlPoints.count >= maxNumPoints) {
+            return
+        }
+        
         let origin = geometry[proxy.plotFrame!].origin
         
         let time = proxy.value(atX: at.x - origin.x, as: Double.self)!
@@ -188,6 +197,14 @@ struct ProfileEditor: View {
             {
                 newValue = 0.0
             }
+            
+            if(newTime > maxPointTime){
+                newTime = maxPointTime
+            }
+            
+            if(newValue > maxPointValue){
+                newValue = maxPointValue
+            }
 
             controlPoints[editing_point_index] = ControlPoint(
                 id: editing_point.id,
@@ -223,63 +240,59 @@ struct ProfileEditor: View {
         }
     }
     
+    private func updatePosition() {
+        if let pointSelection = controlPointSelection {
+            guard let editing_point_index = controlPoints.firstIndex(
+                where: { point in
+                    point.id == pointSelection
+                }
+            ) else { return }
+            
+            let editing_point = controlPoints[editing_point_index]
+            
+            controlPoints[editing_point_index] = ControlPoint(
+                id: editing_point.id,
+                time: posX,
+                value: posY
+            )
+            sortPoints()
+        }
+    }
+    
     private var controlPointEditor: some View {
-        Group {
-            HStack {
+        Form {
+            Button("Remove Point",
+                   systemImage: "trash",
+                   role: .destructive
+            ) {
+                removeControlPoint()
+            }
+            .foregroundStyle(.red)
+            .disabled(!canRemoveControlPoint())
+            
+            Section(header: Text("Time")) {
                 Slider(
                     value: $posX,
                     in: 0...10
                 )
-                .onChange(of: posX) {
-                    if let pointSelection = controlPointSelection {
-                        guard let editing_point_index = controlPoints.firstIndex(
-                            where: { point in
-                                point.id == pointSelection
-                            }
-                        ) else { return }
-                        let editing_point = controlPoints[editing_point_index]
-                        controlPoints[editing_point_index] = ControlPoint(
-                            id: editing_point.id,
-                            time: posX,
-                            value: editing_point.value
-                        )
-                        
-                    }
-                }
-                Text(String(format: "%.1f", posX))
+                Text(String(format: "%.1f", posX) + " s")
                     .font(.headline)
             }
             
-            HStack {
+            Section(header: Text("Pressure")) {
                 Slider(
                     value: $posY,
-                    in: 0...1
+                    in: 0...maxPointValue
                 )
-                .onChange(of: posY) {
-                    if let pointSelection = controlPointSelection {
-                        guard let editing_point_index = controlPoints.firstIndex(
-                            where: { point in
-                                point.id == pointSelection
-                            }
-                        ) else { return }
-                        let editing_point = controlPoints[editing_point_index]
-                        controlPoints[editing_point_index] = ControlPoint(
-                            id: editing_point.id,
-                            time: editing_point.time,
-                            value: posY
-                        )
-                    }
-                }
-                Text(String(format: "%.1f", posY))
+                Text(String(format: "%.1f", posY) + " MPa")
                     .font(.headline)
             }
-            
-            Button("Remove Point", systemImage: "minus.circle", role: .destructive) {
-                removeControlPoint()
-            }
-            .disabled(!canRemoveControlPoint())
-            .buttonStyle(.borderedProminent)
-            .padding()
+        }
+        .onChange(of: posX) {
+            updatePosition()
+        }
+        .onChange(of: posY) {
+            updatePosition()
         }
     }
     
@@ -338,6 +351,10 @@ struct ProfileEditor: View {
                 }
             }
         }
+        .chartYAxis {
+            AxisMarks(values: .automatic(desiredCount: 12))
+        }
+        .chartYScale(domain: 0...maxPointValue + 1)
         .chartXAxisLabel("Time (s)")
         .chartYAxisLabel("Pressure (MPa)")
         .chartOverlay { proxy in
@@ -389,7 +406,11 @@ struct ProfileEditor: View {
             }
             .animation(.bouncy, value: toolSelection)
             Button {
-                toolSelection = .edit
+                if(toolSelection == .edit) {
+                    toolSelection = .drag
+                } else {
+                    toolSelection = .edit
+                }
             } label: {
                 VStack {
                     Image(systemName: "pencil")

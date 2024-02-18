@@ -1,13 +1,18 @@
 import SwiftUI
 import SwiftData
 
+func getShotDuration(controlPoints: [ControlPoint]) -> Double {
+    return controlPoints.max(by: {
+        $0.time > $1.time
+    })?.value ?? 0.0
+}
+
 struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
     let profile: BrewProfile
 
     @State private var name: String = ""
     @State private var temperature: Double = 80.0
-    @State private var duration: Double = 28.0
     @State private var controlType: ControlType = .pressure
     @State private var controlPoints: [ControlPoint] = []
     
@@ -16,7 +21,6 @@ struct EditProfileView: View {
     var changed: Bool {
         profile.name != name ||
         profile.temperature != temperature ||
-        profile.duration != duration ||
         profile.controlType != controlType ||
         profile.controlPoints != controlPoints
     }
@@ -56,28 +60,13 @@ struct EditProfileView: View {
                         controlPoints: $controlPoints
                     )
                     .frame(height: 280)
-                    .listRowSeparator(.hidden)
-                }
-                Button("Open Profile Editor", systemImage: "square.and.pencil") {
-                    showingEditor = true
-                }
-                Section(header: Text("Duration")) {
-                    VStack {
-                        Slider(
-                            value: $duration,
-                            in: 0...100,
-                            step: 0.1
-                        ) {
-                            Text("Values from 0 to 100")
-                        } minimumValueLabel: {
-                            Text("0")
-                        } maximumValueLabel: {
-                            Text("100")
-                        }
-                        
-                        Text(String(format: "%.1f", duration))
-                            .font(.headline)
+                    Button("Open Profile Editor", systemImage: "square.and.pencil") {
+                        showingEditor = true
                     }
+                }
+                Section(header: Text("Shot Duration")) {
+                    Text(String(format: "%.1f", getShotDuration(controlPoints: controlPoints)) + " s")
+                        .font(.headline)
                 }
             }
             .navigationTitle(name)
@@ -86,7 +75,6 @@ struct EditProfileView: View {
                 Button("Update") {
                     profile.name = name
                     profile.temperature = temperature
-                    profile.duration = duration
                     profile.controlType = controlType
                     profile.controlPoints = controlPoints
                     dismiss()
@@ -96,7 +84,6 @@ struct EditProfileView: View {
             .onAppear {
                 name = profile.name
                 temperature = profile.temperature
-                duration = profile.duration
                 controlType = profile.controlType
                 controlPoints = profile.controlPoints
             }
@@ -119,7 +106,6 @@ struct EditProfileView: View {
         profile: BrewProfile(
             temperature: 88.0,
             name: "Profile # 1",
-            duration: 36.0,
             controlType: .pressure,
             controlPoints: [
                 ControlPoint(id: UUID(), time: 0.0, value: 1.0),
@@ -135,11 +121,15 @@ struct EditProfileView: View {
 struct NewBrewProfileView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) private var context
+    @State private var showingEditor: Bool = false
 
     @State private var name: String = ""
     @State private var temperature: Double = 80.0
-    @State private var duration: Double = 28.0
     @State private var controlType: ControlType = .pressure
+    @State private var controlPoints: [ControlPoint] = [
+        ControlPoint(id: UUID(), time: 0.0, value: 8.0),
+        ControlPoint(id: UUID(), time: 40.0, value: 8.0)
+    ]
 
     var body: some View {
         NavigationStack {
@@ -169,32 +159,26 @@ struct NewBrewProfileView: View {
                             .font(.headline)
                     }
                 }
-                Section(header: Text("Duration")) {
-                    VStack {
-                        Slider(
-                            value: $duration,
-                            in: 0...100,
-                            step: 0.1
-                        ) {
-                            Text("Values from 0 to 100")
-                        } minimumValueLabel: {
-                            Text("0")
-                        } maximumValueLabel: {
-                            Text("100")
-                        }
-                        
-                        Text(String(format: "%.1f", duration))
-                            .font(.headline)
+
+                Section(header: Text("Profile")) {
+                    ProfileGraph(
+                        controlPoints: $controlPoints
+                    )
+                    .frame(height: 280)
+                    Button("Open Profile Editor", systemImage: "square.and.pencil") {
+                        showingEditor = true
                     }
                 }
-                
+                Section(header: Text("Shot Duration")) {
+                    Text(String(format: "%.1f", getShotDuration(controlPoints: controlPoints)) + " s")
+                        .font(.headline)
+                }
                 Button("Create") {
                     let newProfile = BrewProfile(
                         temperature: temperature,
                         name: name,
-                        duration: duration,
                         controlType: .pressure,
-                        controlPoints: []
+                        controlPoints: controlPoints
                     )
                     context.insert(newProfile)
                     dismiss()
@@ -202,6 +186,13 @@ struct NewBrewProfileView: View {
                 .disabled(name.isEmpty)
             }
             .navigationTitle("New Brew Profile")
+        }
+        .sheet(isPresented: $showingEditor) {
+            ProfileEditor(
+                controlPoints: $controlPoints
+            )
+            .padding()
+            .presentationDetents([.fraction(0.8)])
         }
     }
 }

@@ -18,14 +18,12 @@ class BrewProfile {
     var temperature: Double
     var name: String
     var controlType: ControlType
-    var duration: Double
     var controlPoints: [ControlPoint]
     
-    init(temperature: Double, name: String, duration: Double, controlType: ControlType = .pressure, controlPoints: [ControlPoint]) {
+    init(temperature: Double, name: String, controlType: ControlType = .pressure, controlPoints: [ControlPoint]) {
         self.uuid = UUID()
         self.temperature = temperature
         self.name = name
-        self.duration = duration
         self.controlType = controlType
         self.controlPoints = controlPoints
     }
