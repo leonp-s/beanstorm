@@ -40,20 +40,12 @@ void IdleProgram::Loop (const Peripherals::SensorState & sensor_state)
 
     const auto now = millis ();
     if (now - window_start_time_ > window_size_)
-    {
         window_start_time_ += window_size_;
-    }
 
     if (output_ > now - window_start_time_)
-    {
-        Serial.println ("Boiler On");
         Peripherals::SetBoilerOn ();
-    }
     else
-    {
-        Serial.println ("Boiler Off");
         Peripherals::SetBoilerOff ();
-    }
 
     Serial.print ("Temperature: ");
     Serial.println (sensor_state.temperature);
@@ -104,20 +96,12 @@ void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
 
     const auto now = millis ();
     if (now - window_start_time_ > window_size_)
-    {
         window_start_time_ += window_size_;
-    }
 
     if (output_ > now - window_start_time_)
-    {
-        Serial.println ("Boiler On");
         Peripherals::SetBoilerOn ();
-    }
     else
-    {
-        Serial.println ("Boiler Off");
         Peripherals::SetBoilerOff ();
-    }
 
     Serial.println (now - shot_start_time_);
     auto shot_time = now - shot_start_time_;
