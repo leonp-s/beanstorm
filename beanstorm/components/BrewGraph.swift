@@ -9,46 +9,95 @@ struct BrewData: Codable, Identifiable, Equatable {
     let flow: Double
 }
 
+let maxDataPoints = 2000
+
 struct BrewGraphOverlay: View {
     let data: [BrewData]
-    let maxData: Int
-    
-    let minValue: Double = 0
-    let maxValue: Double = 1
-    
-    @State private var timestep = 0
+    private let minValue: Double = 0
+    private let maxValue: Double = 1
+    private let lineWidth = 4.0
 
-    func yGraphPosition(_ dataItem: Double, in size: CGSize) -> Double {
+    func yGraphPosition(dataItem: Double, in size: CGSize) -> Double {
         let proportion = (dataItem - minValue) / (maxValue - minValue)
         let yValue: Double = size.height - proportion * size.height
         return yValue
     }
 
-    func xGraphPosition(_ index: Int, in size: CGSize) -> Double {
-        let increment = size.width / Double(maxData)
-        let base = Double(maxData - data.count) * increment
-        return base + Double(index) * increment
+    func xGraphPosition(index: Int, in size: CGSize) -> Double {
+        let increment = size.width / Double(maxDataPoints)
+        return Double(index) * increment
     }
-    
-    private let lineWidth = 4.0
-    
+        
     func strokeTemperaturePath(context: GraphicsContext, size: CGSize) {
         var temperaturePath = Path()
-        temperaturePath.move(
-            to: CGPoint(
-                x: self.xGraphPosition(0, in: size),
-                y: yGraphPosition(data[0].temperature, in: size))
-        )
-        
         for (index, dataPoint) in data.dropFirst().enumerated() {
             temperaturePath.addLine(
                 to: CGPoint(
-                    x: self.xGraphPosition(index, in: size),
-                    y: self.yGraphPosition(dataPoint.temperature, in: size))
+                    x: self.xGraphPosition(
+                        index: index,
+                        in: size
+                    ),
+                    y: self.yGraphPosition(
+                        dataItem: dataPoint.temperature,
+                        in: size
+                    )
+                )
             )
         }
 
-        context.stroke(temperaturePath, with: .color(.green), lineWidth: lineWidth)
+        context.stroke(
+            temperaturePath,
+            with: .color(.green),
+            lineWidth: lineWidth
+        )
+    }
+    
+    func strokePressurePath(context: GraphicsContext, size: CGSize) {
+        var temperaturePath = Path()
+        for (index, dataPoint) in data.dropFirst().enumerated() {
+            temperaturePath.addLine(
+                to: CGPoint(
+                    x: self.xGraphPosition(
+                        index: index,
+                        in: size
+                    ),
+                    y: self.yGraphPosition(
+                        dataItem: dataPoint.pressure,
+                        in: size
+                    )
+                )
+            )
+        }
+
+        context.stroke(
+            temperaturePath,
+            with: .color(.blue),
+            lineWidth: lineWidth
+        )
+    }
+    
+    func strokeFlowPath(context: GraphicsContext, size: CGSize) {
+        var temperaturePath = Path()
+        for (index, dataPoint) in data.dropFirst().enumerated() {
+            temperaturePath.addLine(
+                to: CGPoint(
+                    x: self.xGraphPosition(
+                        index: index,
+                        in: size
+                    ),
+                    y: self.yGraphPosition(
+                        dataItem: dataPoint.flow,
+                        in: size
+                    )
+                )
+            )
+        }
+
+        context.stroke(
+            temperaturePath,
+            with: .color(.yellow),
+            lineWidth: lineWidth
+        )
     }
     
     var body: some View {
@@ -60,22 +109,15 @@ struct BrewGraphOverlay: View {
                 size: size
             )
             
-//            var flowPath = Path()
-//            flowPath.move(to: CGPoint(x: self.xGraphPosition(0, in: size), y: yGraphPosition(data[0].flow, in: size)))
-//            for (index, dataPoint) in data.dropFirst().enumerated() {
-//                flowPath.addLine(to: CGPoint(x: self.xGraphPosition(index, in: size), y: self.yGraphPosition(dataPoint.flow, in: size)))
-//            }
-//            context.stroke(flowPath, with: .color(.yellow), lineWidth: lineWidth)
-//
-//            var pressurePath = Path()
-//            pressurePath.move(to: CGPoint(x: self.xGraphPosition(0, in: size), y: yGraphPosition(data[0].pressure, in: size)))
-//            for (index, dataPoint) in data.dropFirst().enumerated() {
-//                pressurePath.addLine(to: CGPoint(x: self.xGraphPosition(index, in: size), y: self.yGraphPosition(dataPoint.pressure, in: size)))
-//            }
-//            context.stroke(pressurePath, with: .color(.blue), lineWidth: lineWidth)
-        }
-        .onChange(of: data, initial: false) { _,_  in
-            timestep += 1
+            strokePressurePath(
+                context: context,
+                size: size
+            )
+            
+            strokeFlowPath(
+                context: context,
+                size: size
+            )
         }
     }
 }
@@ -83,6 +125,18 @@ struct BrewGraphOverlay: View {
 
 struct BrewGraph: View {
     @Binding var data: [BrewData]
+    
+    func getMinTime() -> Double {
+        return data.max(by: {
+            $0.shotTime > $1.shotTime
+        })?.shotTime ?? 0.0
+    }
+    
+    func getMaxTime() -> Double {
+        return max(data.max(by: {
+            $0.shotTime < $1.shotTime
+        })?.shotTime ?? 0.0, Double(maxDataPoints) * 0.01)
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -101,7 +155,7 @@ struct BrewGraph: View {
                 "Flow": .yellow,
             ])
             .chartYScale(domain: 0...1)
-            .chartXScale(domain: 0...40)
+            .chartXScale(domain: getMinTime()...getMaxTime())
             .chartYAxis {
                 let defaultStride = Array(stride(from: 0, to: 1, by: 1.0 / strideBy))
                 let temperatureStride = Array(stride(from: temperatureMin,
@@ -137,8 +191,7 @@ struct BrewGraph: View {
                     if let plotContainerFrame = proxy.plotContainerFrame {
                         let frame = geometry[plotContainerFrame]
                         BrewGraphOverlay(
-                            data: data,
-                            maxData: 800
+                            data: data
                         )
                         .frame(
                             width: frame.width,
@@ -168,7 +221,7 @@ class BrewGraphPreviewModel : ObservableObject {
                 
                 self.brewData.append(BrewData(
                     id: UUID(),
-                    shotTime: Double(self.shotTime),
+                    shotTime: Double(Double(self.shotTime) * 0.01),
                     temperature: ((sin(Double(self.shotTime) * 0.01) + 1.0) / 2.0) * 0.2 + 0.8,
                     pressure: ((sin(Double(self.shotTime) * 0.02) + 1.0) / 2.0) * 0.1 + 0.2,
                     flow: ((sin(Double(self.shotTime) * 0.04) + 1.0) / 2.0) * 0.4 + 0.2
@@ -176,7 +229,7 @@ class BrewGraphPreviewModel : ObservableObject {
                 
                 shotTime += 1
                 
-                if(self.brewData.count > 1000) {
+                if(self.brewData.count > maxDataPoints) {
                     brewData.removeFirst()
                 }
             }
