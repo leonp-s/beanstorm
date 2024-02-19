@@ -31,7 +31,7 @@ struct ControlPointAreaMark: ChartContent {
     var body: some ChartContent {
         AreaMark(
             x: .value("Time", controlPoint.time),
-            y: .value("Height", controlPoint.value)
+            y: .value("Value", controlPoint.value)
         )
         .interpolationMethod(.monotone)
         .foregroundStyle(
@@ -49,7 +49,7 @@ struct ControlPointLineMark: ChartContent {
     var body: some ChartContent {
         LineMark(
             x: .value("Time", controlPoint.time),
-            y: .value("Height", controlPoint.value)
+            y: .value("Value", controlPoint.value)
         )
         .interpolationMethod(.monotone)
         .foregroundStyle(
@@ -399,7 +399,7 @@ struct ProfileEditor: View {
                 
                 PointMark(
                     x: .value("Time", controlPoint.time),
-                    y: .value("Height", controlPoint.value)
+                    y: .value("Value", controlPoint.value)
                 )
                 .foregroundStyle(.white)
             }
@@ -413,9 +413,9 @@ struct ProfileEditor: View {
                     
                     RuleMark(x: .value("Time", editing_point.time))
                         .foregroundStyle(cursorColor)
-                    RuleMark(y: .value("Height", editing_point.value))
+                    RuleMark(y: .value("Value", editing_point.value))
                         .foregroundStyle(cursorColor)
-                    PointMark(x: .value("Time", editing_point.time), y: .value("Height", editing_point.value))
+                    PointMark(x: .value("Time", editing_point.time), y: .value("Value", editing_point.value))
                         .foregroundStyle(cursorColor)
                         .symbol(BasicChartSymbolShape.circle.strokeBorder(lineWidth: 3.0))
                         .symbolSize(250)
