@@ -30,30 +30,49 @@ struct BrewGraphOverlay: View {
         return base + Double(index) * increment
     }
     
+    private let lineWidth = 4.0
+    
+    func strokeTemperaturePath(context: GraphicsContext, size: CGSize) {
+        var temperaturePath = Path()
+        temperaturePath.move(
+            to: CGPoint(
+                x: self.xGraphPosition(0, in: size),
+                y: yGraphPosition(data[0].temperature, in: size))
+        )
+        
+        for (index, dataPoint) in data.dropFirst().enumerated() {
+            temperaturePath.addLine(
+                to: CGPoint(
+                    x: self.xGraphPosition(index, in: size),
+                    y: self.yGraphPosition(dataPoint.temperature, in: size))
+            )
+        }
+
+        context.stroke(temperaturePath, with: .color(.green), lineWidth: lineWidth)
+    }
+    
     var body: some View {
         Canvas { context, size in
             guard !data.isEmpty else { return }
 
-            var temperaturePath = Path()
-            temperaturePath.move(to: CGPoint(x: self.xGraphPosition(0, in: size), y: yGraphPosition(data[0].shotTime, in: size)))
-            for (index, dataPoint) in data.dropFirst().enumerated() {
-                temperaturePath.addLine(to: CGPoint(x: self.xGraphPosition(index, in: size), y: self.yGraphPosition(dataPoint.temperature, in: size)))
-            }
-            context.stroke(temperaturePath, with: .color(.green), lineWidth: 4)
+            strokeTemperaturePath(
+                context: context,
+                size: size
+            )
             
-            var flowPath = Path()
-            flowPath.move(to: CGPoint(x: self.xGraphPosition(0, in: size), y: yGraphPosition(data[0].shotTime, in: size)))
-            for (index, dataPoint) in data.dropFirst().enumerated() {
-                flowPath.addLine(to: CGPoint(x: self.xGraphPosition(index, in: size), y: self.yGraphPosition(dataPoint.flow, in: size)))
-            }
-            context.stroke(flowPath, with: .color(.yellow), lineWidth: 4)
-            
-            var pressurePath = Path()
-            pressurePath.move(to: CGPoint(x: self.xGraphPosition(0, in: size), y: yGraphPosition(data[0].shotTime, in: size)))
-            for (index, dataPoint) in data.dropFirst().enumerated() {
-                pressurePath.addLine(to: CGPoint(x: self.xGraphPosition(index, in: size), y: self.yGraphPosition(dataPoint.pressure, in: size)))
-            }
-            context.stroke(pressurePath, with: .color(.blue), lineWidth: 4)
+//            var flowPath = Path()
+//            flowPath.move(to: CGPoint(x: self.xGraphPosition(0, in: size), y: yGraphPosition(data[0].flow, in: size)))
+//            for (index, dataPoint) in data.dropFirst().enumerated() {
+//                flowPath.addLine(to: CGPoint(x: self.xGraphPosition(index, in: size), y: self.yGraphPosition(dataPoint.flow, in: size)))
+//            }
+//            context.stroke(flowPath, with: .color(.yellow), lineWidth: lineWidth)
+//
+//            var pressurePath = Path()
+//            pressurePath.move(to: CGPoint(x: self.xGraphPosition(0, in: size), y: yGraphPosition(data[0].pressure, in: size)))
+//            for (index, dataPoint) in data.dropFirst().enumerated() {
+//                pressurePath.addLine(to: CGPoint(x: self.xGraphPosition(index, in: size), y: self.yGraphPosition(dataPoint.pressure, in: size)))
+//            }
+//            context.stroke(pressurePath, with: .color(.blue), lineWidth: lineWidth)
         }
         .onChange(of: data, initial: false) { _,_  in
             timestep += 1
@@ -69,7 +88,7 @@ struct BrewGraph: View {
         VStack(alignment: .leading) {
             let strideBy: Double = 8
 
-            let temperatureMin = 80.0
+            let temperatureMin = 64.0
             let temperatureMax = 110.0
 
             let pressureMin = 0.0
@@ -146,20 +165,20 @@ class BrewGraphPreviewModel : ObservableObject {
             withTimeInterval: 0.01,
             repeats: true) { [weak self] _ in
                 guard let self = self else { return }
-            
-                if shotTime == 0 {
-                    self.brewData = []
-                }
                 
                 self.brewData.append(BrewData(
                     id: UUID(),
                     shotTime: Double(self.shotTime),
-                    temperature: ((sin(Double(self.shotTime) * 0.02) + 1.0) / 2.0) * 0.2 + 0.8,
-                    pressure: ((sin(Double(self.shotTime) * 0.03) + 1.0) / 2.0) * 0.1 + 0.2,
+                    temperature: ((sin(Double(self.shotTime) * 0.01) + 1.0) / 2.0) * 0.2 + 0.8,
+                    pressure: ((sin(Double(self.shotTime) * 0.02) + 1.0) / 2.0) * 0.1 + 0.2,
                     flow: ((sin(Double(self.shotTime) * 0.04) + 1.0) / 2.0) * 0.4 + 0.2
                 ))
                 
-                shotTime = (shotTime + 1) % 10000
+                shotTime += 1
+                
+                if(self.brewData.count > 1000) {
+                    brewData.removeFirst()
+                }
             }
     }
 }
