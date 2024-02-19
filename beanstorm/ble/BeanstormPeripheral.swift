@@ -126,59 +126,20 @@ class BeanstormPeripheralModel: ObservableObject {
     @Published var pressure: Double = 0.0
     @Published var temperature: Double = 0.0
     @Published var flow: Double = 0.0
-    
-    private var targetPressure: Double = 0.0
-    private var targetTemperature: Double = 0.0
-    private var targetFlow: Double = 0.0
-    
-    private var timer: Timer?
-    
+        
     init(dataService: DataService) {
         self.dataService = dataService
         
         self.dataService.pressureSubject
-            .sink { value in self.targetPressure = Double(value) }
+            .sink { value in self.pressure = Double(value) }
             .store(in: &subscriptions)
         
         self.dataService.temperatureSubject
-            .sink { value in self.targetTemperature = Double(value) }
+            .sink { value in self.temperature = Double(value) }
             .store(in: &subscriptions)
         
         self.dataService.flowSubject
-            .sink { value in self.targetFlow = Double(value) }
+            .sink { value in self.flow = Double(value) }
             .store(in: &subscriptions)
-        
-        self.timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            
-            if(!self.pressure.isNearlyEqual(to: self.targetPressure, precision: 0.01)) {
-                self.pressure = self.smoothedValue(
-                    valueToSmooth: self.pressure,
-                    target: self.targetPressure
-                )
-            }
-            
-            if(!self.temperature.isNearlyEqual(to: self.targetTemperature, precision: 0.1)) {
-                self.temperature = self.smoothedValue(
-                    valueToSmooth: self.temperature,
-                    target: self.targetTemperature
-                )
-            }
-            
-            if(!self.flow.isNearlyEqual(to: self.targetFlow, precision: 0.01)) {
-                self.flow = self.smoothedValue(
-                    valueToSmooth: self.flow,
-                    target: self.targetFlow
-                )
-            }
-        }
-    }
-    
-    private func smoothedValue (valueToSmooth: Double,
-                                target: Double) -> Double
-    {
-        let delta = 0.01
-        let step = (target - valueToSmooth) * delta;
-        return valueToSmooth + step;
     }
 }

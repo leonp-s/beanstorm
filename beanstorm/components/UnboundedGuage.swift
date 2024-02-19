@@ -14,9 +14,11 @@ struct UnboundedGuage: View {
         } currentValueLabel: {
             Text(String(format: "%.1f", current))
                 .font(.headline)
+                .animation(.none)
         }
         .gaugeStyle(.accessoryCircularCapacity)
         .tint(gradient)
+        .animation(.spring, value: current)
     }
 }
 

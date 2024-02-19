@@ -1,49 +1,122 @@
 import SwiftUI
 import Charts
 
-private let maxPointValue = 11.0;
+private let maxPointValue = 11.0
+private let yAxisMax = maxPointValue + 1;
+private let timeLabel = "Time (s)"
+private let xAxisMin = 1.0;
+private let maxShotDuration = 120.0;
 
-struct ProfileGraph: View {
-    @Binding var controlPoints: [ControlPoint]
-    
-    var body: some View {
-        Chart {
-            ForEach(controlPoints) { pos in
-                AreaMark(
-                    x: .value("Time", pos.time),
-                    y: .value("Height", pos.value)
-                )
-                .interpolationMethod(.monotone)
-                .foregroundStyle(
-                            .linearGradient(
-                                colors: [.blue.opacity(0.2), .purple.opacity(0.4)],
-                                startPoint: .bottom, endPoint: .top
-                            )
-                        )
-                .alignsMarkStylesWithPlotArea()
+func getControlTypeLabel(controlType: ControlType) -> String {
+    switch(controlType) {
+    case .pressure:
+        return "Pressure (MPa)"
+    case .flow:
+        return "Flow (mls⁻¹)"
+    }
+}
 
-                LineMark(
-                    x: .value("Time", pos.time),
-                    y: .value("Height", pos.value)
-                )
-                .interpolationMethod(.monotone)
-                .foregroundStyle(
+func getShotDuration(controlPoints: [ControlPoint]) -> Double {
+    return controlPoints.max(by: {
+        $0.time < $1.time
+    })?.time ?? 0.0
+}
+
+func getXAxisMax(shotDuration: Double) -> Double {
+    return min(max(shotDuration + (shotDuration / 10), xAxisMin), maxShotDuration)
+}
+
+struct ControlPointAreaMark: ChartContent {
+    @State var controlPoint: ControlPoint
+    var body: some ChartContent {
+        AreaMark(
+            x: .value("Time", controlPoint.time),
+            y: .value("Height", controlPoint.value)
+        )
+        .interpolationMethod(.monotone)
+        .foregroundStyle(
                     .linearGradient(
-                        colors: [.blue, .purple],
+                        colors: [.blue.opacity(0.2), .purple.opacity(0.4)],
                         startPoint: .bottom, endPoint: .top
                     )
                 )
-                .lineStyle(StrokeStyle(lineWidth: 4))
-                .alignsMarkStylesWithPlotArea()
+        .alignsMarkStylesWithPlotArea()
+    }
+}
+
+struct ControlPointLineMark: ChartContent {
+    @State var controlPoint: ControlPoint
+    var body: some ChartContent {
+        LineMark(
+            x: .value("Time", controlPoint.time),
+            y: .value("Height", controlPoint.value)
+        )
+        .interpolationMethod(.monotone)
+        .foregroundStyle(
+            .linearGradient(
+                colors: [.blue, .purple],
+                startPoint: .bottom, endPoint: .top
+            )
+        )
+        .lineStyle(StrokeStyle(lineWidth: 4))
+        .alignsMarkStylesWithPlotArea()
+    }
+}
+
+struct ProfileGraphChartModifier : ViewModifier {
+    @Binding var xAxisMax: Double
+    @Binding var controlType: ControlType
+
+    func body(content: Content) -> some View {
+        content
+            .chartYAxis {
+                AxisMarks(values: .automatic(desiredCount: 12))
+            }
+            .chartXAxis {
+                AxisMarks(values: .automatic(desiredCount: 12))
+            }
+            .chartYScale(domain: 0...yAxisMax)
+            .chartXScale(domain: 0...xAxisMax)
+            .animation(.smooth, value: xAxisMax)
+            .chartXAxisLabel(timeLabel)
+            .chartYAxisLabel(
+                getControlTypeLabel(
+                    controlType: controlType
+                )
+            )
+    }
+}
+
+struct ProfileGraph: View {
+    @Binding var controlType: ControlType
+    @Binding var controlPoints: [ControlPoint]
+
+    @State private var xAxisMax: Double = 0.0
+    
+    var body: some View {
+        Chart {
+            ForEach(controlPoints) { controlPoint in
+                ControlPointAreaMark(controlPoint: controlPoint)
+                ControlPointLineMark(controlPoint: controlPoint)
             }
         }
-        .chartXAxisLabel("Time (s)")
-        .chartYAxisLabel("Pressure (MPa)")
+        .profileGraphChart(
+            xAxisMax: $xAxisMax,
+            controlType: $controlType
+        )
+        .onChange(of: controlPoints, initial: true) {
+            xAxisMax = getXAxisMax(
+                shotDuration: getShotDuration(
+                    controlPoints: controlPoints
+                )
+            )
+        }
     }
 }
 
 #Preview("Profile Graph") {
     ProfileGraph(
+        controlType: .constant(.flow),
         controlPoints: .constant([
             ControlPoint(id: UUID(), time: 0.0, value: 1.0),
             ControlPoint(id: UUID(), time: 4.0, value: 0.8),
@@ -62,9 +135,10 @@ enum ProfileEditorTool {
 
 struct ProfileEditor: View {
     private let maxNumPoints = 20;
-    private let maxPointTime = 80.0;
     
+    @Binding var controlType: ControlType
     @Binding var controlPoints: [ControlPoint]
+
     @State var controlPointSelection: UUID?
     @State private var toolSelection: ProfileEditorTool = .drag
     
@@ -72,6 +146,8 @@ struct ProfileEditor: View {
 
     @State var posX: Double = 0.0
     @State var posY: Double = 0.0
+    
+    @State var xAxisMax: Double = 0.0
         
     @Environment(\.colorScheme) var colorScheme
     
@@ -97,6 +173,8 @@ struct ProfileEditor: View {
     }
     
     func sortPoints() {
+        let firstPoint = controlPoints[0]
+
         controlPoints.sort(by: {a, b in
             if(a.time < b.time) {
                 return true
@@ -107,6 +185,15 @@ struct ProfileEditor: View {
             
             return false
         })
+        
+        // Never move the first point so it can always be locked at zero by index, bit hacky
+        if let rearrangedPointIndex = controlPoints.firstIndex(where: { controlPoint in
+            controlPoint.id == firstPoint.id
+        }) {
+            
+            controlPoints.remove(at: rearrangedPointIndex)
+            controlPoints.insert(firstPoint, at: 0)
+        }
     }
     
     func addControlPoint(at: CGPoint, geometry: GeometryProxy, proxy: ChartProxy) {
@@ -145,7 +232,7 @@ struct ProfileEditor: View {
         let pos = proxy.value(atX: at.x - origin.x, as: Double.self)!
         let closest = controlPoints
                         .enumerated()
-                        .min( by: { abs($0.element.time - pos) < abs($1.element.time - pos) } )!
+                        .min( by: { abs($0.element.time - pos) <= abs($1.element.time - pos) } )!
         
 
         let index = closest.offset
@@ -198,8 +285,13 @@ struct ProfileEditor: View {
                 newValue = 0.0
             }
             
-            if(newTime > maxPointTime){
-                newTime = maxPointTime
+            if(newTime > maxShotDuration){
+                newTime = maxShotDuration
+            }
+            
+            if(editing_point_index == 0)
+            {
+                newTime = 0.0
             }
             
             if(newValue > maxPointValue){
@@ -219,8 +311,12 @@ struct ProfileEditor: View {
         }
     }
     
+    func isFirstPointSelected() -> Bool {
+        return controlPoints.first?.id == controlPointSelection
+    }
+    
     func canRemoveControlPoint() -> Bool {
-        return controlPoints.count > 2
+        return controlPoints.count > 2 && !isFirstPointSelected()
     }
     
     func removeControlPoint() {
@@ -261,32 +357,31 @@ struct ProfileEditor: View {
     
     private var controlPointEditor: some View {
         Form {
+            Section(header: Text("Controls")) {
+                Text("Time (s), " + String(format: "%.1f", posX))
+                    .font(.headline)
+                    .listRowSeparator(.hidden)
+                Slider(
+                    value: $posX,
+                    in: 0...maxShotDuration
+                )
+                .disabled(isFirstPointSelected())
+                Text(getControlTypeLabel(controlType: controlType) + String(format: ", %.1f", posY))
+                    .font(.headline)
+                    .listRowSeparator(.hidden)
+                Slider(
+                    value: $posY,
+                    in: 0...maxPointValue
+                )
+            }
             Button("Remove Point",
                    systemImage: "trash",
                    role: .destructive
             ) {
                 removeControlPoint()
             }
-            .foregroundStyle(.red)
             .disabled(!canRemoveControlPoint())
             
-            Section(header: Text("Time")) {
-                Slider(
-                    value: $posX,
-                    in: 0...10
-                )
-                Text(String(format: "%.1f", posX) + " s")
-                    .font(.headline)
-            }
-            
-            Section(header: Text("Pressure")) {
-                Slider(
-                    value: $posY,
-                    in: 0...maxPointValue
-                )
-                Text(String(format: "%.1f", posY) + " MPa")
-                    .font(.headline)
-            }
         }
         .onChange(of: posX) {
             updatePosition()
@@ -295,44 +390,20 @@ struct ProfileEditor: View {
             updatePosition()
         }
     }
-    
+
     var profileGraph: some View {
         Chart {
-            ForEach(controlPoints) { pos in
-                AreaMark(
-                    x: .value("Time", pos.time),
-                    y: .value("Height", pos.value)
-                )
-                .interpolationMethod(.monotone)
-                .foregroundStyle(
-                            .linearGradient(
-                                colors: [.blue.opacity(0.2), .purple.opacity(0.4)],
-                                startPoint: .bottom, endPoint: .top
-                            )
-                        )
-                .alignsMarkStylesWithPlotArea()
-
-                LineMark(
-                    x: .value("Time", pos.time),
-                    y: .value("Height", pos.value)
-                )
-                .interpolationMethod(.monotone)
-                .foregroundStyle(
-                    .linearGradient(
-                        colors: [.blue, .purple],
-                        startPoint: .bottom, endPoint: .top
-                    )
-                )
-                .lineStyle(StrokeStyle(lineWidth: 4))
-                .alignsMarkStylesWithPlotArea()
+            ForEach(controlPoints) { controlPoint in
+                ControlPointAreaMark(controlPoint: controlPoint)
+                ControlPointLineMark(controlPoint: controlPoint)
                 
                 PointMark(
-                    x: .value("Time", pos.time),
-                    y: .value("Height", pos.value)
+                    x: .value("Time", controlPoint.time),
+                    y: .value("Height", controlPoint.value)
                 )
                 .foregroundStyle(.white)
             }
-            if let index = controlPointSelection {
+            if controlPointSelection != nil {
                 if let editing_point_index = controlPoints.firstIndex(
                     where: { point in
                         point.id == controlPointSelection
@@ -351,12 +422,10 @@ struct ProfileEditor: View {
                 }
             }
         }
-        .chartYAxis {
-            AxisMarks(values: .automatic(desiredCount: 12))
-        }
-        .chartYScale(domain: 0...maxPointValue + 1)
-        .chartXAxisLabel("Time (s)")
-        .chartYAxisLabel("Pressure (MPa)")
+        .profileGraphChart(
+            xAxisMax: $xAxisMax,
+            controlType: $controlType
+        )
         .chartOverlay { proxy in
             GeometryReader { geometry in
                 Rectangle().fill(.clear).contentShape(Rectangle())
@@ -456,6 +525,13 @@ struct ProfileEditor: View {
             }
             toolBar
         }
+        .onChange(of: controlPoints, initial: true) {
+            xAxisMax = getXAxisMax(
+                shotDuration: getShotDuration(
+                    controlPoints: controlPoints
+                )
+            )
+        }
     }
 }
 
@@ -465,11 +541,12 @@ struct ProfileEditorPreview: View {
         ControlPoint(id: UUID(), time: 0.0, value: 1.0),
         ControlPoint(id: UUID(), time: 4.0, value: 0.8),
         ControlPoint(id: UUID(), time: 6.0, value: 0.3),
-        ControlPoint(id: UUID(), time: 10.0, value: 0.9)
+        ControlPoint(id: UUID(), time: 10.0, value: 8.0)
     ]
     
     var body: some View {
         ProfileEditor(
+            controlType: .constant(.pressure),
             controlPoints: $controlPoints
         )
         .padding()

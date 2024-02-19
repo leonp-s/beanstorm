@@ -1,12 +1,6 @@
 import SwiftUI
 import SwiftData
 
-func getShotDuration(controlPoints: [ControlPoint]) -> Double {
-    return controlPoints.max(by: {
-        $0.time > $1.time
-    })?.value ?? 0.0
-}
-
 struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
     let profile: BrewProfile
@@ -15,7 +9,6 @@ struct EditProfileView: View {
     @State private var temperature: Double = 80.0
     @State private var controlType: ControlType = .pressure
     @State private var controlPoints: [ControlPoint] = []
-    
     @State private var showingEditor: Bool = false
     
     var changed: Bool {
@@ -57,6 +50,7 @@ struct EditProfileView: View {
                 }
                 Section(header: Text("Profile")) {
                     ProfileGraph(
+                        controlType: $controlType,
                         controlPoints: $controlPoints
                     )
                     .frame(height: 280)
@@ -90,6 +84,7 @@ struct EditProfileView: View {
         }
         .sheet(isPresented: $showingEditor) {
             ProfileEditor(
+                controlType: $controlType,
                 controlPoints: $controlPoints
             )
             .padding()
@@ -162,6 +157,7 @@ struct NewBrewProfileView: View {
 
                 Section(header: Text("Profile")) {
                     ProfileGraph(
+                        controlType: $controlType,
                         controlPoints: $controlPoints
                     )
                     .frame(height: 280)
@@ -189,6 +185,7 @@ struct NewBrewProfileView: View {
         }
         .sheet(isPresented: $showingEditor) {
             ProfileEditor(
+                controlType: $controlType,
                 controlPoints: $controlPoints
             )
             .padding()

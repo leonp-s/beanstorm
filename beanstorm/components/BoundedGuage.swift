@@ -15,6 +15,7 @@ struct BoundedGuage: View {
             } currentValueLabel: {
                 Text(String(format: "%.1f", current))
                     .font(.headline)
+                    .animation(.none)
             } minimumValueLabel: {
                 Text("\(Int(minValue))")
             } maximumValueLabel: {
@@ -22,6 +23,7 @@ struct BoundedGuage: View {
             }
             .gaugeStyle(.accessoryCircular)
             .tint(gradient)
+            .animation(.spring, value: current)
         }
     }
 }
