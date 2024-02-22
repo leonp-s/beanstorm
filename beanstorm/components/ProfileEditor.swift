@@ -401,7 +401,7 @@ struct ProfileEditor: View {
                     x: .value("Time", controlPoint.time),
                     y: .value("Value", controlPoint.value)
                 )
-                .foregroundStyle(.white)
+                .foregroundStyle(cursorColor)
             }
             if controlPointSelection != nil {
                 if let editing_point_index = controlPoints.firstIndex(
@@ -463,7 +463,7 @@ struct ProfileEditor: View {
                 VStack {
                     Image(systemName: "arrow.up.left.and.down.right.and.arrow.up.right.and.down.left")
                         .frame(width: 52, height: 52)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                         .background(.bar)
                         .cornerRadius(8)
                     if(toolSelection == .drag) {
@@ -484,7 +484,7 @@ struct ProfileEditor: View {
                 VStack {
                     Image(systemName: "pencil")
                         .frame(width: 52, height: 52)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                         .background(.bar)
                         .cornerRadius(8)
                     if(toolSelection == .edit) {

@@ -9,10 +9,10 @@ struct BrewData: Codable, Identifiable, Equatable {
     let flow: Double
 }
 
-let maxDataPoints = 2000
+let maxDataPoints = 1000
 
 struct BrewGraphOverlay: View {
-    let data: [BrewData]
+    @Binding var data: [BrewData]
     private let minValue: Double = 0
     private let maxValue: Double = 1
     private let lineWidth = 4.0
@@ -30,7 +30,7 @@ struct BrewGraphOverlay: View {
         
     func strokeTemperaturePath(context: GraphicsContext, size: CGSize) {
         var temperaturePath = Path()
-        for (index, dataPoint) in data.dropFirst().enumerated() {
+        for (index, dataPoint) in data.enumerated() {
             temperaturePath.addLine(
                 to: CGPoint(
                     x: self.xGraphPosition(
@@ -54,7 +54,7 @@ struct BrewGraphOverlay: View {
     
     func strokePressurePath(context: GraphicsContext, size: CGSize) {
         var temperaturePath = Path()
-        for (index, dataPoint) in data.dropFirst().enumerated() {
+        for (index, dataPoint) in data.enumerated() {
             temperaturePath.addLine(
                 to: CGPoint(
                     x: self.xGraphPosition(
@@ -78,7 +78,7 @@ struct BrewGraphOverlay: View {
     
     func strokeFlowPath(context: GraphicsContext, size: CGSize) {
         var temperaturePath = Path()
-        for (index, dataPoint) in data.dropFirst().enumerated() {
+        for (index, dataPoint) in data.enumerated() {
             temperaturePath.addLine(
                 to: CGPoint(
                     x: self.xGraphPosition(
@@ -191,7 +191,7 @@ struct BrewGraph: View {
                     if let plotContainerFrame = proxy.plotContainerFrame {
                         let frame = geometry[plotContainerFrame]
                         BrewGraphOverlay(
-                            data: data
+                            data: $data
                         )
                         .frame(
                             width: frame.width,
