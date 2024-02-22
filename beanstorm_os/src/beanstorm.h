@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ble/data_service.h"
+#include "event_bridge/event_bridge.h"
 #include "peripherals/peripherals.h"
 #include "peripherals/pindef.h"
 #include "peripherals/pressure_sensor.h"
@@ -7,12 +9,10 @@
 #include "peripherals/temperature_sensor.h"
 #include "programs/program_controller.h"
 
-#include <ble/data_service.h>
-
 class Beanstorm
 {
 public:
-    explicit Beanstorm (DataService & data_service);
+    explicit Beanstorm (DataService & data_service, EventBridge & event_bridge);
     void Setup ();
     void Loop ();
 
@@ -22,6 +22,9 @@ private:
     void HandleSwitchEvents ();
 
     void PerformHealthCheck ();
+
+    void HandleStartShot ();
+    void HandleEndShot ();
 
     static constexpr int kWatchdogTimeout = 1;
     static constexpr int kServiceIntervalMs = 200;
@@ -42,4 +45,5 @@ private:
     BrewProgram brew_program_ {pump_};
 
     DataService & data_service_;
+    EventBridge & event_bridge_;
 };

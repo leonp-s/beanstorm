@@ -3,9 +3,12 @@
 #include "peripherals/peripherals.h"
 #include "watchdog.h"
 
-Beanstorm::Beanstorm (DataService & data_service)
+Beanstorm::Beanstorm (DataService & data_service, EventBridge & event_bridge)
     : data_service_ (data_service)
+    , event_bridge_ (event_bridge)
 {
+    event_bridge_.OnStartShot = [&] { HandleStartShot (); };
+    event_bridge_.OnCancelShot = [&] { HandleEndShot (); };
 }
 
 void Beanstorm::SetupPeripherals ()
@@ -25,8 +28,8 @@ void Beanstorm::SetPeripheralsToDefaultState ()
 void Beanstorm::Setup ()
 {
     Peripherals::SetupPins ();
-    SetPeripheralsToDefaultState ();
     SetupPeripherals ();
+    SetPeripheralsToDefaultState ();
 
     const auto setup_error = TaskWatchdog::SetupWatchdog (kWatchdogTimeout);
     const auto add_task_error = TaskWatchdog::AddTask (nullptr);
@@ -51,9 +54,9 @@ void Beanstorm::HandleSwitchEvents ()
     if (last_switch_state_.brew != switch_state.brew)
     {
         if (switch_state.brew)
-            program_controller_.LoadProgram (&brew_program_);
+            HandleStartShot ();
         else
-            program_controller_.LoadProgram (&idle_program_);
+            HandleEndShot ();
     }
 
     last_switch_state_ = switch_state;
@@ -68,6 +71,16 @@ void Beanstorm::PerformHealthCheck ()
         Serial.println ("Oh no... Temperature");
 }
 
+void Beanstorm::HandleStartShot ()
+{
+    program_controller_.LoadProgram (&brew_program_);
+}
+
+void Beanstorm::HandleEndShot ()
+{
+    program_controller_.LoadProgram (&idle_program_);
+}
+
 void Beanstorm::Loop ()
 {
     TaskWatchdog::Reset ();
@@ -78,7 +91,9 @@ void Beanstorm::Loop ()
         .pressure = pressure_sensor_.ReadPressure (),
     };
 
+    event_bridge_.Loop ();
     HandleSwitchEvents ();
+
     program_controller_.Loop (sensor_state);
     data_service_.SensorStateUpdated (sensor_state);
 

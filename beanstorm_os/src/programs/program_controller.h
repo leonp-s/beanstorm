@@ -61,6 +61,7 @@ class ProgramController
 {
 public:
     ProgramController () = default;
+
     void LoadProgram (Program * program);
     void Loop (const Peripherals::SensorState & sensor_state);
 
