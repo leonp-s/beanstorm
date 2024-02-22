@@ -22,6 +22,7 @@
 		E17E3EB62B337812000F456C /* UnboundedGuage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB52B337812000F456C /* UnboundedGuage.swift */; };
 		E17E3EB82B338580000F456C /* BrewGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EB72B338580000F456C /* BrewGraph.swift */; };
 		E17E3EBB2B33927D000F456C /* Rescale.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EBA2B33927D000F456C /* Rescale.swift */; };
+		E187B29D2B87D0AF0050BFA2 /* Bool.swift in Sources */ = {isa = PBXBuildFile; fileRef = E187B29C2B87D0AF0050BFA2 /* Bool.swift */; };
 		E18B794C2B375B59001A3FF0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794B2B375B59001A3FF0 /* SettingsView.swift */; };
 		E18B794E2B3779CF001A3FF0 /* BrewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794D2B3779CF001A3FF0 /* BrewView.swift */; };
 		E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */; };
@@ -46,6 +47,7 @@
 		E17E3EB52B337812000F456C /* UnboundedGuage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnboundedGuage.swift; sourceTree = "<group>"; };
 		E17E3EB72B338580000F456C /* BrewGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewGraph.swift; sourceTree = "<group>"; };
 		E17E3EBA2B33927D000F456C /* Rescale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rescale.swift; sourceTree = "<group>"; };
+		E187B29C2B87D0AF0050BFA2 /* Bool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bool.swift; sourceTree = "<group>"; };
 		E18B794B2B375B59001A3FF0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E18B794D2B3779CF001A3FF0 /* BrewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewView.swift; sourceTree = "<group>"; };
 		E18B794F2B3779DA001A3FF0 /* ProfilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilesView.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 			children = (
 				E13666852B7AA95600AF2C98 /* FloatingPoint.swift */,
 				E13656E12B7BD35E00FD14A5 /* View.swift */,
+				E187B29C2B87D0AF0050BFA2 /* Bool.swift */,
 			);
 			path = extensions;
 			sourceTree = "<group>";
@@ -244,6 +247,7 @@
 				E13666842B7A760C00AF2C98 /* BeanstormBLEModel.swift in Sources */,
 				E19948152B7AC893000E9B37 /* BrewProfile.swift in Sources */,
 				E17E3EB42B337279000F456C /* QuickMonitorView.swift in Sources */,
+				E187B29D2B87D0AF0050BFA2 /* Bool.swift in Sources */,
 				E17E3EBB2B33927D000F456C /* Rescale.swift in Sources */,
 				E17E3EB82B338580000F456C /* BrewGraph.swift in Sources */,
 				E136667F2B77EB6600AF2C98 /* BeanstormBLE.swift in Sources */,

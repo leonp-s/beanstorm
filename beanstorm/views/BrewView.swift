@@ -4,6 +4,9 @@ import Combine
 struct BrewView: View {
     @StateObject var peripheralModel: BeanstormPeripheralModel
     @State var isBrewing: Bool = false
+    
+    let brew_impact = UIImpactFeedbackGenerator(style: .medium)
+
 
     private var timer: some View {
         HStack {
@@ -44,9 +47,19 @@ struct BrewView: View {
             HStack {
                 Button(action: {
                     isBrewing = true
+                    brew_impact.prepare()
+                    brew_impact.impactOccurred()
+                    
+                    peripheralModel.dataService.startShot()
                 }) {
                     Text("Start Shot")
                     Image(systemName: "play.circle.fill")
+                }
+                .onLongPressGesture(minimumDuration: 0, perform: {}) { pressing in
+                    if pressing {
+                        brew_impact.prepare()
+                        brew_impact.impactOccurred()
+                    }
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -94,6 +107,15 @@ struct BrewView: View {
                             role: .destructive
                         ) {
                             isBrewing = false
+                            peripheralModel.dataService.endShot()
+                            brew_impact.prepare()
+                            brew_impact.impactOccurred()
+                        }
+                        .onLongPressGesture(minimumDuration: 0, perform: {}) { pressing in
+                            if pressing {
+                                brew_impact.prepare()
+                                brew_impact.impactOccurred()
+                            }
                         }
                         .buttonStyle(.borderedProminent)
                     }
@@ -105,6 +127,10 @@ struct BrewView: View {
 }
 
 class MockDataService: DataService {
+    func startShot() { }
+    
+    func endShot() { }
+    
     var pressureSubject: CurrentValueSubject<Float, Never>
     var temperatureSubject: CurrentValueSubject<Float, Never>
     var flowSubject: CurrentValueSubject<Float, Never>

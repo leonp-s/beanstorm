@@ -6,11 +6,15 @@ protocol DataService {
     var pressureSubject: CurrentValueSubject<Float, Never> { get }
     var temperatureSubject: CurrentValueSubject<Float, Never> { get }
     var flowSubject: CurrentValueSubject<Float, Never> { get }
+    
+    func startShot();
+    func endShot();
 }
 
 let pressureCharacteristicUUID = CBUUID(string: "46851b87-ee86-42eb-9e35-aaee0cad5485")
 let temperatureCharacteristicUUID = CBUUID(string: "76400bdc-15ce-4375-b861-97be9d54072c")
 let flowCharacteristicUUID = CBUUID(string: "13cdb71e-8d34-4d53-8f40-05d5677a48f3")
+let shotControlCharacteristicUUID = CBUUID(string: "7e4881af-f9f6-4c12-bf5c-70509ba3d6b4")
 
 class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
     let peripheral: CBPeripheral
@@ -24,6 +28,7 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
     var pressureCharacteristic: CBCharacteristic? = nil
     var temperatureCharacteristic: CBCharacteristic? = nil
     var flowCharacteristic: CBCharacteristic? = nil
+    var shotControlCharacteristic: CBCharacteristic? = nil
     
     init(peripheral: CBPeripheral) {
         self.peripheral = peripheral
@@ -56,6 +61,7 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
         self.pressureCharacteristic = characteristics.first(where: { $0.uuid == pressureCharacteristicUUID })
         self.temperatureCharacteristic = characteristics.first(where: { $0.uuid == temperatureCharacteristicUUID })
         self.flowCharacteristic = characteristics.first(where: { $0.uuid == flowCharacteristicUUID })
+        self.shotControlCharacteristic = characteristics.first(where: { $0.uuid == shotControlCharacteristicUUID })
         
         subscribeToCharacteristics()
     }
@@ -114,6 +120,22 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
                 return pointer.load(as: Float.self)
             })
             flowSubject.send(value)
+        }
+    }
+    
+    func startShot() {
+        if let shotControlCharacteristic = self.shotControlCharacteristic {
+            var startShot = true.intValue
+            let data = Data(bytes: &startShot, count: MemoryLayout.size(ofValue: startShot))
+            peripheral.writeValue(data, for: shotControlCharacteristic, type: .withResponse)
+        }
+    }
+    
+    func endShot() {
+        if let shotControlCharacteristic = self.shotControlCharacteristic {
+            var startShot = false.intValue
+            let data = Data(bytes: &startShot, count: MemoryLayout.size(ofValue: startShot))
+            peripheral.writeValue(data, for: shotControlCharacteristic, type: .withResponse)
         }
     }
 }

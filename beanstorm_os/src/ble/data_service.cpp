@@ -27,8 +27,8 @@ DataService::ShotControlCallbacks::ShotControlCallbacks (EventBridge & event_bri
 
 void DataService::ShotControlCallbacks::onWrite (NimBLECharacteristic * characteristic)
 {
-    const bool shot_control_value = characteristic->getValue ();
-    if (shot_control_value)
+    const auto shot_control_value = characteristic->getValue ().data ();
+    if (*shot_control_value == static_cast<uint8_t> (true))
         event_bridge_.StartShot ();
     else
         event_bridge_.CancelShot ();
