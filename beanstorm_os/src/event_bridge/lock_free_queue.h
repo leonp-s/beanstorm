@@ -6,7 +6,7 @@
 /**
  * A single-producer, single-consumer lock-free queue
  *
- * Taken from Anthony Williams, C++ Concurrency in Action
+ * Implementation taken from Anthony Williams, C++ Concurrency in Action
  * PRACTICAL MULTITHREADING
  *
  */

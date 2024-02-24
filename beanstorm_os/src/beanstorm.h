@@ -7,6 +7,8 @@
 #include "peripherals/pressure_sensor.h"
 #include "peripherals/pump.h"
 #include "peripherals/temperature_sensor.h"
+#include "programs/brew_program.h"
+#include "programs/idle_program.h"
 #include "programs/program_controller.h"
 
 class Beanstorm
