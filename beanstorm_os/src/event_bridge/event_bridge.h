@@ -1,7 +1,36 @@
 #pragma once
 #include "lock_free_queue.h"
+#include "model.h"
 
 #include <functional>
+
+class NotificationBridge
+{
+public:
+    void UpdateModel (const Model & model);
+    std::function<void (Model)> OnModelUpdated;
+
+    void Loop ();
+
+private:
+    struct Event
+    {
+        enum class Type
+        {
+            kUpdateModel,
+        };
+
+        union Data
+        {
+            Model model;
+        };
+
+        Type type;
+        Data data;
+    };
+
+    LockFreeQueue<Event> notification_queue_;
+};
 
 class EventBridge
 {

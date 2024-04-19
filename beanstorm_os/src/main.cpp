@@ -8,12 +8,13 @@ static constexpr auto kBaudRate = 9600;
 
 UMS3 ums3;
 
+NotificationBridge notification_bridge;
 EventBridge event_bridge;
 
 DataService data_service {event_bridge};
 BeanstormBLE beanstorm_ble {data_service};
 
-Beanstorm beanstorm {data_service, event_bridge};
+Beanstorm beanstorm {data_service, event_bridge, notification_bridge};
 
 void setup ()
 {

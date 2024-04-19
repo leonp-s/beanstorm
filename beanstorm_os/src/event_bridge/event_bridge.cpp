@@ -1,5 +1,23 @@
 #include "event_bridge.h"
 
+void NotificationBridge::UpdateModel (const Model & model)
+{
+    notification_queue_.Push (Event {.type = Event::Type::kUpdateModel, .data = model});
+}
+
+void NotificationBridge::Loop ()
+{
+    while (const auto event = notification_queue_.Pop ())
+    {
+        switch (event->type)
+        {
+            case Event::Type::kUpdateModel:
+                OnModelUpdated (event->data.model);
+                break;
+        }
+    }
+}
+
 void EventBridge::StartShot ()
 {
     event_queue_.Push (Event {.type = Event::Type::kStartShot, .data = {}});
