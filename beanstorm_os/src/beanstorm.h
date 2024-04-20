@@ -2,6 +2,7 @@
 
 #include "ble/data_service.h"
 #include "event_bridge/event_bridge.h"
+#include "peripherals/heater.h"
 #include "peripherals/peripherals.h"
 #include "peripherals/pindef.h"
 #include "peripherals/pressure_sensor.h"
@@ -41,10 +42,11 @@ private:
          .spi_pin_do = Pindef::Sensors::kTemperatureSensorSpiDoPin,
          .spi_pin_clk = Pindef::Sensors::kTemperatureSensorSpiClkPin}};
     PressureSensor pressure_sensor_;
+    Heater heater_;
 
     ProgramController program_controller_;
-    IdleProgram idle_program_;
-    BrewProgram brew_program_ {pump_};
+    IdleProgram idle_program_ {heater_};
+    BrewProgram brew_program_ {pump_, heater_};
 
     DataService & data_service_;
     EventBridge & event_bridge_;

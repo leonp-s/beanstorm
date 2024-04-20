@@ -1,34 +1,30 @@
 #include "brew_program.h"
 
-BrewProgram::BrewProgram (Pump & pump)
+BrewProgram::BrewProgram (Pump & pump, Heater & heater)
     : pump_ (pump)
+    , heater_ (heater)
 {
 }
 
 void BrewProgram::Enter ()
 {
-    Serial.println ("Enter Brew Program");
     Peripherals::SetBoilerOff ();
-
-    window_start_time_ = millis ();
-    shot_start_time_ = millis ();
-    set_point_ = 82.0;
-
-    pid_.SetOutputLimits (0, window_size_);
-    pid_.SetMode (AUTOMATIC);
-
     Peripherals::SetValveOpened ();
-
     pump_.SetOff ();
+
+    heater_.SetTarget (92.0f);
+    heater_.Start ();
+
+    shot_start_time_ = millis ();
     smoothed_pump_speed_normalised_ = 0.f;
 }
 
 void BrewProgram::Leave ()
 {
-    Serial.println ("Leave Brew Program");
-    Peripherals::SetBoilerOff ();
-    Peripherals::SetValveClosed ();
     pump_.SetOff ();
+    Peripherals::SetValveClosed ();
+
+    heater_.Stop ();
 }
 
 float SmoothedValue (float value_to_smooth, float target)
@@ -40,17 +36,7 @@ float SmoothedValue (float value_to_smooth, float target)
 
 void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
 {
-    input_ = sensor_state.temperature;
-    pid_.Compute ();
-
     const auto now = millis ();
-    if (now - window_start_time_ > window_size_)
-        window_start_time_ += window_size_;
-
-    if (output_ > now - window_start_time_)
-        Peripherals::SetBoilerOn ();
-    else
-        Peripherals::SetBoilerOff ();
 
     Serial.println (now - shot_start_time_);
     auto shot_time = now - shot_start_time_;

@@ -2,10 +2,6 @@
 
 #include <peripherals/peripherals.h>
 
-static constexpr double kKp = 16.16;
-static constexpr double kKi = 0.14;
-static constexpr double kKd = 480.10;
-
 struct Program
 {
     virtual ~Program () = default;

@@ -1,6 +1,6 @@
-#include "heater_program.h"
+#include "heater.h"
 
-void HeaterProgram::Loop (const Peripherals::SensorState & sensor_state)
+void Heater::Loop (const Peripherals::SensorState & sensor_state)
 {
     if (is_heating)
     {
@@ -18,7 +18,7 @@ void HeaterProgram::Loop (const Peripherals::SensorState & sensor_state)
     }
 }
 
-void HeaterProgram::StartHeater ()
+void Heater::Start ()
 {
     Peripherals::SetBoilerOff ();
 
@@ -31,7 +31,7 @@ void HeaterProgram::StartHeater ()
     is_heating = true;
 }
 
-void HeaterProgram::StopHeater ()
+void Heater::Stop ()
 {
     is_heating = false;
 
@@ -39,7 +39,7 @@ void HeaterProgram::StopHeater ()
     Peripherals::SetBoilerOff ();
 }
 
-void HeaterProgram::SetTarget (float set_point)
+void Heater::SetTarget (float set_point)
 {
     set_point_ = static_cast<double> (set_point);
 }

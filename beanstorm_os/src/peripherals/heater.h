@@ -3,12 +3,13 @@
 #include <PID_v1.h>
 #include <peripherals/peripherals.h>
 
-class HeaterProgram
+class Heater
 {
 public:
-    void StartHeater ();
+    void Start ();
+    void Stop ();
+
     void SetTarget (float set_point);
-    void StopHeater ();
 
     void Loop (const Peripherals::SensorState & sensor_state);
 
@@ -16,7 +17,7 @@ private:
     static constexpr double kKp = 16.16;
     static constexpr double kKi = 0.14;
     static constexpr double kKd = 480.10;
-    
+
     bool is_heating = false;
     double set_point_ {};
     double input_ {};
