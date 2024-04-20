@@ -14,7 +14,7 @@ EventBridge event_bridge;
 DataService data_service {event_bridge};
 BeanstormBLE beanstorm_ble {data_service};
 
-Beanstorm beanstorm {data_service, event_bridge, notification_bridge};
+Beanstorm beanstorm {data_service, event_bridge};
 
 void setup ()
 {

@@ -2,7 +2,7 @@
 
 void NotificationBridge::UpdateModel (const Model & model)
 {
-    notification_queue_.Push (Event {.type = Event::Type::kUpdateModel, .data = model});
+    notification_queue_.Push (Event {.type = Event::Type::kUpdateModel, .data = {model}});
 }
 
 void NotificationBridge::Loop ()
