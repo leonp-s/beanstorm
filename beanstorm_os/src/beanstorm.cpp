@@ -9,6 +9,8 @@ Beanstorm::Beanstorm (DataService & data_service, EventBridge & event_bridge)
 {
     event_bridge_.OnStartShot = [&] { HandleStartShot (); };
     event_bridge_.OnCancelShot = [&] { HandleEndShot (); };
+
+    brew_program_.OnShotEnded = [&] { HandleEndShot (); };
 }
 
 void Beanstorm::SetupPeripherals ()
@@ -23,6 +25,7 @@ void Beanstorm::SetPeripheralsToDefaultState ()
     Peripherals::SetBoilerOff ();
     Peripherals::SetValveClosed ();
     pump_.SetOff ();
+    heater_.Stop ();
 }
 
 void Beanstorm::Setup ()
@@ -95,6 +98,7 @@ void Beanstorm::Loop ()
     HandleSwitchEvents ();
 
     program_controller_.Loop (sensor_state);
+    heater_.Loop (sensor_state);
     data_service_.SensorStateUpdated (sensor_state);
 
     delay (kServiceIntervalMs);

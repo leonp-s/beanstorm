@@ -23,7 +23,6 @@ void BrewProgram::Leave ()
 {
     pump_.SetOff ();
     Peripherals::SetValveClosed ();
-
     heater_.Stop ();
 }
 
@@ -64,14 +63,8 @@ void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
     }
     else
     {
-        Serial.println ("Shot finished");
         Peripherals::SetValveClosed ();
         pump_.SetOff ();
+        OnShotEnded ();
     }
-
-    Serial.print ("Temperature: ");
-    Serial.println (sensor_state.temperature);
-
-    Serial.print ("Pressure: ");
-    Serial.println (sensor_state.pressure);
 }

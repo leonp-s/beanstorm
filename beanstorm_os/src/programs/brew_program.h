@@ -16,6 +16,8 @@ public:
     void Leave () override;
     void Loop (const Peripherals::SensorState & sensor_state) override;
 
+    std::function<void ()> OnShotEnded;
+
 private:
     Pump & pump_;
     Heater & heater_;
