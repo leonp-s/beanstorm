@@ -13,6 +13,10 @@
 		E13666822B7A75E100AF2C98 /* BeanstormPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13666812B7A75E100AF2C98 /* BeanstormPeripheral.swift */; };
 		E13666842B7A760C00AF2C98 /* BeanstormBLEModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13666832B7A760C00AF2C98 /* BeanstormBLEModel.swift */; };
 		E13666862B7AA95600AF2C98 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13666852B7AA95600AF2C98 /* FloatingPoint.swift */; };
+		E16D583D2BD5357C00E0CDFC /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = E16D583C2BD5357C00E0CDFC /* SwiftProtobuf */; };
+		E16D583F2BD5357C00E0CDFC /* SwiftProtobufPluginLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = E16D583E2BD5357C00E0CDFC /* SwiftProtobufPluginLibrary */; };
+		E16D58412BD5357C00E0CDFC /* protoc-gen-swift in Frameworks */ = {isa = PBXBuildFile; productRef = E16D58402BD5357C00E0CDFC /* protoc-gen-swift */; };
+		E16D584D2BD67BE800E0CDFC /* beanstorm_schema.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16D584C2BD67BE800E0CDFC /* beanstorm_schema.pb.swift */; };
 		E17E3EA02B323A6D000F456C /* BeanstormApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */; };
 		E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E3EA12B323A6D000F456C /* ContentView.swift */; };
 		E17E3EA42B323A6D000F456C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E17E3EA32B323A6D000F456C /* Assets.xcassets */; };
@@ -37,6 +41,7 @@
 		E13666812B7A75E100AF2C98 /* BeanstormPeripheral.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormPeripheral.swift; sourceTree = "<group>"; };
 		E13666832B7A760C00AF2C98 /* BeanstormBLEModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormBLEModel.swift; sourceTree = "<group>"; };
 		E13666852B7AA95600AF2C98 /* FloatingPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPoint.swift; sourceTree = "<group>"; };
+		E16D584C2BD67BE800E0CDFC /* beanstorm_schema.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = beanstorm_schema.pb.swift; sourceTree = "<group>"; };
 		E17E3E9C2B323A6D000F456C /* beanstorm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = beanstorm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E17E3E9F2B323A6D000F456C /* BeanstormApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormApp.swift; sourceTree = "<group>"; };
 		E17E3EA12B323A6D000F456C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -60,6 +65,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E16D583F2BD5357C00E0CDFC /* SwiftProtobufPluginLibrary in Frameworks */,
+				E16D583D2BD5357C00E0CDFC /* SwiftProtobuf in Frameworks */,
+				E16D58412BD5357C00E0CDFC /* protoc-gen-swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,6 +94,14 @@
 			path = ble;
 			sourceTree = "<group>";
 		};
+		E16D58472BD5383700E0CDFC /* schemas */ = {
+			isa = PBXGroup;
+			children = (
+				E16D584C2BD67BE800E0CDFC /* beanstorm_schema.pb.swift */,
+			);
+			path = schemas;
+			sourceTree = "<group>";
+		};
 		E17E3E932B323A6D000F456C = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +121,7 @@
 		E17E3E9E2B323A6D000F456C /* beanstorm */ = {
 			isa = PBXGroup;
 			children = (
+				E16D58472BD5383700E0CDFC /* schemas */,
 				E13656E02B7BCFA100FD14A5 /* extensions */,
 				E19948132B7AC87B000E9B37 /* data */,
 				E13666802B7A75C900AF2C98 /* ble */,
@@ -182,6 +199,11 @@
 			dependencies = (
 			);
 			name = beanstorm;
+			packageProductDependencies = (
+				E16D583C2BD5357C00E0CDFC /* SwiftProtobuf */,
+				E16D583E2BD5357C00E0CDFC /* SwiftProtobufPluginLibrary */,
+				E16D58402BD5357C00E0CDFC /* protoc-gen-swift */,
+			);
 			productName = beanstorm;
 			productReference = E17E3E9C2B323A6D000F456C /* beanstorm.app */;
 			productType = "com.apple.product-type.application";
@@ -210,6 +232,9 @@
 				Base,
 			);
 			mainGroup = E17E3E932B323A6D000F456C;
+			packageReferences = (
+				E16D583B2BD5357C00E0CDFC /* XCRemoteSwiftPackageReference "swift-protobuf" */,
+			);
 			productRefGroup = E17E3E9D2B323A6D000F456C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -239,6 +264,7 @@
 				E18B79552B378269001A3FF0 /* ProfileEditor.swift in Sources */,
 				E136667D2B77E94600AF2C98 /* DeviceConnectivity.swift in Sources */,
 				E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */,
+				E16D584D2BD67BE800E0CDFC /* beanstorm_schema.pb.swift in Sources */,
 				E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */,
 				E13666822B7A75E100AF2C98 /* BeanstormPeripheral.swift in Sources */,
 				E13656E22B7BD35E00FD14A5 /* View.swift in Sources */,
@@ -462,6 +488,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E16D583B2BD5357C00E0CDFC /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-protobuf.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.26.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E16D583C2BD5357C00E0CDFC /* SwiftProtobuf */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E16D583B2BD5357C00E0CDFC /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = SwiftProtobuf;
+		};
+		E16D583E2BD5357C00E0CDFC /* SwiftProtobufPluginLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E16D583B2BD5357C00E0CDFC /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = SwiftProtobufPluginLibrary;
+		};
+		E16D58402BD5357C00E0CDFC /* protoc-gen-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E16D583B2BD5357C00E0CDFC /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = "protoc-gen-swift";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E17E3E942B323A6D000F456C /* Project object */;
 }

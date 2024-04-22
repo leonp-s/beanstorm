@@ -34,6 +34,8 @@ void Beanstorm::Setup ()
     SetupPeripherals ();
     SetPeripheralsToDefaultState ();
 
+    last_switch_state_ = Peripherals::ReadSwitchState ();
+
     const auto setup_error = TaskWatchdog::SetupWatchdog (kWatchdogTimeout);
     const auto add_task_error = TaskWatchdog::AddTask (nullptr);
 
@@ -47,6 +49,30 @@ void Beanstorm::Setup ()
     if (TaskWatchdog::IsBootReasonReset ())
         Serial.println ("Reboot from WDT");
 
+    os_preferences_.Setup ();
+
+    //    os_preferences_.SaveHeaterPID ({.kp = 16.16, .ki = 0.14, .kd = 480.10});
+    //    os_preferences_.SavePumpPID ({.kp = 0.1, .ki = 0.0, .kd = 0.0});
+
+    heater_pid_constants_ = os_preferences_.LoadHeaterPID ();
+    pump_pid_constants_ = os_preferences_.LoadPumpPID ();
+
+    BrewProfile default_profile {.uuid = "test_profile_uuid",
+                                 .temperature = 86.0f,
+                                 .control_type = ControlType::kPressure,
+                                 .control_points = {ControlPoint {.time = 0.0f, .value = 6.0f},
+                                                    ControlPoint {.time = 10.0f, .value = 6.0f},
+                                                    ControlPoint {.time = 10.0f, .value = 3.0f},
+                                                    ControlPoint {.time = 20.0f, .value = 3.0f},
+                                                    ControlPoint {.time = 20.0f, .value = 6.0f},
+                                                    ControlPoint {.time = 30.0f, .value = 6.0f}}};
+
+    auto save_result = os_preferences_.SaveBrewProfile (default_profile);
+    if (! save_result)
+        Serial.println ("Failed to save brew_profile");
+
+    brew_profile_ = os_preferences_.LoadBrewProfile ();
+    
     program_controller_.LoadProgram (&idle_program_);
 }
 

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+enum PControlType {
+  pressure = 0;
+  flow = 1;
+}
+
+message PControlPoint
+{
+  float time = 1;
+  float value = 2;
+}
+
+message PBrewProfile {
+  string uuid = 1;
+  float temperature = 2;
+  PControlType control_type = 3;
+//  repeated PControlPoint control_points = 4;
+}
+
+message PPID {
+  float kp = 1;
+  float ki = 2;
+  float kd = 3;
+}

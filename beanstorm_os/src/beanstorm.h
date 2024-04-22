@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ble/data_service.h"
+#include "brew_profile.h"
 #include "event_bridge/event_bridge.h"
+#include "os_preferences.h"
 #include "peripherals/heater.h"
 #include "peripherals/peripherals.h"
 #include "peripherals/pindef.h"
@@ -32,6 +34,12 @@ private:
     static constexpr int kWatchdogTimeout = 1;
     static constexpr int kServiceIntervalMs = 200;
 
+    OsPreferences os_preferences_;
+
+    PIDConstants heater_pid_constants_ {};
+    PIDConstants pump_pid_constants_ {};
+
+    BrewProfile brew_profile_ {};
     Peripherals::SwitchState last_switch_state_ {.steam = false, .brew = false, .water = false};
 
     Pump pump_ {{.motor_pin_1 = Pindef::Control::kPumpMotorPinOne,
@@ -45,8 +53,8 @@ private:
     Heater heater_;
 
     ProgramController program_controller_;
-    IdleProgram idle_program_ {heater_};
-    BrewProgram brew_program_ {pump_, heater_};
+    IdleProgram idle_program_ {heater_, brew_profile_};
+    BrewProgram brew_program_ {pump_, heater_, brew_profile_};
 
     DataService & data_service_;
     EventBridge & event_bridge_;
