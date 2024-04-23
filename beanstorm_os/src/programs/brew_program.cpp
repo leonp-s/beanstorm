@@ -7,6 +7,11 @@ BrewProgram::BrewProgram (Pump & pump, Heater & heater, const BrewProfile & brew
 {
 }
 
+void BrewProgram::SetPumpTunings (const PIDConstants & pid_constants)
+{
+    pid_.SetTunings (pid_constants.kp, pid_constants.ki, pid_constants.kd);
+}
+
 void BrewProgram::Enter ()
 {
     Peripherals::SetBoilerOff ();
@@ -27,7 +32,6 @@ void BrewProgram::Enter ()
     shot_start_time_ = millis ();
 
     target_pressure_ = 0.0;
-    smoothed_pump_speed_normalised_ = 0.f;
 
     pid_.SetOutputLimits (0.0, 1.0);
     pid_.SetMode (AUTOMATIC);

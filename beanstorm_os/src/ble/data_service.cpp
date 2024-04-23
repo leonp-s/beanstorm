@@ -15,15 +15,6 @@ const NimBLEUUID DataService::kFlowCharacteristicUUID =
 const NimBLEUUID DataService::kShotControlCharacteristicUUID =
     NimBLEUUID ("7e4881af-f9f6-4c12-bf5c-70509ba3d6b4");
 
-const NimBLEUUID DataService::kBrewStateCharacteristicUUID =
-    NimBLEUUID ("098ee759-8332-4492-8707-9d25875fe1a5");
-
-const NimBLEUUID DataService::kIdleStateCharacteristicUUID =
-    NimBLEUUID ("b15d2f31-3998-47fb-bf87-a73d302336cf");
-
-const NimBLEUUID DataService::kProgramStateCharacteristicUUID =
-    NimBLEUUID ("cd4bbb6a-1e17-4c5b-9e13-37f98cf2326d");
-
 DataService::DataService (EventBridge & event_bridge)
     : event_bridge_ (event_bridge)
 {
@@ -64,18 +55,6 @@ void DataService::Setup (NimBLEServer * ble_server)
         kShotControlCharacteristicUUID, NIMBLE_PROPERTY::WRITE);
     shot_control_characteristic_->setValue (false);
     shot_control_characteristic_->setCallbacks (&shot_control_callbacks_);
-
-    brew_state_characteristic_ = data_service_->createCharacteristic (
-        kBrewStateCharacteristicUUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-    brew_state_characteristic_->setValue (flow_.load ());
-
-    idle_state_characteristic_ = data_service_->createCharacteristic (
-        kIdleStateCharacteristicUUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-    idle_state_characteristic_->setValue (flow_.load ());
-
-    program_state_characteristic_ = data_service_->createCharacteristic (
-        kProgramStateCharacteristicUUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-    program_state_characteristic_->setValue (flow_.load ());
 
     data_service_->start ();
 }

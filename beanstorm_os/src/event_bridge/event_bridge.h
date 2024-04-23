@@ -3,6 +3,7 @@
 #include "model.h"
 
 #include <functional>
+#include <os_preferences.h>
 
 class NotificationBridge
 {
@@ -36,10 +37,16 @@ class EventBridge
 {
 public:
     void StartShot ();
-    void CancelShot ();
-
     std::function<void ()> OnStartShot;
+
+    void CancelShot ();
     std::function<void ()> OnCancelShot;
+
+    void UpdateHeaterPID (const PIDConstants & pid_constants);
+    std::function<void (const PIDConstants & pid_constants)> OnHeaterPIDUpdated;
+
+    void UpdatePumpPID (const PIDConstants & pid_constants);
+    std::function<void (const PIDConstants & pid_constants)> OnPumpPIDUpdated;
 
     void Loop ();
 
@@ -49,11 +56,14 @@ private:
         enum class Type
         {
             kStartShot,
-            kCancelShot
+            kCancelShot,
+            kUpdateHeaterPID,
+            kUpdatePumpPID,
         };
 
         union Data
         {
+            PIDConstants pid_constants_;
         };
 
         Type type;

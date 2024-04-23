@@ -83,8 +83,9 @@ struct PBrewProfile {
 
   var temperature: Float = 0
 
-  ///  repeated PControlPoint control_points = 4;
   var controlType: PControlType = .pressure
+
+  var controlPoints: [PControlPoint] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -167,6 +168,7 @@ extension PBrewProfile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     1: .same(proto: "uuid"),
     2: .same(proto: "temperature"),
     3: .standard(proto: "control_type"),
+    4: .standard(proto: "control_points"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -178,6 +180,7 @@ extension PBrewProfile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
       case 1: try { try decoder.decodeSingularStringField(value: &self.uuid) }()
       case 2: try { try decoder.decodeSingularFloatField(value: &self.temperature) }()
       case 3: try { try decoder.decodeSingularEnumField(value: &self.controlType) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.controlPoints) }()
       default: break
       }
     }
@@ -193,6 +196,9 @@ extension PBrewProfile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     if self.controlType != .pressure {
       try visitor.visitSingularEnumField(value: self.controlType, fieldNumber: 3)
     }
+    if !self.controlPoints.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.controlPoints, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -200,6 +206,7 @@ extension PBrewProfile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementat
     if lhs.uuid != rhs.uuid {return false}
     if lhs.temperature != rhs.temperature {return false}
     if lhs.controlType != rhs.controlType {return false}
+    if lhs.controlPoints != rhs.controlPoints {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -24,7 +24,9 @@ typedef struct _PControlPoint {
 typedef struct _PBrewProfile {
     char uuid[37];
     float temperature;
-    PControlType control_type; /* repeated PControlPoint control_points = 4; */
+    PControlType control_type;
+    pb_size_t control_points_count;
+    PControlPoint control_points[20];
 } PBrewProfile;
 
 typedef struct _PPID {
@@ -50,10 +52,10 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define PControlPoint_init_default               {0, 0}
-#define PBrewProfile_init_default                {"", 0, _PControlType_MIN}
+#define PBrewProfile_init_default                {"", 0, _PControlType_MIN, 0, {PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default, PControlPoint_init_default}}
 #define PPID_init_default                        {0, 0, 0}
 #define PControlPoint_init_zero                  {0, 0}
-#define PBrewProfile_init_zero                   {"", 0, _PControlType_MIN}
+#define PBrewProfile_init_zero                   {"", 0, _PControlType_MIN, 0, {PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero, PControlPoint_init_zero}}
 #define PPID_init_zero                           {0, 0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -62,6 +64,7 @@ extern "C" {
 #define PBrewProfile_uuid_tag                    1
 #define PBrewProfile_temperature_tag             2
 #define PBrewProfile_control_type_tag            3
+#define PBrewProfile_control_points_tag          4
 #define PPID_kp_tag                              1
 #define PPID_ki_tag                              2
 #define PPID_kd_tag                              3
@@ -76,9 +79,11 @@ X(a, STATIC,   SINGULAR, FLOAT,    value,             2)
 #define PBrewProfile_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, STRING,   uuid,              1) \
 X(a, STATIC,   SINGULAR, FLOAT,    temperature,       2) \
-X(a, STATIC,   SINGULAR, UENUM,    control_type,      3)
+X(a, STATIC,   SINGULAR, UENUM,    control_type,      3) \
+X(a, STATIC,   REPEATED, MESSAGE,  control_points,    4)
 #define PBrewProfile_CALLBACK NULL
 #define PBrewProfile_DEFAULT NULL
+#define PBrewProfile_control_points_MSGTYPE PControlPoint
 
 #define PPID_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, FLOAT,    kp,                1) \
@@ -98,7 +103,7 @@ extern const pb_msgdesc_t PPID_msg;
 
 /* Maximum encoded size of messages (where known) */
 #define BEANSTORM_SCHEMA_PB_H_MAX_SIZE           PBrewProfile_size
-#define PBrewProfile_size                        45
+#define PBrewProfile_size                        285
 #define PControlPoint_size                       10
 #define PPID_size                                15
 

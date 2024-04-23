@@ -1,5 +1,10 @@
 #include "heater.h"
 
+void Heater::SetTunings (const PIDConstants & pid_constants)
+{
+    pid_.SetTunings (pid_constants.kp, pid_constants.ki, pid_constants.kd);
+}
+
 void Heater::Loop (const Peripherals::SensorState & sensor_state)
 {
     if (is_heating)

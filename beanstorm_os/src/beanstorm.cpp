@@ -10,6 +10,12 @@ Beanstorm::Beanstorm (DataService & data_service, EventBridge & event_bridge)
     event_bridge_.OnStartShot = [&] { HandleStartShot (); };
     event_bridge_.OnCancelShot = [&] { HandleEndShot (); };
 
+    event_bridge_.OnHeaterPIDUpdated = [&] (const PIDConstants & pid_constants)
+    { heater_.SetTunings (pid_constants); };
+
+    event_bridge_.OnPumpPIDUpdated = [&] (const PIDConstants & pid_constants)
+    { brew_program_.SetPumpTunings (pid_constants); };
+
     brew_program_.OnShotEnded = [&] { HandleEndShot (); };
 }
 
@@ -49,29 +55,7 @@ void Beanstorm::Setup ()
     if (TaskWatchdog::IsBootReasonReset ())
         Serial.println ("Reboot from WDT");
 
-    os_preferences_.Setup ();
-
-    //    os_preferences_.SaveHeaterPID ({.kp = 16.16, .ki = 0.14, .kd = 480.10});
-    //    os_preferences_.SavePumpPID ({.kp = 0.1, .ki = 0.0, .kd = 0.0});
-
-    heater_pid_constants_ = os_preferences_.LoadHeaterPID ();
-    pump_pid_constants_ = os_preferences_.LoadPumpPID ();
-
-    BrewProfile default_profile {.uuid = "5791f6ba-45db-4900-912e-8fe65af0bc05",
-                                 .temperature = 86.0f,
-                                 .control_type = ControlType::kFlow,
-                                 .control_points = {ControlPoint {.time = 0.0f, .value = 6.0f},
-                                                    ControlPoint {.time = 10.0f, .value = 6.0f},
-                                                    ControlPoint {.time = 10.0f, .value = 3.0f},
-                                                    ControlPoint {.time = 20.0f, .value = 3.0f},
-                                                    ControlPoint {.time = 20.0f, .value = 6.0f},
-                                                    ControlPoint {.time = 30.0f, .value = 6.0f}}};
-
-    auto save_result = os_preferences_.SaveBrewProfile (default_profile);
-    if (! save_result)
-        Serial.println ("Failed to save brew_profile");
-
-    brew_profile_ = os_preferences_.LoadBrewProfile ();
+    event_bridge_.Loop ();
     program_controller_.LoadProgram (&idle_program_);
 }
 

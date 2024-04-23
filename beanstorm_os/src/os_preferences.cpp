@@ -100,8 +100,18 @@ bool OsPreferences::SaveBrewProfile (const BrewProfile & brew_profile)
     p_brew_profile.temperature = brew_profile.temperature;
     p_brew_profile.control_type = ConvertControlType (brew_profile.control_type);
 
+    auto num_control_points = brew_profile.control_points.size ();
+    p_brew_profile.control_points_count = num_control_points;
+    for (auto i = 0; i < num_control_points; ++i)
+    {
+        auto & control_point = brew_profile.control_points [i];
+        p_brew_profile.control_points [i] = {.time = control_point.time,
+                                             .value = control_point.value};
+    }
+
     pb_byte_t buffer [PBrewProfile_size];
     pb_ostream_t stream = pb_ostream_from_buffer (buffer, PBrewProfile_size);
+
     auto status = pb_encode (&stream, PBrewProfile_fields, &p_brew_profile);
 
     if (status)
@@ -112,9 +122,12 @@ bool OsPreferences::SaveBrewProfile (const BrewProfile & brew_profile)
 
 BrewProfile OsPreferences::LoadBrewProfile ()
 {
+    auto profile_size = preferences_.getBytesLength ("brew_profile");
+
     pb_byte_t buffer [PBrewProfile_size];
-    preferences_.getBytes ("brew_profile", &buffer, PBrewProfile_size);
-    pb_istream_t stream = pb_istream_from_buffer (buffer, PBrewProfile_size);
+    preferences_.getBytes ("brew_profile", &buffer, profile_size);
+    pb_istream_t stream = pb_istream_from_buffer (buffer, profile_size);
+
     PBrewProfile p_brew_profile = PBrewProfile_init_zero;
     auto status = pb_decode (&stream, PBrewProfile_fields, &p_brew_profile);
     BrewProfile brew_profile;
@@ -131,6 +144,13 @@ BrewProfile OsPreferences::LoadBrewProfile ()
         brew_profile.uuid = std::string (p_brew_profile.uuid);
         brew_profile.temperature = p_brew_profile.temperature;
         brew_profile.control_type = ConvertPControlType (p_brew_profile.control_type);
+
+        for (auto i = 0; i < p_brew_profile.control_points_count; ++i)
+        {
+            auto & p_control_point = p_brew_profile.control_points [i];
+            brew_profile.control_points.push_back (
+                {.time = p_control_point.time, .value = p_control_point.value});
+        }
     }
 
     return brew_profile;

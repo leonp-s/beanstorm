@@ -15,7 +15,7 @@ message PBrewProfile {
   string uuid = 1;
   float temperature = 2;
   PControlType control_type = 3;
-//  repeated PControlPoint control_points = 4;
+  repeated PControlPoint control_points = 4;
 }
 
 message PPID {

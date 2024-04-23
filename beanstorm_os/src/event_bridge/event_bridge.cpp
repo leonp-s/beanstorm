@@ -28,6 +28,18 @@ void EventBridge::CancelShot ()
     event_queue_.Push (Event {.type = Event::Type::kCancelShot, .data = {}});
 }
 
+void EventBridge::UpdateHeaterPID (const PIDConstants & pid_constants)
+{
+    event_queue_.Push (
+        Event {.type = Event::Type::kUpdateHeaterPID, .data = {.pid_constants_ = pid_constants}});
+}
+
+void EventBridge::UpdatePumpPID (const PIDConstants & pid_constants)
+{
+    event_queue_.Push (
+        Event {.type = Event::Type::kUpdatePumpPID, .data = {.pid_constants_ = pid_constants}});
+}
+
 void EventBridge::Loop ()
 {
     while (const auto event = event_queue_.Pop ())
@@ -39,6 +51,12 @@ void EventBridge::Loop ()
                 break;
             case Event::Type::kCancelShot:
                 OnCancelShot ();
+                break;
+            case Event::Type::kUpdateHeaterPID:
+                OnHeaterPIDUpdated (event->data.pid_constants_);
+                break;
+            case Event::Type::kUpdatePumpPID:
+                OnPumpPIDUpdated (event->data.pid_constants_);
                 break;
         }
     }

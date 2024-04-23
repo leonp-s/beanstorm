@@ -36,9 +36,6 @@ private:
     NimBLECharacteristic * temperature_characteristic_ = nullptr;
     NimBLECharacteristic * flow_characteristic_ = nullptr;
     NimBLECharacteristic * shot_control_characteristic_ = nullptr;
-    NimBLECharacteristic * brew_state_characteristic_ = nullptr;
-    NimBLECharacteristic * idle_state_characteristic_ = nullptr;
-    NimBLECharacteristic * program_state_characteristic_ = nullptr;
 
     std::atomic<float> pressure_ {0.f};
     std::atomic<float> temperature_ {0.f};
@@ -49,7 +46,4 @@ private:
     static const NimBLEUUID kTemperatureCharacteristicUUID;
     static const NimBLEUUID kFlowCharacteristicUUID;
     static const NimBLEUUID kShotControlCharacteristicUUID;
-    static const NimBLEUUID kBrewStateCharacteristicUUID;
-    static const NimBLEUUID kIdleStateCharacteristicUUID;
-    static const NimBLEUUID kProgramStateCharacteristicUUID;
 };

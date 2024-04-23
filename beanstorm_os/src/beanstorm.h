@@ -3,7 +3,6 @@
 #include "ble/data_service.h"
 #include "brew_profile.h"
 #include "event_bridge/event_bridge.h"
-#include "os_preferences.h"
 #include "peripherals/heater.h"
 #include "peripherals/peripherals.h"
 #include "peripherals/pindef.h"
@@ -36,10 +35,16 @@ private:
 
     OsPreferences os_preferences_;
 
-    PIDConstants heater_pid_constants_ {};
-    PIDConstants pump_pid_constants_ {};
+    BrewProfile brew_profile_ {.uuid = "5791f6ba-45db-4900-912e-8fe65af0bc05",
+                               .temperature = 86.0f,
+                               .control_type = ControlType::kFlow,
+                               .control_points = {ControlPoint {.time = 0.0f, .value = 6.0f},
+                                                  ControlPoint {.time = 10.0f, .value = 6.0f},
+                                                  ControlPoint {.time = 10.0f, .value = 3.0f},
+                                                  ControlPoint {.time = 20.0f, .value = 3.0f},
+                                                  ControlPoint {.time = 20.0f, .value = 6.0f},
+                                                  ControlPoint {.time = 30.0f, .value = 6.0f}}};
 
-    BrewProfile brew_profile_ {};
     Peripherals::SwitchState last_switch_state_ {.steam = false, .brew = false, .water = false};
 
     Pump pump_ {{.motor_pin_1 = Pindef::Control::kPumpMotorPinOne,
