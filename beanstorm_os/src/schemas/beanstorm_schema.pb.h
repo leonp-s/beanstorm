@@ -22,7 +22,7 @@ typedef struct _PControlPoint {
 } PControlPoint;
 
 typedef struct _PBrewProfile {
-    pb_callback_t uuid;
+    char uuid[37];
     float temperature;
     PControlType control_type; /* repeated PControlPoint control_points = 4; */
 } PBrewProfile;
@@ -50,10 +50,10 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define PControlPoint_init_default               {0, 0}
-#define PBrewProfile_init_default                {{{NULL}, NULL}, 0, _PControlType_MIN}
+#define PBrewProfile_init_default                {"", 0, _PControlType_MIN}
 #define PPID_init_default                        {0, 0, 0}
 #define PControlPoint_init_zero                  {0, 0}
-#define PBrewProfile_init_zero                   {{{NULL}, NULL}, 0, _PControlType_MIN}
+#define PBrewProfile_init_zero                   {"", 0, _PControlType_MIN}
 #define PPID_init_zero                           {0, 0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
@@ -74,10 +74,10 @@ X(a, STATIC,   SINGULAR, FLOAT,    value,             2)
 #define PControlPoint_DEFAULT NULL
 
 #define PBrewProfile_FIELDLIST(X, a) \
-X(a, CALLBACK, SINGULAR, STRING,   uuid,              1) \
+X(a, STATIC,   SINGULAR, STRING,   uuid,              1) \
 X(a, STATIC,   SINGULAR, FLOAT,    temperature,       2) \
 X(a, STATIC,   SINGULAR, UENUM,    control_type,      3)
-#define PBrewProfile_CALLBACK pb_default_field_callback
+#define PBrewProfile_CALLBACK NULL
 #define PBrewProfile_DEFAULT NULL
 
 #define PPID_FIELDLIST(X, a) \
@@ -97,8 +97,8 @@ extern const pb_msgdesc_t PPID_msg;
 #define PPID_fields &PPID_msg
 
 /* Maximum encoded size of messages (where known) */
-/* PBrewProfile_size depends on runtime parameters */
-#define BEANSTORM_SCHEMA_PB_H_MAX_SIZE           PPID_size
+#define BEANSTORM_SCHEMA_PB_H_MAX_SIZE           PBrewProfile_size
+#define PBrewProfile_size                        45
 #define PControlPoint_size                       10
 #define PPID_size                                15
 

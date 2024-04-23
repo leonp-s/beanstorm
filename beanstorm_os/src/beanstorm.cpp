@@ -57,9 +57,9 @@ void Beanstorm::Setup ()
     heater_pid_constants_ = os_preferences_.LoadHeaterPID ();
     pump_pid_constants_ = os_preferences_.LoadPumpPID ();
 
-    BrewProfile default_profile {.uuid = "test_profile_uuid",
+    BrewProfile default_profile {.uuid = "5791f6ba-45db-4900-912e-8fe65af0bc05",
                                  .temperature = 86.0f,
-                                 .control_type = ControlType::kPressure,
+                                 .control_type = ControlType::kFlow,
                                  .control_points = {ControlPoint {.time = 0.0f, .value = 6.0f},
                                                     ControlPoint {.time = 10.0f, .value = 6.0f},
                                                     ControlPoint {.time = 10.0f, .value = 3.0f},
@@ -72,7 +72,6 @@ void Beanstorm::Setup ()
         Serial.println ("Failed to save brew_profile");
 
     brew_profile_ = os_preferences_.LoadBrewProfile ();
-    
     program_controller_.LoadProgram (&idle_program_);
 }
 
