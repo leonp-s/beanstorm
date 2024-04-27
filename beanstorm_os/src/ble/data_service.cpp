@@ -15,6 +15,9 @@ const NimBLEUUID DataService::kFlowCharacteristicUUID =
 const NimBLEUUID DataService::kShotControlCharacteristicUUID =
     NimBLEUUID ("7e4881af-f9f6-4c12-bf5c-70509ba3d6b4");
 
+const NimBLEUUID DataService::kHeaterPIDCharacteristicUUID =
+    NimBLEUUID ("ad94bdc2-8ea0-4282-aed8-47c4f917349b");
+
 DataService::DataService (EventBridge & event_bridge)
     : event_bridge_ (event_bridge)
 {
@@ -32,6 +35,14 @@ void DataService::ShotControlCallbacks::onWrite (NimBLECharacteristic * characte
         event_bridge_.StartShot ();
     else
         event_bridge_.CancelShot ();
+}
+
+void DataService::PIDCallbacks::onWrite (NimBLECharacteristic * characteristic)
+{
+    PIDSchema pid_schema {};
+    const auto pid_value = characteristic->getValue ();
+    memcpy (&pid_schema.buffer, pid_value.data (), sizeof (pid_schema.buffer));
+    OnPIDValueUpdated (pid_schema.Decode ());
 }
 
 void DataService::Setup (NimBLEServer * ble_server)
@@ -56,7 +67,27 @@ void DataService::Setup (NimBLEServer * ble_server)
     shot_control_characteristic_->setValue (false);
     shot_control_characteristic_->setCallbacks (&shot_control_callbacks_);
 
+    CreateHeaterPIDCharacteristic ();
+
     data_service_->start ();
+}
+
+void DataService::CreateHeaterPIDCharacteristic ()
+{
+    heater_pid_characteristic_ = data_service_->createCharacteristic (
+        kHeaterPIDCharacteristicUUID,
+        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+
+    heater_pid_callbacks_.OnPIDValueUpdated = [&] (const PIDConstants & pid_constants)
+    { event_bridge_.OnHeaterPIDUpdated (pid_constants); };
+    heater_pid_characteristic_->setCallbacks (&heater_pid_callbacks_);
+}
+
+void DataService::HeaterPIDUpdated (const PIDConstants & pid_constants)
+{
+    PIDSchema pid_schema {};
+    if (pid_schema.Encode (pid_constants))
+        heater_pid_characteristic_->setValue (pid_schema.buffer);
 }
 
 void DataService::Service ()

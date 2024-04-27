@@ -1,15 +1,9 @@
 #pragma once
 
 #include "brew_profile.h"
+#include "os_schema.h"
 
 #include <Preferences.h>
-
-struct PIDConstants
-{
-    float kp;
-    float ki;
-    float kd;
-};
 
 class OsPreferences
 {
