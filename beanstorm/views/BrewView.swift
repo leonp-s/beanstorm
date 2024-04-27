@@ -130,11 +130,13 @@ class MockDataService: DataService {
     func startShot() { }
     func endShot() { }
     func updateSettings(heaterPid: PPID) { }
+    func sendBrewProfile(brewProfile: PBrewProfile) { }
 
     var pressureSubject: CurrentValueSubject<Float, Never>
     var temperatureSubject: CurrentValueSubject<Float, Never>
     var flowSubject: CurrentValueSubject<Float, Never>
     var heaterPIDSubject: CurrentValueSubject<PPID?, Never>
+    var brewProfileTransferSubject: CurrentValueSubject<BrewTransferState, Never>
     
     init() {
         self.pressureSubject = CurrentValueSubject<Float, Never>(1.4)
@@ -145,6 +147,7 @@ class MockDataService: DataService {
             $0.ki = 0.6
             $0.kd = 1.2
         })
+        self.brewProfileTransferSubject = CurrentValueSubject<BrewTransferState, Never>(.idle)
     }
 }
 

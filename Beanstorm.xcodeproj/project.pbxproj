@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E107292F2BDD6D400010FCA1 /* Binding.swift in Sources */ = {isa = PBXBuildFile; fileRef = E107292E2BDD6D400010FCA1 /* Binding.swift */; };
 		E13656E22B7BD35E00FD14A5 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13656E12B7BD35E00FD14A5 /* View.swift */; };
 		E136667D2B77E94600AF2C98 /* DeviceConnectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */; };
 		E136667F2B77EB6600AF2C98 /* BeanstormBLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */; };
@@ -35,6 +36,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E107292E2BDD6D400010FCA1 /* Binding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Binding.swift; sourceTree = "<group>"; };
 		E13656E12B7BD35E00FD14A5 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceConnectivity.swift; sourceTree = "<group>"; };
 		E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormBLE.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 				E13666852B7AA95600AF2C98 /* FloatingPoint.swift */,
 				E13656E12B7BD35E00FD14A5 /* View.swift */,
 				E187B29C2B87D0AF0050BFA2 /* Bool.swift */,
+				E107292E2BDD6D400010FCA1 /* Binding.swift */,
 			);
 			path = extensions;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 				E13666862B7AA95600AF2C98 /* FloatingPoint.swift in Sources */,
 				E18B794C2B375B59001A3FF0 /* SettingsView.swift in Sources */,
 				E13666842B7A760C00AF2C98 /* BeanstormBLEModel.swift in Sources */,
+				E107292F2BDD6D400010FCA1 /* Binding.swift in Sources */,
 				E19948152B7AC893000E9B37 /* BrewProfile.swift in Sources */,
 				E17E3EB42B337279000F456C /* QuickMonitorView.swift in Sources */,
 				E187B29D2B87D0AF0050BFA2 /* Bool.swift in Sources */,
@@ -422,7 +426,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -452,7 +456,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

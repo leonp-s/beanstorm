@@ -7,6 +7,7 @@ protocol DataService {
     var temperatureSubject: CurrentValueSubject<Float, Never> { get }
     var flowSubject: CurrentValueSubject<Float, Never> { get }
     var heaterPIDSubject: CurrentValueSubject<PPID?, Never> { get }
+    var brewProfileTransferSubject: CurrentValueSubject<BrewTransferState, Never> { get }
     
     func startShot();
     func endShot();
@@ -19,10 +20,10 @@ let temperatureCharacteristicUUID = CBUUID(string: "76400bdc-15ce-4375-b861-97be
 let flowCharacteristicUUID = CBUUID(string: "13cdb71e-8d34-4d53-8f40-05d5677a48f3")
 let shotControlCharacteristicUUID = CBUUID(string: "7e4881af-f9f6-4c12-bf5c-70509ba3d6b4")
 let heaterPIDCharacteristicUUID = CBUUID(string: "ad94bdc2-8ea0-4282-aed8-47c4f917349b")
-let brewProfileTransferCharacteristicUUID = CBUUID(string: "...")
+let brewProfileTransferCharacteristicUUID = CBUUID(string: "417249bc-3a8b-4958-8d44-d080eb48b890")
 
 
-enum BrewTransferState {
+enum BrewTransferState: Equatable {
     case idle
     case transfer
     case failed(String)
@@ -246,7 +247,8 @@ class BeanstormPeripheralModel: ObservableObject {
     @Published var pressure: Double = 0.0
     @Published var temperature: Double = 0.0
     @Published var flow: Double = 0.0
-    @Published var heaterPid: PPID?
+    @Published var heaterPid: PPID? = nil
+    @Published var brewProfileTransfer: BrewTransferState = .idle
         
     init(dataService: DataService) {
         self.dataService = dataService
@@ -265,6 +267,10 @@ class BeanstormPeripheralModel: ObservableObject {
         
         self.dataService.heaterPIDSubject
             .sink { value in self.heaterPid = value }
+            .store(in: &subscriptions)
+        
+        self.dataService.brewProfileTransferSubject
+            .sink { value in self.brewProfileTransfer = value }
             .store(in: &subscriptions)
     }
 }

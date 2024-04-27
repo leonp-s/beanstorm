@@ -1,6 +1,18 @@
 import SwiftUI
 import SwiftData
 
+let previewProfile = BrewProfile(
+    temperature: 88.0,
+    name: "Profile # 1",
+    controlType: .pressure,
+    controlPoints: [
+        ControlPoint(id: UUID(), time: 0.0, value: 1.0),
+        ControlPoint(id: UUID(), time: 4.0, value: 0.8),
+        ControlPoint(id: UUID(), time: 6.0, value: 0.3),
+        ControlPoint(id: UUID(), time: 10.0, value: 0.9)
+    ]
+)
+
 struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
     let profile: BrewProfile
@@ -98,17 +110,7 @@ struct EditProfileView: View {
     let container = try! ModelContainer(for: BrewProfile.self, configurations: config)
 
     return EditProfileView(
-        profile: BrewProfile(
-            temperature: 88.0,
-            name: "Profile # 1",
-            controlType: .pressure,
-            controlPoints: [
-                ControlPoint(id: UUID(), time: 0.0, value: 1.0),
-                ControlPoint(id: UUID(), time: 4.0, value: 0.8),
-                ControlPoint(id: UUID(), time: 6.0, value: 0.3),
-                ControlPoint(id: UUID(), time: 10.0, value: 0.9)
-            ]
-        )
+        profile: previewProfile
     )
     .modelContainer(container)
 }
@@ -198,10 +200,81 @@ struct NewBrewProfileView: View {
     NewBrewProfileView()
 }
 
+struct TransferProfileView: View {
+    @Binding var brewProfile: BrewProfile
+    @StateObject var peripheralModel: BeanstormPeripheralModel
+    
+    var body: some View {
+        VStack {
+            Image(systemName: "network")
+                .font(.largeTitle)
+                .padding()
+            Text("This will transfer the brew profile to the machine via BLE so it can be reproduced. This may take a second.")
+                .multilineTextAlignment(.center)
+            
+            if peripheralModel.brewProfileTransfer != .transfer {
+                Button(action: {
+                    peripheralModel.dataService.sendBrewProfile(
+                        brewProfile: PBrewProfile(brewProfile)
+                    )
+                }) {
+                    Text("Transfer Profile")
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .buttonStyle(.borderedProminent)
+                
+                if case .failed(let error) = peripheralModel.brewProfileTransfer {
+                    Divider()
+                    Text(error)
+                        .font(.title)
+                        .foregroundStyle(.red)
+                }
+            } else {
+                ProgressView()
+            }
+            Divider()
+                HStack {
+                    Section(header: Text("Profile Name")) {
+                        Text(brewProfile.name)
+                            .font(.headline)
+                    }
+                    Section(header: Text("Shot Duration")) {
+                        Text(String(format: "%.1f", getShotDuration(controlPoints: brewProfile.controlPoints)) + " s")
+                            .font(.headline)
+                    }
+                }
+                Section(header: Text("Profile")) {
+                    ProfileGraph(
+                        controlType: $brewProfile.controlType,
+                        controlPoints: $brewProfile.controlPoints
+                    )
+                    .frame(height: 280)
+                }
+        }
+        .padding()
+    }
+}
+
+#Preview("Transfer Profile View") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: BrewProfile.self, configurations: config)
+    
+    return TransferProfileView(
+        brewProfile: .constant(previewProfile),
+        peripheralModel: BeanstormPeripheralModel(
+            dataService: MockDataService()
+        )
+    )
+    .modelContainer(container)
+}
+
 struct ProfilesView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \BrewProfile.name) private var profiles: [BrewProfile]
+    @EnvironmentObject private var beanstormBLE: BeanstormBLEModel
+    
     @State private var showingAddView = false
+    @State private var transferProfile: BrewProfile? = nil
 
     var body: some View {
         NavigationStack {
@@ -225,6 +298,14 @@ struct ProfilesView: View {
                                     Text(profile.name)
                                         .bold()
                                 }
+                            }
+                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                Button {
+                                    transferProfile = profile
+                                } label: {
+                                    Label("Upload Profile", systemImage: "square.and.arrow.up")
+                                }
+                                .tint(.blue)
                             }
                         }
                         .onDelete { indexSet in
@@ -253,11 +334,37 @@ struct ProfilesView: View {
             .sheet(isPresented: $showingAddView) {
                 NewBrewProfileView()
             }
+            .sheet(isPresented: $transferProfile.mappedToBool(), onDismiss: {
+                transferProfile = nil
+            }, content: {
+                NavigationStack {
+                    Group {
+                        if(beanstormBLE.isConnected) {
+                            if let brewProfile = Binding($transferProfile) {
+                                TransferProfileView(
+                                    brewProfile: brewProfile,
+                                    peripheralModel: .init(
+                                        dataService: beanstormBLE.service.connectedPeripheral!
+                                    )
+                                )
+                            }
+                        } else {
+                            Text("Connect to a machine to transfer a profile!")
+                        }
+                    }
+                    .navigationTitle("Transfer Profile")
+                }
+                .presentationDetents([.medium, .large])
+            })
         }
     }
 }
 
 #Preview("Profiles View") {
-    ProfilesView()
-        .modelContainer(for: BrewProfile.self)
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: BrewProfile.self, configurations: config)
+    container.mainContext.insert(previewProfile)
+    return ProfilesView()
+        .modelContainer(container)
+        .environmentObject(BeanstormBLEModel())
 }
