@@ -1,5 +1,7 @@
 #include "data_service.h"
 
+#include <cstring>
+
 const NimBLEUUID DataService::kDataServiceUUID =
     NimBLEUUID ("8ec57513-faca-4a5c-9a45-912bd28ce1dc");
 
@@ -18,10 +20,10 @@ const NimBLEUUID DataService::kShotControlCharacteristicUUID =
 const NimBLEUUID DataService::kHeaterPIDCharacteristicUUID =
     NimBLEUUID ("ad94bdc2-8ea0-4282-aed8-47c4f917349b");
 
-DataService::DataService (EventBridge & event_bridge)
-    : event_bridge_ (event_bridge)
-{
-}
+const NimBLEUUID DataService::kBrewTransferCharacteristicUUID =
+    NimBLEUUID ("417249bc-3a8b-4958-8d44-d080eb48b890");
+
+const std::string DataService::BrewTransferCallbacks::kEndOfFileFlag = "EOF";
 
 DataService::ShotControlCallbacks::ShotControlCallbacks (EventBridge & event_bridge)
     : event_bridge_ (event_bridge)
@@ -43,6 +45,30 @@ void DataService::PIDCallbacks::onWrite (NimBLECharacteristic * characteristic)
     const auto pid_value = characteristic->getValue ();
     memcpy (&pid_schema.buffer, pid_value.data (), sizeof (pid_schema.buffer));
     OnPIDValueUpdated (pid_schema.Decode ());
+}
+
+void DataService::BrewTransferCallbacks::onWrite (NimBLECharacteristic * characteristic)
+{
+    const auto chunk = characteristic->getValue ();
+    auto chunk_size = chunk.size ();
+
+    if (chunk.c_str () == kEndOfFileFlag.c_str ())
+    {
+        // Do the parse and notify...
+
+        // Reset num bytes received
+        bytes_received_ = 0;
+    }
+    else
+    {
+        std::memcpy (&profile_buffer_ [bytes_received_], chunk.data (), chunk_size);
+        bytes_received_ += chunk_size;
+    }
+}
+
+DataService::DataService (EventBridge & event_bridge)
+    : event_bridge_ (event_bridge)
+{
 }
 
 void DataService::Setup (NimBLEServer * ble_server)
@@ -68,6 +94,7 @@ void DataService::Setup (NimBLEServer * ble_server)
     shot_control_characteristic_->setCallbacks (&shot_control_callbacks_);
 
     CreateHeaterPIDCharacteristic ();
+    CreateBrewTransferCharacteristic ();
 
     data_service_->start ();
 }
@@ -81,6 +108,14 @@ void DataService::CreateHeaterPIDCharacteristic ()
     heater_pid_callbacks_.OnPIDValueUpdated = [&] (const PIDConstants & pid_constants)
     { event_bridge_.OnHeaterPIDUpdated (pid_constants); };
     heater_pid_characteristic_->setCallbacks (&heater_pid_callbacks_);
+}
+
+void DataService::CreateBrewTransferCharacteristic ()
+{
+    brew_transfer_characteristic_ = data_service_->createCharacteristic (
+        kBrewTransferCharacteristicUUID,
+        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+    brew_transfer_characteristic_->setCallbacks (&brew_transfer_callbacks_);
 }
 
 void DataService::HeaterPIDUpdated (const PIDConstants & pid_constants)

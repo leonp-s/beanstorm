@@ -1,9 +1,13 @@
 #pragma once
 
+#include "event_bridge/event_bridge.h"
+#include "os_schema.h"
+#include "peripherals/peripherals.h"
+
 #include <NimBLEDevice.h>
 #include <atomic>
-#include <event_bridge/event_bridge.h>
-#include <peripherals/peripherals.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 class DataService
 {
@@ -41,7 +45,22 @@ private:
         std::function<void (const PIDConstants &)> OnPIDValueUpdated;
     };
 
+    class BrewTransferCallbacks final : public NimBLECharacteristicCallbacks
+    {
+    public:
+        explicit BrewTransferCallbacks () = default;
+        ~BrewTransferCallbacks () override = default;
+        void onWrite (NimBLECharacteristic * characteristic) override;
+
+    private:
+        static const std::string kEndOfFileFlag;
+
+        int bytes_received_ = 0;
+        pb_byte_t profile_buffer_ [PBrewProfile_size];
+    };
+
     void CreateHeaterPIDCharacteristic ();
+    void CreateBrewTransferCharacteristic ();
 
     EventBridge & event_bridge_;
     NimBLEServer * ble_server_ = nullptr;
@@ -49,12 +68,14 @@ private:
 
     ShotControlCallbacks shot_control_callbacks_ {event_bridge_};
     PIDCallbacks heater_pid_callbacks_;
+    BrewTransferCallbacks brew_transfer_callbacks_;
 
     NimBLECharacteristic * pressure_characteristic_ = nullptr;
     NimBLECharacteristic * temperature_characteristic_ = nullptr;
     NimBLECharacteristic * flow_characteristic_ = nullptr;
     NimBLECharacteristic * shot_control_characteristic_ = nullptr;
     NimBLECharacteristic * heater_pid_characteristic_ = nullptr;
+    NimBLECharacteristic * brew_transfer_characteristic_ = nullptr;
 
     std::atomic<float> pressure_ {0.f};
     std::atomic<float> temperature_ {0.f};
@@ -66,4 +87,5 @@ private:
     static const NimBLEUUID kFlowCharacteristicUUID;
     static const NimBLEUUID kShotControlCharacteristicUUID;
     static const NimBLEUUID kHeaterPIDCharacteristicUUID;
+    static const NimBLEUUID kBrewTransferCharacteristicUUID;
 };

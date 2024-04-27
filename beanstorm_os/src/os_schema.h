@@ -19,3 +19,21 @@ struct PIDSchema
 
     pb_byte_t buffer [PPID_size];
 };
+
+struct BrewProfileSchema
+{
+    bool Encode (const PBrewProfile & brew_profile);
+    PBrewProfile Decode () const;
+
+    pb_byte_t buffer [PBrewProfile_size];
+};
+
+bool BrewProfileSchema::Encode (const PBrewProfile & brew_profile)
+{
+    return false;
+}
+
+PBrewProfile BrewProfileSchema::Decode () const
+{
+    return PBrewProfile ();
+}
