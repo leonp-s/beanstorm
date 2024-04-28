@@ -40,7 +40,7 @@ void setup ()
     Serial.println ("Setup - Preferences Loaded");
 
     data_service.HeaterPIDUpdated (heater_pid_constants);
-    event_bridge.UpdatePumpPID (pump_pid_constants);
+    data_service.PumpPIDUpdated (pump_pid_constants);
 }
 
 void loop ()

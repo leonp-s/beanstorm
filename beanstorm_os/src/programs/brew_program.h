@@ -2,7 +2,7 @@
 
 #include "program.h"
 
-#include <PID_v1.h>
+#include <QuickPID.h>
 #include <brew_profile.h>
 #include <peripherals/heater.h>
 #include <peripherals/peripherals.h>
@@ -30,8 +30,10 @@ private:
     float shot_duration_ = 0.0f;
     unsigned long shot_start_time_ = 0;
 
-    double target_pressure_ {};
-    double input_ {};
-    double output_ {};
-    PID pid_ {&input_, &output_, &target_pressure_, 0.0, 0.0, 0.0, DIRECT};
+    float target_pressure_ {};
+    float input_ {};
+    float output_ {};
+
+    QuickPID
+        pid_ {&input_, &output_, &target_pressure_, 0.0f, 0.0f, 0.0f, QuickPID::Action::direct};
 };

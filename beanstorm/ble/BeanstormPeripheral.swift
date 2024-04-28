@@ -7,11 +7,12 @@ protocol DataService {
     var temperatureSubject: CurrentValueSubject<Float, Never> { get }
     var flowSubject: CurrentValueSubject<Float, Never> { get }
     var heaterPIDSubject: CurrentValueSubject<PPID?, Never> { get }
+    var pumpPIDSubject: CurrentValueSubject<PPID?, Never> { get }
     var brewProfileTransferSubject: CurrentValueSubject<BrewTransferState, Never> { get }
     
     func startShot();
     func endShot();
-    func updateSettings(heaterPid: PPID);
+    func updateSettings(heaterPid: PPID, pumpPid: PPID);
     func sendBrewProfile(brewProfile: PBrewProfile);
     func stopSendingBrewProfile();
 }
@@ -21,8 +22,8 @@ let temperatureCharacteristicUUID = CBUUID(string: "76400bdc-15ce-4375-b861-97be
 let flowCharacteristicUUID = CBUUID(string: "13cdb71e-8d34-4d53-8f40-05d5677a48f3")
 let shotControlCharacteristicUUID = CBUUID(string: "7e4881af-f9f6-4c12-bf5c-70509ba3d6b4")
 let heaterPIDCharacteristicUUID = CBUUID(string: "ad94bdc2-8ea0-4282-aed8-47c4f917349b")
+let pumpPIDCharacteristicUUID = CBUUID(string: "6f788d6a-1c71-4a5e-acd9-f7350ddc4478")
 let brewProfileTransferCharacteristicUUID = CBUUID(string: "417249bc-3a8b-4958-8d44-d080eb48b890")
-
 
 enum BrewTransferState: Equatable {
     case idle
@@ -38,6 +39,7 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
     let temperatureSubject = CurrentValueSubject<Float, Never> (0.0);
     let flowSubject = CurrentValueSubject<Float, Never> (0.0);
     let heaterPIDSubject = CurrentValueSubject<PPID?, Never> (nil);
+    let pumpPIDSubject = CurrentValueSubject<PPID?, Never> (nil);
     let brewProfileTransferSubject = CurrentValueSubject<BrewTransferState, Never> (.idle);
 
     var dataService: CBService? = nil
@@ -47,7 +49,8 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
     var flowCharacteristic: CBCharacteristic? = nil
     var shotControlCharacteristic: CBCharacteristic? = nil
     var heaterPIDCharacteristic: CBCharacteristic? = nil
-    
+    var pumpPIDCharacteristic: CBCharacteristic? = nil
+
     let endFileFlag = "EOF"
     var brewProfileData: Data? = nil
     var brewProfileTransferCharacteristic: CBCharacteristic? = nil
@@ -85,13 +88,15 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
         self.flowCharacteristic = characteristics.first(where: { $0.uuid == flowCharacteristicUUID })
         self.shotControlCharacteristic = characteristics.first(where: { $0.uuid == shotControlCharacteristicUUID })
         self.heaterPIDCharacteristic = characteristics.first(where: {$0.uuid == heaterPIDCharacteristicUUID })
+        self.pumpPIDCharacteristic = characteristics.first(where: {$0.uuid == pumpPIDCharacteristicUUID })
+
         self.brewProfileTransferCharacteristic = characteristics.first(where: {$0.uuid == brewProfileTransferCharacteristicUUID })
 
         subscribeToCharacteristics()
     }
     
     func subscribeToCharacteristics() {
-        guard let pressureCharacteristic = self.pressureCharacteristic, let temperatureCharacteristic = self.temperatureCharacteristic, let flowCharacteristic = self.flowCharacteristic, let heaterPIDCharacteristic = self.heaterPIDCharacteristic else {
+        guard let pressureCharacteristic = self.pressureCharacteristic, let temperatureCharacteristic = self.temperatureCharacteristic, let flowCharacteristic = self.flowCharacteristic, let heaterPIDCharacteristic = self.heaterPIDCharacteristic, let pumpPIDCharacteristic = self.pumpPIDCharacteristic else {
             print("Characteristics were not found during discovery!")
             return
         }
@@ -102,6 +107,9 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
         
         peripheral.setNotifyValue(true, for: heaterPIDCharacteristic)
         peripheral.readValue(for: heaterPIDCharacteristic)
+        
+        peripheral.setNotifyValue(true, for: pumpPIDCharacteristic)
+        peripheral.readValue(for: pumpPIDCharacteristic)
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
@@ -124,6 +132,10 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
         
         if(characteristic == heaterPIDCharacteristic) {
             readHeaterPID()
+        }
+        
+        if(characteristic == pumpPIDCharacteristic) {
+            readPumpPID()
         }
         
         if(characteristic == brewProfileTransferCharacteristic) {
@@ -180,10 +192,22 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
         }
     }
     
-    func updateSettings(heaterPid: PPID) {
+    func readPumpPID() {
+        if let data = pumpPIDCharacteristic?.value {
+            pumpPIDSubject.send(try? PPID(serializedData: data))
+        }
+    }
+    
+    func updateSettings(heaterPid: PPID, pumpPid: PPID) {
         if let heaterPIDCharacteristic = self.heaterPIDCharacteristic {
             if let data = try? heaterPid.serializedData() {
                 peripheral.writeValue(data, for: heaterPIDCharacteristic, type: .withResponse)
+            }
+        }
+        
+        if let pumpPIDCharacteristic = self.pumpPIDCharacteristic {
+            if let data = try? pumpPid.serializedData() {
+                peripheral.writeValue(data, for: pumpPIDCharacteristic, type: .withResponse)
             }
         }
     }
@@ -260,6 +284,7 @@ class BeanstormPeripheralModel: ObservableObject {
     @Published var temperature: Double = 0.0
     @Published var flow: Double = 0.0
     @Published var heaterPid: PPID? = nil
+    @Published var pumpPid: PPID? = nil
     @Published var brewProfileTransfer: BrewTransferState = .idle
         
     init(dataService: DataService) {
@@ -279,6 +304,10 @@ class BeanstormPeripheralModel: ObservableObject {
         
         self.dataService.heaterPIDSubject
             .sink { value in self.heaterPid = value }
+            .store(in: &subscriptions)
+        
+        self.dataService.pumpPIDSubject
+            .sink { value in self.pumpPid = value }
             .store(in: &subscriptions)
         
         self.dataService.brewProfileTransferSubject

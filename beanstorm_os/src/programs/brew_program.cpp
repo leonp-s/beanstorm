@@ -9,6 +9,13 @@ BrewProgram::BrewProgram (Pump & pump, Heater & heater, const BrewProfile & brew
 
 void BrewProgram::SetPumpTunings (const PIDConstants & pid_constants)
 {
+    Serial.print ("Pump Tunings Set: ");
+    Serial.print (pid_constants.kp);
+    Serial.print (" | ");
+    Serial.print (pid_constants.ki);
+    Serial.print (" | ");
+    Serial.println (pid_constants.kd);
+
     pid_.SetTunings (pid_constants.kp, pid_constants.ki, pid_constants.kd);
 }
 
@@ -33,8 +40,12 @@ void BrewProgram::Enter ()
 
     target_pressure_ = 0.0;
 
-    pid_.SetOutputLimits (0.0, 1.0);
-    pid_.SetMode (AUTOMATIC);
+    input_ = 0.f;
+    output_ = 0.f;
+    target_pressure_ = 0.f;
+    
+    pid_.SetOutputLimits (0.0f, 1.0f);
+    pid_.SetMode (QuickPID::Control::automatic);
 }
 
 void BrewProgram::Leave ()
@@ -42,6 +53,7 @@ void BrewProgram::Leave ()
     pump_.SetOff ();
     Peripherals::SetValveClosed ();
     heater_.Stop ();
+    pid_.Initialize ();
 }
 
 /**
@@ -100,7 +112,7 @@ void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
     auto shot_time = static_cast<float> ((shot_time_ms / 1000));
 
     heater_.SetTarget (brew_profile_.temperature);
-    
+
     if (shot_time < shot_duration_)
     {
         auto target_value = GetTargetValue (shot_time);

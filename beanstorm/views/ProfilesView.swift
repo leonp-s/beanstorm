@@ -203,7 +203,6 @@ struct NewBrewProfileView: View {
 struct TransferProfileView: View {
     @Binding var brewProfile: BrewProfile
     @StateObject var peripheralModel: BeanstormPeripheralModel
-    @State var showingNotice: Bool = true
 
     var body: some View {
         VStack {
@@ -217,16 +216,11 @@ struct TransferProfileView: View {
                         .foregroundColor(.green)
                         .font(.system(size: 48, weight: .regular))
                         .padding(EdgeInsets(top: 20, leading: 5, bottom: 5, trailing: 5))
-                    Text("Transfer Complete")
+                    Text("Transfer Finished")
                         .foregroundColor(.white)
                         .font(.callout)
                         .padding(EdgeInsets(top: 0, leading: 10, bottom: 5, trailing: 10))
                 }
-                .onAppear(perform: {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
-                        self.showingNotice = false
-                    })
-                })
             } else {
                 Group {
                     Text("This will transfer the brew profile to the machine via BLE so it can be reproduced. This may take a second.")
@@ -271,7 +265,7 @@ struct TransferProfileView: View {
             )
             .frame(height: 280)
         }
-        .animation(.easeInOut(duration: 0.4), value: showingNotice)
+        .animation(.easeInOut(duration: 0.4), value: peripheralModel.brewProfileTransfer)
         .padding()
     }
 }
@@ -324,7 +318,7 @@ struct ProfilesView: View {
                                 Button {
                                     transferProfile = profile
                                 } label: {
-                                    Label("Upload Profile", systemImage: "square.and.arrow.up")
+                                    Label("Upload Profile", systemImage: "network")
                                 }
                                 .tint(.blue)
                             }

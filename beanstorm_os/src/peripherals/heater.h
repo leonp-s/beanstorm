@@ -2,7 +2,7 @@
 
 #include "os_preferences.h"
 
-#include <PID_v1.h>
+#include <QuickPID.h>
 #include <peripherals/peripherals.h>
 
 class Heater
@@ -18,10 +18,10 @@ public:
 
 private:
     bool is_heating = false;
-    double set_point_ {};
-    double input_ {};
-    double output_ {};
+    float set_point_ {};
+    float input_ {};
+    float output_ {};
     int window_size_ = 1000;
     unsigned long window_start_time_ {};
-    PID pid_ {&input_, &output_, &set_point_, 0.0, 0.0, 0.0, DIRECT};
+    QuickPID pid_ {&input_, &output_, &set_point_, 0.0f, 0.0f, 0.0f, QuickPID::Action::direct};
 };

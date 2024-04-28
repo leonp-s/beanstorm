@@ -20,6 +20,9 @@ const NimBLEUUID DataService::kShotControlCharacteristicUUID =
 const NimBLEUUID DataService::kHeaterPIDCharacteristicUUID =
     NimBLEUUID ("ad94bdc2-8ea0-4282-aed8-47c4f917349b");
 
+const NimBLEUUID DataService::kPumpPIDCharacteristicUUID =
+    NimBLEUUID ("6f788d6a-1c71-4a5e-acd9-f7350ddc4478");
+
 const NimBLEUUID DataService::kBrewTransferCharacteristicUUID =
     NimBLEUUID ("417249bc-3a8b-4958-8d44-d080eb48b890");
 
@@ -118,13 +121,13 @@ void DataService::Setup (NimBLEServer * ble_server)
     shot_control_characteristic_->setValue (false);
     shot_control_characteristic_->setCallbacks (&shot_control_callbacks_);
 
-    CreateHeaterPIDCharacteristic ();
+    CreatePIDCharacteristics ();
     CreateBrewTransferCharacteristic ();
 
     data_service_->start ();
 }
 
-void DataService::CreateHeaterPIDCharacteristic ()
+void DataService::CreatePIDCharacteristics ()
 {
     heater_pid_characteristic_ = data_service_->createCharacteristic (
         kHeaterPIDCharacteristicUUID,
@@ -133,6 +136,14 @@ void DataService::CreateHeaterPIDCharacteristic ()
     heater_pid_callbacks_.OnPIDValueUpdated = [&] (const PIDConstants & pid_constants)
     { event_bridge_.OnHeaterPIDUpdated (pid_constants); };
     heater_pid_characteristic_->setCallbacks (&heater_pid_callbacks_);
+
+    pump_pid_characteristic_ = data_service_->createCharacteristic (
+        kPumpPIDCharacteristicUUID,
+        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+
+    pump_pid_callbacks_.OnPIDValueUpdated = [&] (const PIDConstants & pid_constants)
+    { event_bridge_.OnPumpPIDUpdated (pid_constants); };
+    pump_pid_characteristic_->setCallbacks (&pump_pid_callbacks_);
 }
 
 void DataService::CreateBrewTransferCharacteristic ()
@@ -149,6 +160,13 @@ void DataService::HeaterPIDUpdated (const PIDConstants & pid_constants)
     PIDSchema pid_schema {};
     if (pid_schema.Encode (pid_constants))
         heater_pid_characteristic_->setValue (pid_schema.buffer);
+}
+
+void DataService::PumpPIDUpdated (const PIDConstants & pid_constants)
+{
+    PIDSchema pid_schema {};
+    if (pid_schema.Encode (pid_constants))
+        pump_pid_characteristic_->setValue (pid_schema.buffer);
 }
 
 void DataService::Service ()

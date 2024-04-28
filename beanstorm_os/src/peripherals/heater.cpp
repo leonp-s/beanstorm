@@ -30,8 +30,8 @@ void Heater::Start ()
     window_start_time_ = millis ();
     set_point_ = 82.0;
 
-    pid_.SetOutputLimits (0, window_size_);
-    pid_.SetMode (AUTOMATIC);
+    pid_.SetOutputLimits (0.f, static_cast<float> (window_size_));
+    pid_.SetMode (QuickPID::Control::automatic);
 
     is_heating = true;
 }
@@ -46,5 +46,5 @@ void Heater::Stop ()
 
 void Heater::SetTarget (float set_point)
 {
-    set_point_ = static_cast<double> (set_point);
+    set_point_ = set_point;
 }

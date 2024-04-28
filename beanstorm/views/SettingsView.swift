@@ -6,13 +6,19 @@ struct PIDSettings: View {
     var body: some View {
         Group {
             Section(header: Text("kP - " + pid.kp.formatted())) {
-                Slider(value: $pid.kp)
+                Stepper(value: $pid.kp, in: 0...10, step: 0.01) {
+                    Slider(value: $pid.kp, in: 0...10)
+                }
             }
             Section(header: Text("kI - " + pid.ki.formatted())) {
-                Slider(value: $pid.ki)
+                Stepper(value: $pid.ki, in: 0...10, step: 0.01) {
+                    Slider(value: $pid.ki, in: 0...10)
+                }
             }
             Section(header: Text("kD - " + pid.kd.formatted())) {
-                Slider(value: $pid.kd)
+                Stepper(value: $pid.kd, in: 0...10, step: 0.01) {
+                    Slider(value: $pid.kd, in: 0...10)
+                }
             }
         }
     }
@@ -32,18 +38,22 @@ struct PeripheralSettingsView : View {
     
     var body: some View {
         Group {
-            if let heaterPid = Binding($peripheralModel.heaterPid) {
+            if let heaterPid = Binding($peripheralModel.heaterPid), let pumpPid = Binding($peripheralModel.pumpPid) {
                 Section(header: Text("Heater PID")) {
                     PIDSettings(pid: heaterPid)
                 }
                 
-                Button("Update Settings") {
-                    if let heaterPid = peripheralModel.heaterPid {
-                        peripheralModel.dataService.updateSettings(heaterPid: heaterPid)
-                    }
+                Section(header: Text("Pump PID")) {
+                    PIDSettings(pid: pumpPid)
                 }
             } else {
                 ProgressView()
+            }
+            
+            Button("Update Settings") {
+                if let heaterPid = peripheralModel.heaterPid, let pumpPid = peripheralModel.pumpPid {
+                    peripheralModel.dataService.updateSettings(heaterPid: heaterPid, pumpPid: pumpPid)
+                }
             }
         }
     }

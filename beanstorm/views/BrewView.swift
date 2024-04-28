@@ -129,7 +129,7 @@ struct BrewView: View {
 class MockDataService: DataService {
     func startShot() { }
     func endShot() { }
-    func updateSettings(heaterPid: PPID) { }
+    func updateSettings(heaterPid: PPID, pumpPid: PPID) { }
     func sendBrewProfile(brewProfile: PBrewProfile) { }
     func stopSendingBrewProfile() { }
 
@@ -137,6 +137,7 @@ class MockDataService: DataService {
     var temperatureSubject: CurrentValueSubject<Float, Never>
     var flowSubject: CurrentValueSubject<Float, Never>
     var heaterPIDSubject: CurrentValueSubject<PPID?, Never>
+    var pumpPIDSubject: CurrentValueSubject<PPID?, Never>
     var brewProfileTransferSubject: CurrentValueSubject<BrewTransferState, Never>
     
     init() {
@@ -144,6 +145,11 @@ class MockDataService: DataService {
         self.temperatureSubject = CurrentValueSubject<Float, Never>(86.8)
         self.flowSubject = CurrentValueSubject<Float, Never>(2.6)
         self.heaterPIDSubject = CurrentValueSubject<PPID?, Never>(PPID.with {
+            $0.kp = 1.0
+            $0.ki = 0.6
+            $0.kd = 1.2
+        })
+        self.pumpPIDSubject = CurrentValueSubject<PPID?, Never>(PPID.with {
             $0.kp = 1.0
             $0.ki = 0.6
             $0.kd = 1.2

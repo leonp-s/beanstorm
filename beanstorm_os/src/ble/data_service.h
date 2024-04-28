@@ -18,6 +18,7 @@ public:
 
     void SensorStateUpdated (const Peripherals::SensorState & sensor_state);
     void HeaterPIDUpdated (const PIDConstants & pid_constants);
+    void PumpPIDUpdated (const PIDConstants & pid_constants);
 
     void Service ();
 
@@ -62,7 +63,7 @@ private:
         BrewProfileSchema brew_profile_schema_ {};
     };
 
-    void CreateHeaterPIDCharacteristic ();
+    void CreatePIDCharacteristics ();
     void CreateBrewTransferCharacteristic ();
 
     EventBridge & event_bridge_;
@@ -71,6 +72,7 @@ private:
 
     ShotControlCallbacks shot_control_callbacks_ {event_bridge_};
     PIDCallbacks heater_pid_callbacks_;
+    PIDCallbacks pump_pid_callbacks_;
     BrewTransferCallbacks brew_transfer_callbacks_ {event_bridge_};
 
     NimBLECharacteristic * pressure_characteristic_ = nullptr;
@@ -78,6 +80,7 @@ private:
     NimBLECharacteristic * flow_characteristic_ = nullptr;
     NimBLECharacteristic * shot_control_characteristic_ = nullptr;
     NimBLECharacteristic * heater_pid_characteristic_ = nullptr;
+    NimBLECharacteristic * pump_pid_characteristic_ = nullptr;
     NimBLECharacteristic * brew_transfer_characteristic_ = nullptr;
 
     std::atomic<float> pressure_ {0.f};
@@ -90,5 +93,6 @@ private:
     static const NimBLEUUID kFlowCharacteristicUUID;
     static const NimBLEUUID kShotControlCharacteristicUUID;
     static const NimBLEUUID kHeaterPIDCharacteristicUUID;
+    static const NimBLEUUID kPumpPIDCharacteristicUUID;
     static const NimBLEUUID kBrewTransferCharacteristicUUID;
 };
