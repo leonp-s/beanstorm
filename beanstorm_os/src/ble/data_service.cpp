@@ -47,23 +47,48 @@ void DataService::PIDCallbacks::onWrite (NimBLECharacteristic * characteristic)
     OnPIDValueUpdated (pid_schema.Decode ());
 }
 
+DataService::BrewTransferCallbacks::BrewTransferCallbacks (EventBridge & event_bridge)
+    : event_bridge_ (event_bridge)
+{
+}
+
 void DataService::BrewTransferCallbacks::onWrite (NimBLECharacteristic * characteristic)
 {
     const auto chunk = characteristic->getValue ();
     auto chunk_size = chunk.size ();
 
-    if (chunk.c_str () == kEndOfFileFlag.c_str ())
+    if (kEndOfFileFlag == chunk.c_str ())
     {
         // Do the parse and notify...
+        std::unique_ptr<BrewProfile> brew_profile {new BrewProfile ()};
+        brew_profile_schema_.Decode (*brew_profile, bytes_received_);
+
+        Serial.print ("Decoded profile: ");
+        Serial.println (brew_profile->uuid.c_str ());
+
+        event_bridge_.OnBrewProfileUpdated (std::move (brew_profile));
 
         // Reset num bytes received
         bytes_received_ = 0;
     }
     else
     {
-        std::memcpy (&profile_buffer_ [bytes_received_], chunk.data (), chunk_size);
+        Serial.print ("Chunk Received: ");
+        Serial.println (bytes_received_);
+        if (bytes_received_ < PBrewProfile_size)
+            std::memcpy (&brew_profile_schema_.buffer [bytes_received_], chunk.data (), chunk_size);
         bytes_received_ += chunk_size;
     }
+
+    characteristic->notify ();
+}
+
+void DataService::BrewTransferCallbacks::onSubscribe (NimBLECharacteristic * pCharacteristic,
+                                                      ble_gap_conn_desc * desc,
+                                                      uint16_t subValue)
+{
+    Serial.println ("Subscribed to brew transfer!");
+    bytes_received_ = 0;
 }
 
 DataService::DataService (EventBridge & event_bridge)
@@ -114,7 +139,8 @@ void DataService::CreateBrewTransferCharacteristic ()
 {
     brew_transfer_characteristic_ = data_service_->createCharacteristic (
         kBrewTransferCharacteristicUUID,
-        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+        NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY |
+            NIMBLE_PROPERTY::WRITE_NR);
     brew_transfer_characteristic_->setCallbacks (&brew_transfer_callbacks_);
 }
 

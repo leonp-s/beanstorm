@@ -99,6 +99,8 @@ void BrewProgram::Loop (const Peripherals::SensorState & sensor_state)
     auto shot_time_ms = now - shot_start_time_;
     auto shot_time = static_cast<float> ((shot_time_ms / 1000));
 
+    heater_.SetTarget (brew_profile_.temperature);
+    
     if (shot_time < shot_duration_)
     {
         auto target_value = GetTargetValue (shot_time);

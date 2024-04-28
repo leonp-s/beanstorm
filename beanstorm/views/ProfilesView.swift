@@ -203,54 +203,75 @@ struct NewBrewProfileView: View {
 struct TransferProfileView: View {
     @Binding var brewProfile: BrewProfile
     @StateObject var peripheralModel: BeanstormPeripheralModel
-    
+    @State var showingNotice: Bool = true
+
     var body: some View {
         VStack {
             Image(systemName: "network")
                 .font(.largeTitle)
                 .padding()
-            Text("This will transfer the brew profile to the machine via BLE so it can be reproduced. This may take a second.")
-                .multilineTextAlignment(.center)
-            
-            if peripheralModel.brewProfileTransfer != .transfer {
-                Button(action: {
-                    peripheralModel.dataService.sendBrewProfile(
-                        brewProfile: PBrewProfile(brewProfile)
-                    )
-                }) {
-                    Text("Transfer Profile")
-                    Image(systemName: "square.and.arrow.up")
-                }
-                .buttonStyle(.borderedProminent)
-                
-                if case .failed(let error) = peripheralModel.brewProfileTransfer {
-                    Divider()
-                    Text(error)
-                        .font(.title)
-                        .foregroundStyle(.red)
-                }
-            } else {
-                ProgressView()
-            }
             Divider()
-                HStack {
-                    Section(header: Text("Profile Name")) {
-                        Text(brewProfile.name)
-                            .font(.headline)
-                    }
-                    Section(header: Text("Shot Duration")) {
-                        Text(String(format: "%.1f", getShotDuration(controlPoints: brewProfile.controlPoints)) + " s")
-                            .font(.headline)
+            if peripheralModel.brewProfileTransfer == .finished {
+                VStack (alignment: .center, spacing: 8) {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.green)
+                        .font(.system(size: 48, weight: .regular))
+                        .padding(EdgeInsets(top: 20, leading: 5, bottom: 5, trailing: 5))
+                    Text("Transfer Complete")
+                        .foregroundColor(.white)
+                        .font(.callout)
+                        .padding(EdgeInsets(top: 0, leading: 10, bottom: 5, trailing: 10))
+                }
+                .onAppear(perform: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+                        self.showingNotice = false
+                    })
+                })
+            } else {
+                Group {
+                    Text("This will transfer the brew profile to the machine via BLE so it can be reproduced. This may take a second.")
+                        .multilineTextAlignment(.center)
+                    
+                    if peripheralModel.brewProfileTransfer != .transfer {
+                        Button(action: {
+                            peripheralModel.dataService.sendBrewProfile(
+                                brewProfile: PBrewProfile(brewProfile)
+                            )
+                        }) {
+                            Text("Transfer Profile")
+                            Image(systemName: "network")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        
+                        if case .failed(let error) = peripheralModel.brewProfileTransfer {
+                            Divider()
+                            Text(error)
+                                .font(.title)
+                                .foregroundStyle(.red)
+                        }
+                    } else {
+                        ProgressView()
                     }
                 }
-                Section(header: Text("Profile")) {
-                    ProfileGraph(
-                        controlType: $brewProfile.controlType,
-                        controlPoints: $brewProfile.controlPoints
-                    )
-                    .frame(height: 280)
+            }
+            Spacer()
+            HStack {
+                Section(header: Text("Name")) {
+                    Text(brewProfile.name)
+                        .font(.headline)
                 }
+                Section(header: Text("Duration")) {
+                    Text(String(format: "%.1f", getShotDuration(controlPoints: brewProfile.controlPoints)) + " s")
+                        .font(.headline)
+                }
+            }
+            ProfileGraph(
+                controlType: $brewProfile.controlType,
+                controlPoints: $brewProfile.controlPoints
+            )
+            .frame(height: 280)
         }
+        .animation(.easeInOut(duration: 0.4), value: showingNotice)
         .padding()
     }
 }
@@ -336,6 +357,7 @@ struct ProfilesView: View {
             }
             .sheet(isPresented: $transferProfile.mappedToBool(), onDismiss: {
                 transferProfile = nil
+                beanstormBLE.service.connectedPeripheral?.stopSendingBrewProfile()
             }, content: {
                 NavigationStack {
                     Group {

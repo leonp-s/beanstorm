@@ -21,4 +21,5 @@ void IdleProgram::Loop (const Peripherals::SensorState & sensor_state)
 {
     Serial.print ("Temperature: ");
     Serial.println (sensor_state.temperature);
+    heater_.SetTarget (brew_profile_.temperature);
 }

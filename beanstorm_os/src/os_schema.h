@@ -1,5 +1,6 @@
 #pragma once
 
+#include "brew_profile.h"
 #include "schemas/beanstorm_schema.pb.h"
 
 #include <pb_decode.h>
@@ -22,18 +23,8 @@ struct PIDSchema
 
 struct BrewProfileSchema
 {
-    bool Encode (const PBrewProfile & brew_profile);
-    PBrewProfile Decode () const;
+    bool Encode (const BrewProfile & brew_profile, std::size_t & bytes_written);
+    void Decode (BrewProfile & brew_profile, std::size_t profile_size);
 
     pb_byte_t buffer [PBrewProfile_size];
 };
-
-bool BrewProfileSchema::Encode (const PBrewProfile & brew_profile)
-{
-    return false;
-}
-
-PBrewProfile BrewProfileSchema::Decode () const
-{
-    return PBrewProfile ();
-}

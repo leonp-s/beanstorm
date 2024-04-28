@@ -131,6 +131,7 @@ class MockDataService: DataService {
     func endShot() { }
     func updateSettings(heaterPid: PPID) { }
     func sendBrewProfile(brewProfile: PBrewProfile) { }
+    func stopSendingBrewProfile() { }
 
     var pressureSubject: CurrentValueSubject<Float, Never>
     var temperatureSubject: CurrentValueSubject<Float, Never>

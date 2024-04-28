@@ -13,6 +13,7 @@ protocol DataService {
     func endShot();
     func updateSettings(heaterPid: PPID);
     func sendBrewProfile(brewProfile: PBrewProfile);
+    func stopSendingBrewProfile();
 }
 
 let pressureCharacteristicUUID = CBUUID(string: "46851b87-ee86-42eb-9e35-aaee0cad5485")
@@ -26,6 +27,7 @@ let brewProfileTransferCharacteristicUUID = CBUUID(string: "417249bc-3a8b-4958-8
 enum BrewTransferState: Equatable {
     case idle
     case transfer
+    case finished
     case failed(String)
 }
 
@@ -195,6 +197,7 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
         let range = 0..<amountToSend
         let chunk = content.subdata(in: range)
         content.removeSubrange(range)
+        brewProfileData = content
         return chunk
     }
     
@@ -215,7 +218,7 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
         if let brewProfileTransferCharacteristic = brewProfileTransferCharacteristic, let data = brewProfileTransferCharacteristic.value {
             if data == endFileFlag.data(using: .utf8) {
                 peripheral.setNotifyValue(false, for: brewProfileTransferCharacteristic)
-                brewProfileTransferSubject.send(.idle)
+                brewProfileTransferSubject.send(.finished)
             } else {
                 sendBrewProfileData()
             }
@@ -235,6 +238,15 @@ class BeanstormPeripheral: NSObject, CBPeripheralDelegate, DataService {
             }
         } else {
             brewProfileTransferSubject.send(.failed("No characteristic found!"))
+        }
+    }
+    
+    func stopSendingBrewProfile() {
+        brewProfileTransferSubject.send(.idle)
+        if let brewProfileTransferCharacteristic = self.brewProfileTransferCharacteristic {
+            brewProfileData = nil
+            peripheral.setNotifyValue(false, for: brewProfileTransferCharacteristic)
+
         }
     }
 }

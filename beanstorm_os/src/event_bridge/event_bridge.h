@@ -2,6 +2,7 @@
 #include "lock_free_queue.h"
 #include "model.h"
 
+#include <brew_profile.h>
 #include <functional>
 #include <os_preferences.h>
 
@@ -48,6 +49,9 @@ public:
     void UpdatePumpPID (const PIDConstants & pid_constants);
     std::function<void (const PIDConstants & pid_constants)> OnPumpPIDUpdated;
 
+    void UpdateBrewProfile (std::unique_ptr<BrewProfile> brew_profile);
+    std::function<void (std::unique_ptr<BrewProfile> brew_profile)> OnBrewProfileUpdated;
+
     void Loop ();
 
 private:
@@ -59,11 +63,13 @@ private:
             kCancelShot,
             kUpdateHeaterPID,
             kUpdatePumpPID,
+            kUpdateBrewProfile
         };
 
         union Data
         {
             PIDConstants pid_constants_;
+            BrewProfile * brew_profile_;
         };
 
         Type type;

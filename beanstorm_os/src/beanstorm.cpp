@@ -16,6 +16,9 @@ Beanstorm::Beanstorm (DataService & data_service, EventBridge & event_bridge)
     event_bridge_.OnPumpPIDUpdated = [&] (const PIDConstants & pid_constants)
     { brew_program_.SetPumpTunings (pid_constants); };
 
+    event_bridge_.OnBrewProfileUpdated = [&] (std::unique_ptr<BrewProfile> brew_profile)
+    { brew_profile_ = *brew_profile; };
+
     brew_program_.OnShotEnded = [&] { HandleEndShot (); };
 }
 

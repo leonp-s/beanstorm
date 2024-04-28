@@ -40,6 +40,12 @@ void EventBridge::UpdatePumpPID (const PIDConstants & pid_constants)
         Event {.type = Event::Type::kUpdatePumpPID, .data = {.pid_constants_ = pid_constants}});
 }
 
+void EventBridge::UpdateBrewProfile (std::unique_ptr<BrewProfile> brew_profile)
+{
+    event_queue_.Push (Event {.type = Event::Type::kUpdateBrewProfile,
+                              .data = {.brew_profile_ = brew_profile.release ()}});
+}
+
 void EventBridge::Loop ()
 {
     while (const auto event = event_queue_.Pop ())
@@ -57,6 +63,9 @@ void EventBridge::Loop ()
                 break;
             case Event::Type::kUpdatePumpPID:
                 OnPumpPIDUpdated (event->data.pid_constants_);
+                break;
+            case Event::Type::kUpdateBrewProfile:
+                OnBrewProfileUpdated (std::unique_ptr<BrewProfile> (event->data.brew_profile_));
                 break;
         }
     }

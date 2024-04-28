@@ -48,15 +48,18 @@ private:
     class BrewTransferCallbacks final : public NimBLECharacteristicCallbacks
     {
     public:
-        explicit BrewTransferCallbacks () = default;
+        explicit BrewTransferCallbacks (EventBridge & event_bridge);
         ~BrewTransferCallbacks () override = default;
         void onWrite (NimBLECharacteristic * characteristic) override;
+        void onSubscribe (NimBLECharacteristic * pCharacteristic,
+                          ble_gap_conn_desc * desc,
+                          uint16_t subValue) override;
 
     private:
         static const std::string kEndOfFileFlag;
-
+        EventBridge & event_bridge_;
         int bytes_received_ = 0;
-        pb_byte_t profile_buffer_ [PBrewProfile_size];
+        BrewProfileSchema brew_profile_schema_ {};
     };
 
     void CreateHeaterPIDCharacteristic ();
@@ -68,7 +71,7 @@ private:
 
     ShotControlCallbacks shot_control_callbacks_ {event_bridge_};
     PIDCallbacks heater_pid_callbacks_;
-    BrewTransferCallbacks brew_transfer_callbacks_;
+    BrewTransferCallbacks brew_transfer_callbacks_ {event_bridge_};
 
     NimBLECharacteristic * pressure_characteristic_ = nullptr;
     NimBLECharacteristic * temperature_characteristic_ = nullptr;
