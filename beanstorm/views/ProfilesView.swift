@@ -370,7 +370,7 @@ struct ProfilesView: View {
                     }
                     .navigationTitle("Transfer Profile")
                 }
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
             })
         }
     }

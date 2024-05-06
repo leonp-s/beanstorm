@@ -1,7 +1,7 @@
 import SwiftUI
 import Charts
 
-private let maxPointValue = 11.0
+private let maxPointValue = 9.0
 private let yAxisMax = maxPointValue + 1;
 private let timeLabel = "Time (s)"
 private let xAxisMin = 1.0;

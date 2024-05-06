@@ -40,6 +40,10 @@ void setup ()
 
     data_service.HeaterPIDUpdated (heater_pid_constants);
     data_service.PumpPIDUpdated (pump_pid_constants);
+
+    std::unique_ptr<BrewProfile> brew_profile_event {new BrewProfile ()};
+    *brew_profile_event = brew_profile;
+    event_bridge.OnBrewProfileUpdated (std::move (brew_profile_event));
 }
 
 void loop ()
