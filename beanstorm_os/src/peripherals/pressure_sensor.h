@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ADS1X15.h>
+#include <Adafruit_ADS1X15.h>
 
 class PressureSensor
 {
@@ -10,11 +10,5 @@ public:
     float ReadPressure ();
 
 private:
-    ADS1115 ads_;
-
-    void I2CResetState ();
-    void GetAdsError ();
-
-    float previous_pressure_ {};
-    float current_pressure_ {};
+    Adafruit_ADS1115 ads_;
 };

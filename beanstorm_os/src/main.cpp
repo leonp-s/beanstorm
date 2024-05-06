@@ -21,7 +21,6 @@ Beanstorm beanstorm {data_service, event_bridge};
 void setup ()
 {
     Serial.begin (kBaudRate);
-    Wire.begin (SDA, SCL);
     ums3.begin ();
 
     beanstorm.Setup ();
