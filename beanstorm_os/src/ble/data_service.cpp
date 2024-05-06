@@ -46,12 +46,17 @@ void DataService::PIDCallbacks::onWrite (NimBLECharacteristic * characteristic)
 {
     PIDSchema pid_schema {};
     const auto pid_value = characteristic->getValue ();
-    memcpy (&pid_schema.buffer, pid_value.data (), sizeof (pid_schema.buffer));
-    OnPIDValueUpdated (pid_schema.Decode ());
+    auto pid_size = pid_value.size ();
+    memcpy (&pid_schema.buffer, pid_value.data (), pid_size);
+    PIDConstants pid_constants {};
+    pid_schema.Decode (pid_constants, pid_size);
+    OnPIDValueUpdated (pid_constants);
 }
 
-DataService::BrewTransferCallbacks::BrewTransferCallbacks (EventBridge & event_bridge)
+DataService::BrewTransferCallbacks::BrewTransferCallbacks (EventBridge & event_bridge,
+                                                           OsPreferences & os_preferences)
     : event_bridge_ (event_bridge)
+    , os_preferences_ (os_preferences)
 {
 }
 
@@ -69,6 +74,7 @@ void DataService::BrewTransferCallbacks::onWrite (NimBLECharacteristic * charact
         Serial.print ("Decoded profile: ");
         Serial.println (brew_profile->uuid.c_str ());
 
+        os_preferences_.SaveBrewProfile (*brew_profile);
         event_bridge_.OnBrewProfileUpdated (std::move (brew_profile));
 
         // Reset num bytes received
@@ -94,8 +100,9 @@ void DataService::BrewTransferCallbacks::onSubscribe (NimBLECharacteristic * pCh
     bytes_received_ = 0;
 }
 
-DataService::DataService (EventBridge & event_bridge)
+DataService::DataService (EventBridge & event_bridge, OsPreferences & os_preferences)
     : event_bridge_ (event_bridge)
+    , os_preferences_ (os_preferences)
 {
 }
 
@@ -134,7 +141,10 @@ void DataService::CreatePIDCharacteristics ()
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
 
     heater_pid_callbacks_.OnPIDValueUpdated = [&] (const PIDConstants & pid_constants)
-    { event_bridge_.OnHeaterPIDUpdated (pid_constants); };
+    {
+        os_preferences_.SaveHeaterPID (pid_constants);
+        event_bridge_.OnHeaterPIDUpdated (pid_constants);
+    };
     heater_pid_characteristic_->setCallbacks (&heater_pid_callbacks_);
 
     pump_pid_characteristic_ = data_service_->createCharacteristic (
@@ -142,7 +152,10 @@ void DataService::CreatePIDCharacteristics ()
         NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
 
     pump_pid_callbacks_.OnPIDValueUpdated = [&] (const PIDConstants & pid_constants)
-    { event_bridge_.OnPumpPIDUpdated (pid_constants); };
+    {
+        os_preferences_.SavePumpPID (pid_constants);
+        event_bridge_.OnPumpPIDUpdated (pid_constants);
+    };
     pump_pid_characteristic_->setCallbacks (&pump_pid_callbacks_);
 }
 
@@ -158,15 +171,17 @@ void DataService::CreateBrewTransferCharacteristic ()
 void DataService::HeaterPIDUpdated (const PIDConstants & pid_constants)
 {
     PIDSchema pid_schema {};
-    if (pid_schema.Encode (pid_constants))
-        heater_pid_characteristic_->setValue (pid_schema.buffer);
+    std::size_t bytes_written;
+    if (pid_schema.Encode (pid_constants, bytes_written))
+        heater_pid_characteristic_->setValue (pid_schema.buffer, bytes_written);
 }
 
 void DataService::PumpPIDUpdated (const PIDConstants & pid_constants)
 {
     PIDSchema pid_schema {};
-    if (pid_schema.Encode (pid_constants))
-        pump_pid_characteristic_->setValue (pid_schema.buffer);
+    std::size_t bytes_written;
+    if (pid_schema.Encode (pid_constants, bytes_written))
+        pump_pid_characteristic_->setValue (pid_schema.buffer, bytes_written);
 }
 
 void DataService::Service ()

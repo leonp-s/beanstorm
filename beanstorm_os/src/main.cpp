@@ -13,7 +13,7 @@ NotificationBridge notification_bridge;
 EventBridge event_bridge;
 
 OsPreferences os_preferences;
-DataService data_service {event_bridge};
+DataService data_service {event_bridge, os_preferences};
 BeanstormBLE beanstorm_ble {data_service};
 
 Beanstorm beanstorm {data_service, event_bridge};

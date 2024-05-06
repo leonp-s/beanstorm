@@ -15,8 +15,8 @@ struct PIDConstants
 
 struct PIDSchema
 {
-    bool Encode (const PIDConstants & pid_constants);
-    PIDConstants Decode () const;
+    bool Encode (const PIDConstants & pid_constants, std::size_t & bytes_written);
+    void Decode (PIDConstants & pid_constants, std::size_t size) const;
 
     pb_byte_t buffer [PPID_size];
 };
@@ -24,7 +24,7 @@ struct PIDSchema
 struct BrewProfileSchema
 {
     bool Encode (const BrewProfile & brew_profile, std::size_t & bytes_written);
-    void Decode (BrewProfile & brew_profile, std::size_t profile_size);
+    void Decode (BrewProfile & brew_profile, std::size_t size);
 
     pb_byte_t buffer [PBrewProfile_size];
 };

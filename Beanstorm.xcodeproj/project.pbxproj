@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E107292F2BDD6D400010FCA1 /* Binding.swift in Sources */ = {isa = PBXBuildFile; fileRef = E107292E2BDD6D400010FCA1 /* Binding.swift */; };
+		E12E0F062BE9237F0039D3A7 /* PID.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12E0F052BE9237F0039D3A7 /* PID.swift */; };
 		E13656E22B7BD35E00FD14A5 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13656E12B7BD35E00FD14A5 /* View.swift */; };
 		E136667D2B77E94600AF2C98 /* DeviceConnectivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */; };
 		E136667F2B77EB6600AF2C98 /* BeanstormBLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */; };
@@ -37,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		E107292E2BDD6D400010FCA1 /* Binding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Binding.swift; sourceTree = "<group>"; };
+		E12E0F052BE9237F0039D3A7 /* PID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PID.swift; sourceTree = "<group>"; };
 		E13656E12B7BD35E00FD14A5 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		E136667C2B77E94600AF2C98 /* DeviceConnectivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceConnectivity.swift; sourceTree = "<group>"; };
 		E136667E2B77EB6600AF2C98 /* BeanstormBLE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeanstormBLE.swift; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				E19948142B7AC893000E9B37 /* BrewProfile.swift */,
+				E12E0F052BE9237F0039D3A7 /* PID.swift */,
 			);
 			path = data;
 			sourceTree = "<group>";
@@ -269,6 +272,7 @@
 				E18B79502B3779DA001A3FF0 /* ProfilesView.swift in Sources */,
 				E16D584D2BD67BE800E0CDFC /* beanstorm_schema.pb.swift in Sources */,
 				E17E3EA22B323A6D000F456C /* ContentView.swift in Sources */,
+				E12E0F062BE9237F0039D3A7 /* PID.swift in Sources */,
 				E13666822B7A75E100AF2C98 /* BeanstormPeripheral.swift in Sources */,
 				E13656E22B7BD35E00FD14A5 /* View.swift in Sources */,
 				E13666862B7AA95600AF2C98 /* FloatingPoint.swift in Sources */,

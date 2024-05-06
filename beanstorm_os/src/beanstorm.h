@@ -31,7 +31,7 @@ private:
     void HandleEndShot ();
 
     static constexpr int kWatchdogTimeout = 1;
-    static constexpr int kServiceIntervalMs = 200;
+    static constexpr int kServiceIntervalMs = 100;
 
     OsPreferences os_preferences_;
 

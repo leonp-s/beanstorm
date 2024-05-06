@@ -43,9 +43,10 @@ void BrewProgram::Enter ()
     input_ = 0.f;
     output_ = 0.f;
     target_pressure_ = 0.f;
-    
+
     pid_.SetOutputLimits (0.0f, 1.0f);
     pid_.SetMode (QuickPID::Control::automatic);
+    pid_.Reset ();
 }
 
 void BrewProgram::Leave ()
@@ -53,7 +54,6 @@ void BrewProgram::Leave ()
     pump_.SetOff ();
     Peripherals::SetValveClosed ();
     heater_.Stop ();
-    pid_.Initialize ();
 }
 
 /**

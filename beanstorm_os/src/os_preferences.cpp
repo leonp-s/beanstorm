@@ -8,16 +8,21 @@
 bool SavePID (const PIDConstants & pid, Preferences & preferences, const char * key)
 {
     PIDSchema pid_schema {};
-    if (pid_schema.Encode (pid))
-        return preferences.putBytes (key, &pid_schema.buffer, PPID_size);
+    std::size_t bytes_written;
+    if (pid_schema.Encode (pid, bytes_written))
+        return preferences.putBytes (key, &pid_schema.buffer, bytes_written);
     return false;
 }
 
 PIDConstants LoadPID (Preferences & preferences, const char * key)
 {
     PIDSchema pid_schema {};
-    preferences.getBytes (key, &pid_schema.buffer, PPID_size);
-    return pid_schema.Decode ();
+    auto pid_size = preferences.getBytesLength (key);
+    preferences.getBytes (key, &pid_schema.buffer, pid_size);
+
+    PIDConstants pid_constants {};
+    pid_schema.Decode (pid_constants, pid_size);
+    return pid_constants;
 }
 
 void OsPreferences::Setup ()

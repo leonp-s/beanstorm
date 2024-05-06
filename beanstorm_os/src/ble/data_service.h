@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event_bridge/event_bridge.h"
+#include "os_preferences.h"
 #include "os_schema.h"
 #include "peripherals/peripherals.h"
 
@@ -12,7 +13,7 @@
 class DataService
 {
 public:
-    explicit DataService (EventBridge & event_bridge);
+    explicit DataService (EventBridge & event_bridge, OsPreferences & os_preferences);
     void Setup (NimBLEServer * ble_server);
     void Advertise (NimBLEAdvertising * advertising);
 
@@ -49,7 +50,7 @@ private:
     class BrewTransferCallbacks final : public NimBLECharacteristicCallbacks
     {
     public:
-        explicit BrewTransferCallbacks (EventBridge & event_bridge);
+        explicit BrewTransferCallbacks (EventBridge & event_bridge, OsPreferences & os_preferences);
         ~BrewTransferCallbacks () override = default;
         void onWrite (NimBLECharacteristic * characteristic) override;
         void onSubscribe (NimBLECharacteristic * pCharacteristic,
@@ -59,6 +60,7 @@ private:
     private:
         static const std::string kEndOfFileFlag;
         EventBridge & event_bridge_;
+        OsPreferences & os_preferences_;
         int bytes_received_ = 0;
         BrewProfileSchema brew_profile_schema_ {};
     };
@@ -67,13 +69,14 @@ private:
     void CreateBrewTransferCharacteristic ();
 
     EventBridge & event_bridge_;
+    OsPreferences & os_preferences_;
     NimBLEServer * ble_server_ = nullptr;
     NimBLEService * data_service_ = nullptr;
 
     ShotControlCallbacks shot_control_callbacks_ {event_bridge_};
     PIDCallbacks heater_pid_callbacks_;
     PIDCallbacks pump_pid_callbacks_;
-    BrewTransferCallbacks brew_transfer_callbacks_ {event_bridge_};
+    BrewTransferCallbacks brew_transfer_callbacks_ {event_bridge_, os_preferences_};
 
     NimBLECharacteristic * pressure_characteristic_ = nullptr;
     NimBLECharacteristic * temperature_characteristic_ = nullptr;
