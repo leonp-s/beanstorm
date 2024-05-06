@@ -11,6 +11,12 @@ struct BrewData: Codable, Identifiable, Equatable {
 
 let maxDataPoints = 1000
 
+let temperatureMin = 64.0
+let temperatureMax = 110.0
+
+let pressureMin = 0.0
+let pressureMax = 12.0
+
 struct BrewGraphOverlay: View {
     @Binding var data: [BrewData]
     private let minValue: Double = 0
@@ -141,12 +147,6 @@ struct BrewGraph: View {
     var body: some View {
         VStack(alignment: .leading) {
             let strideBy: Double = 8
-
-            let temperatureMin = 64.0
-            let temperatureMax = 110.0
-
-            let pressureMin = 0.0
-            let pressureMax = 12.0
             
             Chart(data) { _ in }
             .chartForegroundStyleScale([

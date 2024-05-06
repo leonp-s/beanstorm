@@ -14,7 +14,7 @@ public:
     void Setup ();
 
 private:
-    static constexpr int kServiceIntervalMs = 400;
+    static constexpr int kServiceIntervalMs = 100;
 
     DataService & data_service_;
     NimBLEServer * ble_server_ = nullptr;

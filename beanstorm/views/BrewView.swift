@@ -1,18 +1,33 @@
 import SwiftUI
 import Combine
 
+func SmoothedValue (valueToSmooth: Double, target: Double) -> Double
+{
+    let delta = 0.08;
+    let step = (target - valueToSmooth) * delta;
+    return valueToSmooth + step;
+}
+
 struct BrewView: View {
     @StateObject var peripheralModel: BeanstormPeripheralModel
     @State var isBrewing: Bool = false
+    @State var brewData: [BrewData] = []
+    @State var shotStartTime: Date = Date.now;
+    @State var shotElapsedTime: TimeInterval = TimeInterval(integerLiteral: 0.0)
     
-    let brew_impact = UIImpactFeedbackGenerator(style: .medium)
+    @State var smoothPressure: Double = 0.0
+    @State var smoothTemperature: Double = 0.0
+    @State var smoothFlow: Double = 0.0
 
+    let shotTimer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
+
+    let brew_impact = UIImpactFeedbackGenerator(style: .medium)
 
     private var timer: some View {
         HStack {
             Image(systemName: "timer")
                 .foregroundStyle(.yellow)
-            Text("00:11")
+            Text(shotElapsedTime.formattedMinsSecs)
                 .font(.headline)
                 .bold()
         }
@@ -37,8 +52,15 @@ struct BrewView: View {
                 .bold()
         }
     }
-
     
+    private var normalisedTemp: Double {
+        return (peripheralModel.temperature - temperatureMin) / (temperatureMax - temperatureMin)
+    }
+    
+    private var normalisedPressure: Double {
+        return peripheralModel.pressure / pressureMax
+    }
+
     private var getReady: some View {
         ContentUnavailableView {
             Label("BeanstormOS Idle", systemImage: "lightswitch.off")
@@ -49,7 +71,11 @@ struct BrewView: View {
                     isBrewing = true
                     brew_impact.prepare()
                     brew_impact.impactOccurred()
-                    
+                    shotStartTime = Date.now;
+                    brewData = [];
+                    smoothFlow = peripheralModel.flow
+                    smoothPressure = normalisedPressure
+                    smoothTemperature = normalisedTemp
                     peripheralModel.dataService.startShot()
                 }) {
                     Text("Start Shot")
@@ -73,7 +99,35 @@ struct BrewView: View {
                 Spacer()
                 timer
             }
-            BrewGraph(data: .constant([]))
+            BrewGraph(data: $brewData)
+                .onReceive(shotTimer) { time in
+                    smoothTemperature = SmoothedValue(
+                        valueToSmooth: smoothTemperature,
+                        target: normalisedTemp
+                    )
+                    smoothPressure = SmoothedValue(
+                        valueToSmooth: smoothPressure,
+                        target: normalisedPressure
+                    )
+                    smoothFlow = SmoothedValue(
+                        valueToSmooth: smoothFlow,
+                        target: peripheralModel.flow
+                    )
+                    
+                    shotElapsedTime = time.timeIntervalSince(shotStartTime)
+
+                    brewData.append(BrewData(
+                        id: UUID(),
+                        shotTime: shotElapsedTime.magnitude,
+                        temperature: smoothTemperature,
+                        pressure: smoothPressure,
+                        flow: smoothFlow
+                    ))
+                    
+                    if(brewData.count > maxDataPoints) {
+                        brewData.removeFirst()
+                    }
+                }
         }
     }
     
