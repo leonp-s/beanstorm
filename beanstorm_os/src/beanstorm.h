@@ -33,11 +33,13 @@ private:
     static constexpr int kWatchdogTimeout = 1;
     static constexpr int kServiceIntervalMs = 100;
 
+    unsigned long last_service_ = 0;
+
     OsPreferences os_preferences_;
 
     BrewProfile brew_profile_ {.uuid = "5791f6ba-45db-4900-912e-8fe65af0bc05",
                                .temperature = 86.0f,
-                               .control_type = ControlType::kFlow,
+                               .control_type = ControlType::kPressure,
                                .control_points = {ControlPoint {.time = 0.0f, .value = 6.0f},
                                                   ControlPoint {.time = 10.0f, .value = 6.0f},
                                                   ControlPoint {.time = 10.0f, .value = 3.0f},

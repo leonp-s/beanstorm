@@ -79,8 +79,8 @@ void Beanstorm::HandleSwitchEvents ()
 
 void Beanstorm::PerformHealthCheck ()
 {
-    if (pressure_sensor_.HasError ())
-        Serial.println ("Oh no... Pressure");
+    //    if (pressure_sensor_.HasError ())
+    //        Serial.println ("Oh no... Pressure");
 
     if (temperature_sensor_.HasError ())
         Serial.println ("Oh no... Temperature");
@@ -98,20 +98,24 @@ void Beanstorm::HandleEndShot ()
 
 void Beanstorm::Loop ()
 {
-    TaskWatchdog::Reset ();
-    PerformHealthCheck ();
+    auto now = millis ();
+    if (last_service_ - now > kServiceIntervalMs)
+    {
+        TaskWatchdog::Reset ();
+        PerformHealthCheck ();
 
-    const Peripherals::SensorState sensor_state {
-        .temperature = temperature_sensor_.ReadTemperature (),
-        .pressure = pressure_sensor_.ReadPressure (),
-    };
+        const Peripherals::SensorState sensor_state {
+            .temperature = temperature_sensor_.ReadTemperature (),
+            .pressure = pressure_sensor_.ReadPressure (),
+        };
 
-    event_bridge_.Loop ();
-    HandleSwitchEvents ();
+        event_bridge_.Loop ();
+        HandleSwitchEvents ();
 
-    program_controller_.Loop (sensor_state);
-    heater_.Loop (sensor_state);
-    data_service_.SensorStateUpdated (sensor_state);
+        program_controller_.Loop (sensor_state);
+        heater_.Loop (sensor_state);
+        data_service_.SensorStateUpdated (sensor_state);
 
-    delay (kServiceIntervalMs);
+        last_service_ = now;
+    }
 }

@@ -174,6 +174,7 @@ void DataService::HeaterPIDUpdated (const PIDConstants & pid_constants)
     std::size_t bytes_written;
     if (pid_schema.Encode (pid_constants, bytes_written))
         heater_pid_characteristic_->setValue (pid_schema.buffer, bytes_written);
+    event_bridge_.OnHeaterPIDUpdated (pid_constants);
 }
 
 void DataService::PumpPIDUpdated (const PIDConstants & pid_constants)
@@ -182,6 +183,7 @@ void DataService::PumpPIDUpdated (const PIDConstants & pid_constants)
     std::size_t bytes_written;
     if (pid_schema.Encode (pid_constants, bytes_written))
         pump_pid_characteristic_->setValue (pid_schema.buffer, bytes_written);
+    event_bridge_.OnPumpPIDUpdated (pid_constants);
 }
 
 void DataService::Service ()
