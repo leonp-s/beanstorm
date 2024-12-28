@@ -66,7 +66,21 @@ void Beanstorm::HandleSwitchEvents ()
 {
     const auto switch_state = Peripherals::ReadSwitchState ();
 
-    if (last_switch_state_.brew != switch_state.brew)
+    if (last_switch_state_.water != switch_state.water)
+    {
+        if (switch_state.water)
+            program_controller_.LoadProgram (&hot_water_program_);
+        else
+            program_controller_.LoadProgram (&idle_program_);
+    }
+    else if (last_switch_state_.steam != switch_state.steam)
+    {
+        if (switch_state.steam)
+            program_controller_.LoadProgram (&steam_program_);
+        else
+            program_controller_.LoadProgram (&idle_program_);
+    }
+    else if (last_switch_state_.brew != switch_state.brew)
     {
         if (switch_state.brew)
             HandleStartShot ();

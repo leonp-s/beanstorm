@@ -10,8 +10,10 @@
 #include "peripherals/pump.h"
 #include "peripherals/temperature_sensor.h"
 #include "programs/brew_program.h"
+#include "programs/hot_water_program.h"
 #include "programs/idle_program.h"
 #include "programs/program_controller.h"
+#include "programs/steam_program.h"
 
 class Beanstorm
 {
@@ -62,6 +64,8 @@ private:
     ProgramController program_controller_;
     IdleProgram idle_program_ {heater_, brew_profile_};
     BrewProgram brew_program_ {pump_, heater_, brew_profile_};
+    HotWaterProgram hot_water_program_ {pump_, heater_, brew_profile_};
+    SteamProgram steam_program_ {pump_, heater_};
 
     DataService & data_service_;
     EventBridge & event_bridge_;
